@@ -67,8 +67,8 @@ function buildTempalte(that) {
     target.jinkela.setAttribute('jinkela-class', classId);
     var styleSheet = that.styleSheet;
     if(styleSheet) {
-      styleSheet = styleSheet.replace(/:scope\b/g, `[jinkela-class="${classId}"]`);
-      document.documentElement.firstChild.insertAdjacentHTML('beforeend', `<style>${styleSheet}</style>`);
+      styleSheet = styleSheet.replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
+      document.documentElement.firstChild.insertAdjacentHTML('beforeend', '<style>' + styleSheet + '</style>');
     }
   }
   return target.jinkela.cloneNode(true);
