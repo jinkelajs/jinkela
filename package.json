@@ -1,0 +1,8 @@
+{
+  "name": "jinkela",
+  "version": "1.0.0",
+  "description": "A Modularization Solution of Front-End ",
+  "main": "jinkela.js",
+  "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
+  "license": "MIT"
+}
