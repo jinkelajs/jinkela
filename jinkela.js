@@ -52,13 +52,18 @@ function parseTempalte(that) {
   }(name);
 }
 
+// Some element require specifial parent element
+const strictTagMap = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table' };
+
 // To build and cache instance tempalte
 function buildTempalte(that) {
   var target = that.constructor;
   if(!target.jinkela) {
+    var template = that.template || '<jinkela>Jinkela</jinkela>';
+    var tagName =  String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
     // Build template
-    target.jinkela = document.createElement('jinkela');
-    target.jinkela.innerHTML = that.template || '<jinkela>Jinkela</jinkela>';
+    target.jinkela = document.createElement(strictTagMap[tagName] || 'jinkela');
+    target.jinkela.innerHTML = template;
     if (target.jinkela.children.length !== 1) {
       throw new Error('Jinkela: Template require ☝️ and only ☝️ root element');
     }
@@ -85,7 +90,7 @@ function initProperties(that) {
 }
 
 // Main Constructor
-function Jinkela() {
+function Jinkela(a) {
   initProperties(this);
   parseTempalte(this);
 }
