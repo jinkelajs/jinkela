@@ -13,15 +13,15 @@ document.currentScript === void 0 && Object.defineProperty(document, 'currentScr
 });
 
 // Create a unique hash
-function createUUID() {
+var createUUID = function() {
   return Date.now().toString(36) + '' + Math.floor(Math.random() * Math.pow(36, 10)).toString(36);
-}
+};
 
 // Define the heap object to store private property for instance
 var heap = {};
 
 // Walk the tree and change "{xxx}" template to accessor properties.
-function parseTempalte(that) {
+var parseTempalte = function(that) {
   var cache = {};
   var watches = Object.create(null);
   // Walking and match special templates into "watches"
@@ -38,29 +38,29 @@ function parseTempalte(that) {
     }
   }(that.element);
   // Change "watches" to accessor properties
-  for(var name in watches) void function(name) {
+  for (var name in watches) void function(name) {
     var list = watches[name];
     var value = that[name];
     Object.defineProperty(that, name, {
       set: function(value) {
         cache[name] = value;
-        for(var i = 0; i < list.length; i++) list[i].nodeValue = value;
+        for (var i = 0; i < list.length; i++) list[i].nodeValue = value;
       },
       get: function() { return cache[name]; }
     });
     that[name] = value;
   }(name);
-}
+};
 
 // Some element require specifial parent element
-const strictTagMap = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table' };
+var strictTagMap = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table' };
 
 // To build and cache instance tempalte
-function buildTempalte(that) {
+var buildTempalte = function(that) {
   var target = that.constructor;
-  if(!target.jinkela) {
+  if (!target.jinkela) {
     var template = that.template || '<jinkela>Jinkela</jinkela>';
-    var tagName =  String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
+    var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
     // Build template
     target.jinkela = document.createElement(strictTagMap[tagName] || 'jinkela');
     target.jinkela.innerHTML = template;
@@ -71,29 +71,29 @@ function buildTempalte(that) {
     var classId = createUUID();
     target.jinkela.setAttribute('jinkela-class', classId);
     var styleSheet = that.styleSheet;
-    if(styleSheet) {
+    if (styleSheet) {
       styleSheet = styleSheet.replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       document.documentElement.firstChild.insertAdjacentHTML('beforeend', '<style>' + styleSheet + '</style>');
     }
   }
   return target.jinkela.cloneNode(true);
-}
+};
 
 // Init public and private properties
-function initProperties(that) {
+var initProperties = function(that) {
   Object.defineProperties(that, {
     uuid: { value: createUUID() },
     element: { value: buildTempalte(that) }
   });
   // that.element.setAttribute('jinkela-id', that.uuid);
-  heap[that.uuid] = { currentScript: document.currentScript, cache: {} };
-}
+  heap[that.uuid] = { currentScript: document.currentScript };
+};
 
 // Main Constructor
-function Jinkela(a) {
+var Jinkela = function(a) {
   initProperties(this);
   parseTempalte(this);
-}
+};
 
 // Method Definations
 Object.defineProperties(Jinkela.prototype, {
