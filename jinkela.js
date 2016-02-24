@@ -104,6 +104,7 @@ Object.defineProperties(Jinkela.prototype, {
         throw new Error('Jinkela: I don\'t know where are you 🙈');
       }
       currentScript.parentNode.insertBefore(this.element, currentScript);
+      return this;
     }
   }
 });
