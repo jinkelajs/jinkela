@@ -1,0 +1,25 @@
+{
+  "name": "tester",
+  "main": "tester.js",
+  "version": "0.0.13",
+  "authors": [
+    "YanagiEiichi <admin@web-tinker.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "homepage": "https://github.com/YanagiEiichi/tester",
+  "description": "A simple web unit tester",
+  "keywords": [
+    "unit",
+    "tester"
+  ],
+  "dependencies": {
+    "promise.js": "git@github.com:YanagiEiichi/promise.js#f6f859e"
+  }
+}

@@ -1,0 +1,3 @@
+MIT LICENSE
+Copyright 2015 YanagiEiichi, yanagieiichi@web-tinker.com
+

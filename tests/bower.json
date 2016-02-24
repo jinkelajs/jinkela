@@ -1,0 +1,6 @@
+{
+  "name": "tests",
+  "dependencies": {
+    "tester": "^0.0.13"
+  }
+}

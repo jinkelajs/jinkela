@@ -1,0 +1,28 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<table>
+  <tbody>
+    <script>
+    class Foo extends Jinkela {
+      get template() {
+        return `<tr><td>{text}</td></tr>`;
+      }
+      get text() {
+        return 'Jinkela';
+      }
+    }
+    new Foo().renderHere();
+    </script>
+  </tbody>
+<table>
+<script>
+setTimeout(() => {
+  var td = document.querySelector('td');
+  Tester.assert(td.tagName === 'TD');
+  Tester.assert(td.parentNode.tagName === 'TR');
+  Tester.assert(td.parentNode.parentNode.tagName === 'TBODY');
+  Tester.assert(td.parentNode.parentNode.parentNode.tagName === 'TABLE');
+  Tester.feedback(true);
+});
+</script>
