@@ -59,7 +59,7 @@ var strictTagMap = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: '
 var buildTempalte = function(that) {
   var target = that.constructor;
   if (!target.jinkela) {
-    var template = that.template || '<jinkela>Jinkela</jinkela>';
+    var template = that.template || '<div></div>';
     var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
     // Build template
     target.jinkela = document.createElement(strictTagMap[tagName] || 'jinkela');
