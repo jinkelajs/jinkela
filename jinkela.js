@@ -17,9 +17,6 @@ var createUUID = function() {
   return Date.now().toString(36) + '' + Math.floor(Math.random() * Math.pow(36, 10)).toString(36);
 };
 
-// Define the heap object to store private property for instance
-var heap = {};
-
 // Walk the tree and change "{xxx}" template to accessor properties.
 var parseTempalte = function(that) {
   var cache = {};
@@ -44,7 +41,10 @@ var parseTempalte = function(that) {
     Object.defineProperty(that, name, {
       set: function(value) {
         cache[name] = value;
-        for (var i = 0; i < list.length; i++) list[i].nodeValue = value;
+        for (var i = 0; i < list.length; i++) {
+          // TODO: Directive Injector
+          list[i].nodeValue = value;
+        }
       },
       get: function() { return cache[name]; }
     });
@@ -85,8 +85,7 @@ var initProperties = function(that) {
     uuid: { value: createUUID() },
     element: { value: buildTempalte(that) }
   });
-  // that.element.setAttribute('jinkela-id', that.uuid);
-  heap[that.uuid] = { currentScript: document.currentScript };
+  /* that.element.setAttribute('jinkela-id', that.uuid); */
 };
 
 // Main Constructor
@@ -99,7 +98,7 @@ var Jinkela = function(a) {
 Object.defineProperties(Jinkela.prototype, {
   renderHere: {
     value: function() {
-      var currentScript = heap[this.uuid].currentScript;
+      var currentScript = document.currentScript;
       if (!currentScript || !currentScript.parentNode) {
         throw new Error('Jinkela: I don\'t know where are you 🙈');
       }

@@ -1,0 +1,39 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<style>
+.red { color: red; }
+.green { color: green; }
+.blue { color: blue; }
+</style>
+<div class="red">
+  <script>
+  class Foo extends Jinkela {};
+  var a = new Foo();
+  var b = new Foo();
+  </script>
+</div>
+<div class="green">
+  <script>
+  a.renderHere();
+  b.renderHere();
+  </script>
+</div>
+<div class="blue">
+  <script>
+  b.renderHere();
+  </script>
+</div>
+<script>
+Tester.assert(a.element.parentNode.className === 'green', 'a must be gree');
+Tester.assert(b.element.parentNode.className === 'blue', 'a must be blue');
+setTimeout(() => {
+  var result;
+  try {
+    a.renderHere();
+  } catch(error) {
+    result = error;
+  }
+  Tester.assert(!!result, 'async renderHerer must be error');
+  Tester.feedback(true);
+});
+</script>
