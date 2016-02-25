@@ -1,0 +1,26 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+var expection = new Tester.Expection(void 0, 1).feedback();
+Jinkela.register('test', (that, node) => {
+  setTimeout(() => {
+    Tester.assert(that === foo, 'that must be foo');
+    Tester.assert(node === foo.element.firstElementChild.attributes[0], 'node must be node');
+  });
+  return value => {
+    expection.answer(value);
+  };
+});
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <a test="{test}" href="JavaScript:">Jinkela</a>
+      </div>
+    `;
+  }
+}
+var foo = new Foo().renderHere();
+foo.test = 1;
+</script>

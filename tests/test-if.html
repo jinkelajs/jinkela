@@ -1,0 +1,20 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../directives/if.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <a if="{cond}" href="JavaScript:">Jinkela</a>
+      </div>
+    `;
+  }
+}
+var foo = new Foo().renderHere();
+Tester.assert(foo.element.children.length === 0);
+foo.cond = 1;
+Tester.assert(foo.element.children.length === 1);
+Tester.feedback(true);
+</script>

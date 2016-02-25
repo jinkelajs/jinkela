@@ -1,0 +1,18 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../directives/ref.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <a href="JavaScript:" ref="a">Jinkela</a>
+      </div>
+    `;
+  }
+}
+var foo = new Foo().renderHere();
+Tester.assert(foo.a === foo.element.firstElementChild);
+Tester.feedback(true);
+</script>
