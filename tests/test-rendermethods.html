@@ -1,0 +1,63 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<style>
+.red { color: red; }
+.green { color: green; }
+.blue { color: blue; }
+</style>
+<script>
+class Foo extends Jinkela {
+  constructor(raw) {
+    super();
+    this.text = raw.text;
+  }
+  get template() {
+    return '<div>{text}</div>';
+  }
+};
+</script>
+<div class="red">
+  <script>
+  var a = new Foo({ text: 'a' });
+  var b = new Foo({ text: 'b' });
+  </script>
+</div>
+<div class="green">
+  <script>
+  a.renderHere();
+  b.renderHere();
+  </script>
+</div>
+<div class="blue">
+  <script>
+  b.renderHere();
+  </script>
+  <meta id="c" />
+</div>
+<script>
+Tester.assert(a.element.parentNode.className === 'green', 'a must be gree');
+Tester.assert(b.element.parentNode.className === 'blue', 'a must be blue');
+
+var c = new Foo({ text: 'c' }).renderWith(document.getElementById('c'));
+var d = new Foo({ text: 'd' }).renderTo(c);
+var e = new Foo({ text: 'e' }).renderTo(document.querySelector('.red'));
+Tester.assert(c.element.parentNode.className === 'blue', 'c must be blue');
+Tester.assert(d.element.parentNode === c.element, 'parent of d must be c');
+Tester.assert(e.element.parentNode.className === 'red', 'e must be red');
+c.renderWith(e);
+e.renderTo(document.querySelector('.green'));
+Tester.assert(e.element.parentNode.className === 'green', 'e must be green');
+Tester.assert(c.element.parentNode.className === 'red', 'e must be red');
+Tester.assert(d.element.parentNode === c.element, 'parent of d must be c');
+
+setTimeout(() => {
+  var result;
+  try {
+    a.renderHere();
+  } catch(error) {
+    result = error;
+  }
+  Tester.assert(!!result, 'async renderHerer must be error');
+  Tester.feedback(true);
+});
+</script>

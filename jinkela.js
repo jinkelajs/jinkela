@@ -105,6 +105,20 @@ Object.defineProperties(Jinkela.prototype, {
       currentScript.parentNode.insertBefore(this.element, currentScript);
       return this;
     }
+  },
+  renderTo: {
+    value: function(target) {
+      if (target instanceof Jinkela) target = target.element;
+      target.appendChild(this.element);
+      return this;
+    }
+  },
+  renderWith: {
+    value: function(target) {
+      if (target instanceof Jinkela) target = target.element;
+      target.parentNode.replaceChild(this.element, target);
+      return this;
+    }
   }
 });
 
