@@ -23,10 +23,11 @@ var parseTempalte = function(that) {
   var watches = Object.create(null);
   // Walking and match special templates into "watches"
   void function callee(node) {
-    var name, attrs, child;
+    var name, attrs, child, handler;
+    if (directives[node.nodeName]) handler = directives[node.nodeName](that, node);
     if (typeof node.nodeValue === 'string' && node.nodeValue.match(/^\{([$_a-zA-Z][$\w]*)\}$/g)) {
       name = RegExp.$1;
-      (name in watches ? watches[name] : watches[name] = []).push(node);
+      (name in watches ? watches[name] : watches[name] = []).push(handler || node);
     }
     if (attrs = node.attributes) for (var attr, i = 0; attr = attrs[i]; i++) callee(attr);
     if (child = node.firstChild) {
@@ -42,8 +43,11 @@ var parseTempalte = function(that) {
       set: function(value) {
         cache[name] = value;
         for (var i = 0; i < list.length; i++) {
-          // TODO: Directive Injector
-          list[i].nodeValue = value;
+          if (typeof list[i] === 'function') {
+            list[i](value);
+          } else {
+            list[i].nodeValue = value;
+          }
         }
       },
       get: function() { return cache[name]; }
@@ -121,6 +125,10 @@ Object.defineProperties(Jinkela.prototype, {
     }
   }
 });
+
+// Directive register
+var directives = {};
+Jinkela.register = function(type, callback) { directives[type] = callback; };
 
 // Export to global
 window.Jinkela = Jinkela;
