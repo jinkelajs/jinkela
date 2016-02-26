@@ -21,16 +21,12 @@ setTimeout(() => {
   Tester.assert(foo.text === 'Jinkela', 'text error');
   Tester.assert(foo.href === 'JavaScript:', 'href error');
   foo.text = 'Jinkela hehe';
-  foo.href = 'JavaScript:var result = 233;';
+  foo.href = 'JavaScript: void 233;';
   setTimeout(() => {
     Tester.assert(foo.text === 'Jinkela hehe', 'hehe error');
-    Tester.assert(foo.href === 'JavaScript:var result = 233;', 'href error');
+    Tester.assert(foo.href === 'JavaScript: void 233;', 'href error');
     Tester.assert(foo.href === foo.element.getAttribute('href'), 'href attr error');
-    document.querySelector('a').click();
-    setTimeout(() => {
-      Tester.assert(result === 233, 'result error');
-      Tester.feedback(true);
-    });
+    Tester.feedback(true);
   });
 });
 </script>

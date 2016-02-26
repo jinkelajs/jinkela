@@ -2,13 +2,25 @@
 <script src="../jinkela.js"></script>
 <body>
 <script>
-var expection = new Tester.Expection(void 0, 1).feedback();
+var expection = new Tester.Expection(void 0, 1);
+expection.catch(() => {
+  setTimeout(() => {
+    throw new Error('value dismatched in handler funciton');
+  });
+  Tester.feedback(false);
+})
 Jinkela.register('test', (that, node) => {
   setTimeout(() => {
-    Tester.assert(that === foo, 'that must be foo');
-    Tester.assert(node === foo.element.firstElementChild.attributes[0], 'node must be node');
+    Tester.assert(that === foo, '"this" must be instance in factory function');
+    var attrs = foo.element.firstElementChild.attributes;
+    for (var i = 0; i < attrs.length; i++) if (attrs[i] === node) break;
+    Tester.assert(i < attrs.length, 'node must in attrs');
+    Tester.feedback(true);
   });
-  return value => {
+  return function(value) {
+    setTimeout(() => {
+      Tester.assert(this === foo, '"this" must be instance in handler function');
+    });
     expection.answer(value);
   };
 });
