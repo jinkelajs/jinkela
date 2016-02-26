@@ -3,18 +3,43 @@
 <script src="../directives/if.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <a if="{cond}" href="JavaScript:">Jinkela</a>
-      </div>
-    `;
-  }
-}
-var foo = new Foo().renderHere();
-Tester.assert(foo.element.children.length === 0);
-foo.cond = 1;
-Tester.assert(foo.element.children.length === 1);
-Tester.feedback(true);
+class A extends Jinkela { get template() { return `<div if="{cond}"></div>`; } }
+class B extends Jinkela { get template() { return `<div><div if="{cond}"></div></div>`; } }
+var expection = new Tester.Expection(
+  true, true, true, true, true, true, true, true
+).feedback();
+</script>
+<script>
+// false to true for container
+var a = new A();
+a.renderHere();
+expection.answer(a.element.parentNode === null, 'parentNode must be null');
+a.cond = true;
+expection.answer(a.element.parentNode === document.body);
+</script>
+<script>
+// true to false for container
+var a = new A();
+a.cond = true;
+a.renderHere();
+expection.answer(a.element.parentNode === document.body);
+a.cond = false;
+expection.answer(a.element.parentNode === null, 'parentNode must be null');
+</script>
+<script>
+// falst to true for child
+var b = new B();
+b.renderHere();
+expection.answer(b.element.firstChild.nodeType === 8);
+b.cond = true;
+expection.answer(b.element.firstChild.nodeType === 1);
+</script>
+<script>
+// true to false for child
+var b = new B();
+b.cond = true;
+b.renderHere();
+expection.answer(b.element.firstChild.nodeType === 1);
+b.cond = false;
+expection.answer(b.element.firstChild.nodeType === 8);
 </script>

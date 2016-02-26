@@ -112,31 +112,32 @@ var Jinkela = function(a) {
 };
 
 // Method Definations
-Object.defineProperties(Jinkela.prototype, {
-  renderHere: {
+Object.defineProperty(Jinkela.prototype, 'didMountHandlers', { value: [] });
+var createRender = function(name, handler) {
+  Object.defineProperty(Jinkela.prototype, name, {
     value: function() {
-      var currentScript = document.currentScript;
-      if (!currentScript || !currentScript.parentNode) {
-        throw new Error('Jinkela: I don\'t know where are you 🙈');
+      handler.apply(this, arguments);
+      for (var i = 0; i < this.didMountHandlers.length; i++) {
+        this.didMountHandlers[i].call(this);
       }
-      currentScript.parentNode.insertBefore(this.element, currentScript);
       return this;
     }
-  },
-  renderTo: {
-    value: function(target) {
-      if (target instanceof Jinkela) target = target.element;
-      target.appendChild(this.element);
-      return this;
-    }
-  },
-  renderWith: {
-    value: function(target) {
-      if (target instanceof Jinkela) target = target.element;
-      target.parentNode.replaceChild(this.element, target);
-      return this;
-    }
+  });
+};
+createRender('renderHere', function() {
+  var currentScript = document.currentScript;
+  if (!currentScript || !currentScript.parentNode) {
+    throw new Error('Jinkela: I don\'t know where are you 🙈');
   }
+  currentScript.parentNode.insertBefore(this.element, currentScript);
+});
+createRender('renderTo', function(target) {
+  if (target instanceof Jinkela) target = target.element;
+  target.appendChild(this.element);
+});
+createRender('renderWith', function(target) {
+  if (target instanceof Jinkela) target = target.element;
+  target.parentNode.replaceChild(this.element, target);
 });
 
 // Directive register
