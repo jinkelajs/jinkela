@@ -109,6 +109,7 @@ var initProperties = function(that) {
 var Jinkela = function(a) {
   initProperties(this);
   parseTempalte(this);
+  if (typeof this.init === 'function') this.init();
 };
 
 // Method Definations
