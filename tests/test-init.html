@@ -1,0 +1,19 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return '<div>{xx}</div>';
+  }
+  init(raw) {
+    this.xx = raw.xx;
+    // async function can't use in construcor
+    return Promise.resolve(true);
+  }
+}
+addEventListener('DOMContentLoaded', () => {
+  var foo = new Foo({ xx: 'Jinkela' }).renderTo(document.body);
+  Tester.assert(document.body.textContent === 'Jinkela');
+  Tester.feedback(true);
+});
+</script>

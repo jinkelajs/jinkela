@@ -92,7 +92,7 @@ var buildTempalte = function(that) {
 var Jinkela = function() {
   Object.defineProperty(this, 'element', { value: buildTempalte(this) });
   parseTempalte(this);
-  if (typeof this.init === 'function') this.init();
+  if (typeof this.init === 'function') this.init.apply(this, arguments);
 };
 
 // Method Definations
