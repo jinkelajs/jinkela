@@ -24,12 +24,25 @@ var parseTempalte = function(that) {
   // Walking and match special templates into "watches"
   void function callee(node) {
     var name, attrs, child, handler;
-    if (directives[node.nodeName]) handler = directives[node.nodeName](that, node);
+    var i;
+    // Try to match directive
+    if (directives[node.nodeName]) {
+      handler = directives[node.nodeName](that, node);
+    } else {
+      for (i = 0; i < directivesR.length; i++) {
+        if (directivesR[i].regexp.test(node.nodeName)) {
+          handler = directivesR[i].factory(that, node);
+          break;
+        }
+      }
+    }
+    // Try to match binding node
     if (typeof node.nodeValue === 'string' && node.nodeValue.match(/^\{([$_a-zA-Z][$\w]*)\}$/g)) {
       name = RegExp.$1;
       (name in watches ? watches[name] : watches[name] = []).push(handler || node);
     }
-    if (attrs = node.attributes) for (var attr, i = 0; attr = attrs[i]; i++) callee(attr);
+    var attr;
+    if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr);
     if (child = node.firstChild) {
       callee(child);
       for (var sibling = child; sibling = sibling.nextSibling; callee(sibling));
@@ -128,7 +141,14 @@ Object.defineProperties(Jinkela.prototype, {
 
 // Directive register
 var directives = {};
-Jinkela.register = function(type, callback) { directives[type] = callback; };
+var directivesR = [];
+Jinkela.register = function(type, factory) {
+  if (type instanceof RegExp) {
+    directivesR.push({ regexp: type, factory: factory });
+  } else {
+    directives[type] = factory;
+  }
+};
 
 // Export to global
 window.Jinkela = Jinkela;
