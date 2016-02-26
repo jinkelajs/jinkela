@@ -41,10 +41,13 @@
         "no-native-reassign": [ 1 ],
         "no-nested-ternary": [ 1 ],
         "no-fallthrough": [ 1 ],
-        "no-undef": [ 0 ],
-        "no-unused-vars": [ 0 ],
+        "no-undef": [ 1 ],
+        "no-unused-vars": [ 1 ],
         "no-cond-assign": [ 0 ],
         "indent": [ 0 ]
+    },
+    "globals": {
+        "Jinkela": true
     },
     "env": {
         "browser": true
