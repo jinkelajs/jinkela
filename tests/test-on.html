@@ -1,0 +1,17 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../directives/on.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  onClick(e) {
+    Tester.assert(e.target === this.element);
+    Tester.feedback(true);
+  }
+  get template() {
+    return `<a href="JavaScript:" on-click="{onClick}">Jinkela</a>`;
+  }
+}
+var foo = new Foo().renderHere();
+foo.element.click();
+</script>
