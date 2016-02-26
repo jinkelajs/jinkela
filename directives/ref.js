@@ -1,3 +1,3 @@
-Jinkela.register('ref', function(that, node) {
-  that[node.nodeValue] = node.ownerElement;
+Jinkela.register('ref', function(that, node, ownerElement) {
+  that[node.value] = ownerElement;
 });

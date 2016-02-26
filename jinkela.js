@@ -16,28 +16,29 @@ document.currentScript === void 0 && Object.defineProperty(document, 'currentScr
 var createId = function() { return createId.i = createId.i + 1 || 1; };
 
 // Walk the tree and change "{xxx}" template to accessor properties.
+var parseTempaltePropMap = { 2: 'value', 3: 'data' };
 var parseTempalte = function(that) {
   var watches = Object.create(null);
   // Walking and match special templates into "watches"
-  void function callee(node) {
+  void function callee(node, ownerElement) {
     var attrs, child, handler, attr, i;
     // Try to match directive
     if (directives[node.nodeName]) {
-      handler = directives[node.nodeName](that, node);
+      handler = directives[node.nodeName](that, node, ownerElement);
     } else {
       for (i = 0; i < directivesR.length; i++) {
         if (directivesR[i].regexp.test(node.nodeName)) {
-          handler = directivesR[i].factory(that, node);
+          handler = directivesR[i].factory(that, node, ownerElement);
           break;
         }
       }
     }
-    // Try to match binding node and save if matched
-    if (typeof node.nodeValue === 'string' && node.nodeValue.match(/^\{([$_a-zA-Z][$\w]*)\}$/g)) {
+    // Try to match binding node (textNode or attrNode) and save if matched
+    if (/^\{([$_a-zA-Z][$\w]*)\}$/.test(node[parseTempaltePropMap[node.nodeType]])) {
       (RegExp.$1 in watches ? watches[RegExp.$1] : watches[RegExp.$1] = []).push(handler || node);
     }
     // Traversing as a binary tree
-    if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr);
+    if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr, node);
     if (child = node.firstChild) do { callee(child); } while (child = child.nextSibling);
   }(that.element);
   // Change "watches" to accessor properties
@@ -53,7 +54,7 @@ var parseTempalte = function(that) {
           if (typeof list[i] === 'function') {
             list[i].call(that, value);
           } else {
-            list[i].nodeValue = value;
+            list[i][parseTempaltePropMap[list[i].nodeType]] = value;
           }
         }
       }
