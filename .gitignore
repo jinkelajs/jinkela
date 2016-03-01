@@ -1,1 +1,3 @@
 *.swp
+tests/bower_components
+tests/index.html
