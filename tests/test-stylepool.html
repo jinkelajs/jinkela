@@ -1,0 +1,28 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../directives/ref.js"></script>
+<body>
+<script>
+class Color extends Jinkela {
+  get template() { return `<div>${this.color}</div>`; }
+  get styleSheet() { return `:scope { color: ${this.color}; }`; }
+}
+class Red extends Color { get color() { return 'red'; } }
+class Green extends Color { get color() { return 'green'; } }
+class Blue extends Color { get color() { return 'blue'; } }
+
+[ Red, Green, Blue ].forEach(E => new E().renderHere());
+
+var divs = document.querySelectorAll('div');
+var red = divs[0];
+var green = divs[1];
+var blue = divs[2];
+
+Tester.assert(getComputedStyle(red).color === 'rgb(255, 0, 0)', 'must be red');
+Tester.assert(getComputedStyle(green).color === 'rgb(0, 128, 0)', 'must be green');
+Tester.assert(getComputedStyle(blue).color === 'rgb(0, 0, 255)', 'must be blue');
+
+Tester.assert(document.querySelectorAll('style').length === 1, 'count of style tag must be 1');
+
+Tester.feedback(true);
+</script>

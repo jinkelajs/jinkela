@@ -12,6 +12,15 @@ document.currentScript === void 0 && Object.defineProperty(document, 'currentScr
   }
 });
 
+// To store the jinkela-class in styleSheet
+var head = document.documentElement.firstChild;
+var getStylePool = function() {
+  if (getStylePool.cache) return getStylePool.cache;
+  var style = document.createElement('style');
+  head.appendChild(style);
+  return getStylePool.cache = style;
+};
+
 // To generate a unique id
 var createId = function() { return createId.i = createId.i + 1 || 1; };
 
@@ -82,7 +91,7 @@ var buildTempalte = function(that) {
       var classId = createId();
       target.jinkela.setAttribute('jinkela-class', classId);
       styleSheet = styleSheet.replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
-      document.documentElement.firstChild.insertAdjacentHTML('beforeend', '<style>' + styleSheet + '</style>');
+      getStylePool().insertAdjacentHTML('beforeend', styleSheet);
     }
   }
   return target.jinkela.cloneNode(true);
