@@ -12,7 +12,7 @@ Jinkela.cssPreprocessor = function(styleSheet) {
   // Flatten
   var tmp;
   while (tmp !== styleSheet) {
-    styleSheet = (tmp = styleSheet).replace(/(([^{};]+)\{[^}]*?)([^{};]+\{[^}]*?\})/, '$2 $3$1');
+    styleSheet = (tmp = styleSheet).replace(/(([^{};]+)\{[^{}]*?)([^{};]+\{[^{}]*?\})/, '$2 $3$1');
   }
   styleSheet = styleSheet.replace(/\s+&/g, '');
   // Reset special blocks
