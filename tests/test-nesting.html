@@ -1,0 +1,40 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../plugins/nesting.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div class="a">
+        <span x="{">Jinkela</a>
+      </div>
+    `;
+  }
+  get styleSheet() {
+    return `
+      :scope {
+        &.a {
+          /* haha shabi */
+          animation: anime 200ms ease forwards;
+          [x="{"] {
+            color: red;
+          }
+        }
+      }
+      @keyframes anime {
+        0% { opacity: 1; }
+        100% { opacity: 0; }
+      }
+    `;
+  }
+}
+
+var foo = new Foo().renderHere();
+
+Tester.assert(getComputedStyle(foo.element.firstElementChild).color === 'rgb(255, 0, 0)', 'color must be red')
+
+foo.element.addEventListener('animationend', () => {
+  Tester.feedback(true);
+});
+</script>
