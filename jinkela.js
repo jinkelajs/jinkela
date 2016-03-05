@@ -102,7 +102,14 @@ var buildTempalte = function(that) {
 var Jinkela = function() {
   Object.defineProperty(this, 'element', { value: buildTempalte(this) });
   parseTempalte(this);
-  if (typeof this.init === 'function') this.init.apply(this, arguments);
+  // Find all "init" method list in prototype chain and call they
+  var list = [];
+  for (var i = this; i; i = Object. getPrototypeOf(i)) {
+    var desc = Object.getOwnPropertyDescriptor(i, 'init');
+    if (!desc || typeof desc.value !== 'function') continue;
+    list.push(desc.value);
+  }
+  while (list.length) list.pop().apply(this, arguments);
 };
 
 // Method Definations
