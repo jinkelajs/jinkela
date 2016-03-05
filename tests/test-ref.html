@@ -12,7 +12,24 @@ class Foo extends Jinkela {
     `;
   }
 }
+
+class Span extends Jinkela {
+  get template() { return `<span>{text}</span>`; }
+}
+
 var foo = new Foo().renderHere();
 Tester.assert(foo.a === foo.element.firstElementChild);
+
+var haha = foo.a = new Span({ text: 'haha' });
+Tester.assert(foo.a === foo.element.firstElementChild);
+Tester.assert(foo.a === haha.element);
+
+var hehe = foo.a = new Span({ text: 'hehe' });
+Tester.assert(foo.a === hehe.element);
+
+var hoho = new Span({ text: 'hoho' });
+foo.a = hoho.element;
+Tester.assert(foo.a === hoho.element);
+
 Tester.feedback(true);
 </script>
