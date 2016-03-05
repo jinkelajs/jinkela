@@ -1,0 +1,25 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+var foo = new class extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <span>{H}</span>
+        <span>{E}</span>
+        <span>{L}</span>
+        <span>{L}</span>
+        <span>{O}</span>
+      </div>
+    `;
+  }
+}({
+  H: 'H',
+  E: 'E',
+  L: 'L',
+  O: 'O'
+}).renderHere();
+Tester.assert(foo.element.textContent.replace(/\s+/g, '') === 'HELLO', 'result must be HELLO');
+Tester.feedback(true);
+</script>
