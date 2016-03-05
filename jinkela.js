@@ -102,8 +102,11 @@ var buildTempalte = function(that) {
 var Jinkela = function(raw) {
   Object.defineProperty(this, 'element', { value: buildTempalte(this) });
   parseTempalte(this);
-  // Copy properties from raw
-  if (raw instanceof Object) for (var i in raw) this[i] = raw[i];
+  // Extends each arguments to this
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i];
+    if (arg instanceof Object) for (var j in arg) this[j] = arg[j];
+  }
   // Find all "init" method list in prototype chain and call they
   var list = [];
   for (var i = this; i; i = Object. getPrototypeOf(i)) {
