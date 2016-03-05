@@ -6,13 +6,12 @@ A Modularization Solution of Front-End
 
 ```html
 <body>
-  <script>new MyComponent().renderHere()</script>
+  <script>new MyComponent({ value: 'Jinkela' }).renderHere()</script>
 </body>
 ```
 
 ```js
 class MyComponent extends Jinkela {
-  get value { return 'Jinkela'; }
   get styleSheet() {
     return `
       :scope {
