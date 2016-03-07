@@ -1,0 +1,25 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+class Text extends Jinkela {
+  get template() { return '<div>Jinkela</div>'; }
+}
+
+class RedText extends Text {
+  get styleSheet() { return ':scope { color: red; }'; }
+}
+
+class BigRedText extends RedText {
+  get styleSheet() { return ':scope { font-size: 32px; }'; }
+}
+
+var bigRedText = new BigRedText().renderHere();
+
+var style = getComputedStyle(bigRedText.element)
+
+Tester.assert(style.color === 'rgb(255, 0, 0)', 'color must be red');
+Tester.assert(style.fontSize === '32px', 'size must be 32px');
+
+Tester.feedback(true);
+</script>

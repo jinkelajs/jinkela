@@ -24,6 +24,15 @@ var getStylePool = function() {
 // To generate a unique id
 var createId = function() { return createId.i = createId.i + 1 || 1; };
 
+var getShadedProps = function(that, propName) {
+  var list = [];
+  for (var i = that; i; i = Object.getPrototypeOf(i)) {
+    var desc = Object.getOwnPropertyDescriptor(i, propName);
+    desc && list.push(desc.get ? desc.get.call(that) : desc.value);
+  }
+  return list;
+};
+
 // Walk the tree and change "{xxx}" template to accessor properties.
 var parseTempaltePropMap = { 2: 'value', 3: 'data' };
 var parseTempalte = function(that) {
@@ -87,10 +96,12 @@ var buildTempalte = function(that) {
     target.jinkela = target.jinkela.firstElementChild;
     // Build styleSheet as a style tag
     var styleSheet = that.styleSheet;
-    if (styleSheet) {
+    // Find all shaded "styleSheet" from prototype chain
+    var styleSheetList = getShadedProps(that, 'styleSheet');
+    if (styleSheetList.length) {
       var classId = createId();
       target.jinkela.setAttribute('jinkela-class', classId);
-      styleSheet = styleSheet.replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
+      var styleSheet = styleSheetList.join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
       getStylePool().insertAdjacentHTML('beforeend', styleSheet);
     }
@@ -108,12 +119,7 @@ var Jinkela = function(raw) {
     if (arg instanceof Object) for (var j in arg) this[j] = arg[j];
   }
   // Find all "init" method list in prototype chain and call they
-  var list = [];
-  for (var i = this; i; i = Object. getPrototypeOf(i)) {
-    var desc = Object.getOwnPropertyDescriptor(i, 'init');
-    if (!desc || typeof desc.value !== 'function') continue;
-    list.push(desc.value);
-  }
+  var list = getShadedProps(this, 'init');
   while (list.length) list.pop().apply(this, arguments);
 };
 
