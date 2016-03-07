@@ -101,7 +101,7 @@ var buildTempalte = function(that) {
     if (styleSheetList.length) {
       var classId = createId();
       target.jinkela.setAttribute('jinkela-class', classId);
-      var styleSheet = styleSheetList.join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
+      var styleSheet = styleSheetList.reverse().join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
       getStylePool().insertAdjacentHTML('beforeend', styleSheet);
     }
