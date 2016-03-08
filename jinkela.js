@@ -85,7 +85,7 @@ var parseTempalte = function(that) {
 var buildTempalteTagMap = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table' };
 var buildTempalte = function(that) {
   var target = that.constructor;
-  if (!target.jinkela) {
+  if (!target.hasOwnProperty('jinkela')) {
     var template = that.template || '<div></div>';
     // Some element require specifial parent element
     var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();

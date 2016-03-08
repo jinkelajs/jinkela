@@ -14,6 +14,16 @@ class BigRedText extends RedText {
   get styleSheet() { return ':scope { font-size: 32px; }'; }
 }
 
+
+
+var redText = new RedText().renderHere();
+
+var style = getComputedStyle(redText.element)
+
+Tester.assert(style.color === 'rgb(255, 0, 0)', 'color must be red');
+
+
+
 var bigRedText = new BigRedText().renderHere();
 
 var style = getComputedStyle(bigRedText.element)
