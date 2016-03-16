@@ -10,10 +10,16 @@ var fee = new class extends Jinkela {
       <div>
         <div class="a" ref="a">
           a
-          <div class=" b" ref="b">
+          <div class="b" ref="b">
             b
             <div class="c" ref="c">
               c
+            </div>
+          </div>
+          <div class="d" ref="d">
+            d
+            <div class="e" ref="e">
+              e
             </div>
           </div>
         </div>
@@ -25,9 +31,9 @@ var fee = new class extends Jinkela {
       :scope {
         .a {
           color: red;
-          .b {
+          .b, .d {
             color: green;
-            .c {
+            .c, .e {
               color: blue;
             }
           }
@@ -41,6 +47,8 @@ fee.renderHere();
 Tester.assert(getComputedStyle(fee.a).color === 'rgb(255, 0, 0)', 'color must be red')
 Tester.assert(getComputedStyle(fee.b).color === 'rgb(0, 128, 0)', 'color must be green')
 Tester.assert(getComputedStyle(fee.c).color === 'rgb(0, 0, 255)', 'color must be blue')
+Tester.assert(getComputedStyle(fee.d).color === 'rgb(0, 128, 0)', 'color must be green')
+Tester.assert(getComputedStyle(fee.e).color === 'rgb(0, 0, 255)', 'color must be blue')
 
 var foo = new class extends Jinkela {
   get template() {

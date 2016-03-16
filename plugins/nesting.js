@@ -11,8 +11,19 @@ Jinkela.cssPreprocessor = function(styleSheet) {
   });
   // Flatten
   var tmp;
+  var engin = /(([^{};]+)\{[^{}]*?)([^{};]+)(\{[^{}]*?\})/;
   while (tmp !== styleSheet) {
-    styleSheet = (tmp = styleSheet).replace(/(([^{};]+)\{[^{}]*?)([^{};]+\{[^{}]*?\})/, '$2 $3$1');
+    styleSheet = (tmp = styleSheet).replace(engin, function($0, $1, $2, $3, $4) {
+      var outer = $2.split(/,/g);
+      var inner = $3.split(/,/g);
+      var mixed = [];
+      for (var i = 0; i < outer.length; i++) {
+        for (var j = 0; j < inner.length; j++) {
+          mixed.push(outer[i] + ' ' + inner[j] + $4);
+        }
+      }
+      return mixed.join('') + $1;
+    });
   }
   styleSheet = styleSheet.replace(/\s+&/g, '');
   // Reset special blocks
