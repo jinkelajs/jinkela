@@ -6,7 +6,8 @@
 class A extends Jinkela { get template() { return `<div if="{cond}"></div>`; } }
 class B extends Jinkela { get template() { return `<div><div if="{cond}"></div></div>`; } }
 var expection = new Tester.Expection(
-  true, true, true, true, true, true, true, true
+  true, true, true, true, true, true, true, true,
+  true, true
 ).feedback();
 </script>
 <script>
@@ -16,8 +17,6 @@ a.renderHere();
 expection.answer(a.element.parentNode === null, 'parentNode must be null');
 a.cond = true;
 expection.answer(a.element.parentNode === document.body);
-</script>
-<script>
 // true to false for container
 var a = new A();
 a.cond = true;
@@ -25,16 +24,12 @@ a.renderHere();
 expection.answer(a.element.parentNode === document.body);
 a.cond = false;
 expection.answer(a.element.parentNode === null, 'parentNode must be null');
-</script>
-<script>
 // falst to true for child
 var b = new B();
 b.renderHere();
 expection.answer(b.element.firstChild.nodeType === 8);
 b.cond = true;
 expection.answer(b.element.firstChild.nodeType === 1);
-</script>
-<script>
 // true to false for child
 var b = new B();
 b.cond = true;
@@ -42,4 +37,14 @@ b.renderHere();
 expection.answer(b.element.firstChild.nodeType === 1);
 b.cond = false;
 expection.answer(b.element.firstChild.nodeType === 8);
+</script>
+
+<script>
+class C extends Jinkela { get template() { return `<div if-not="{cond}"></div>`; } }
+var c = new C();
+c.cond = true;
+c.renderHere();
+expection.answer(c.element.parentNode === null, 'parentNode must be null');
+c.cond = false;
+expection.answer(c.element.parentNode === document.body);
 </script>
