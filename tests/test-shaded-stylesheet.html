@@ -16,7 +16,7 @@ class BigRedText extends RedText {
 
 
 
-var redText = new RedText().renderHere();
+var redText = new RedText().renderTo(document.body);
 
 var style = getComputedStyle(redText.element)
 
@@ -24,7 +24,7 @@ Tester.assert(style.color === 'rgb(255, 0, 0)', 'color must be red');
 
 
 
-var bigRedText = new BigRedText().renderHere();
+var bigRedText = new BigRedText().renderTo(document.body);
 
 var style = getComputedStyle(bigRedText.element)
 

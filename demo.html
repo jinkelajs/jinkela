@@ -1,10 +1,9 @@
-## Jinkela
-
-A Modularization Solution of Front-End 
-
-#### Usage
-
-```js
+<!DOCTYPE html>
+<base href="https://yanagieiichi.github.io/jinkela/" />
+<script src="jinkela.js"></script>
+<script src="plugins/nesting.js"></script>
+<script src="directives/on.js"></script>
+<script>
 class MyComponent extends Jinkela {
   onInput({ target }) { this.value = target.value; }
   get styleSheet() {
@@ -37,12 +36,8 @@ class MyComponent extends Jinkela {
     `;
   }
 }
-```
 
-```js
 addEventListener('DOMContentLoaded', () => {
   new MyComponent({ value: 'Jinkela' }).renderTo(document.body);
 });
-```
-
-<img src="demo.png" width="512" />
+</script>

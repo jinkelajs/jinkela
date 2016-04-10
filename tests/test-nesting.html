@@ -43,7 +43,7 @@ var fee = new class extends Jinkela {
   }
 };
 
-fee.renderHere();
+fee.renderTo(document.body);
 Tester.assert(getComputedStyle(fee.a).color === 'rgb(255, 0, 0)', 'color must be red')
 Tester.assert(getComputedStyle(fee.b).color === 'rgb(0, 128, 0)', 'color must be green')
 Tester.assert(getComputedStyle(fee.c).color === 'rgb(0, 0, 255)', 'color must be blue')
@@ -77,7 +77,7 @@ var foo = new class extends Jinkela {
   }
 };
 
-foo.renderHere();
+foo.renderTo(document.body);
 
 Tester.assert(getComputedStyle(foo.element.firstElementChild).color === 'rgb(255, 0, 0)', 'color must be red')
 

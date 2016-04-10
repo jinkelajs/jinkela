@@ -16,7 +16,7 @@ class Foo extends Jinkela {
     return 'Jinkela';
   }
 }
-var foo = new Foo().renderHere();
+var foo = new Foo().renderTo(document.body);
 setTimeout(() => {
   Tester.assert(foo.text === 'Jinkela', 'text error');
   Tester.assert(foo.href === 'JavaScript:', 'href error');

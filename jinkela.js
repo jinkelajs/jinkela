@@ -1,17 +1,6 @@
 /**/ 'use strict';
 /**/ void function() { /**/
 
-// Polyfill document.currentScript for IE10-
-document.currentScript === void 0 && Object.defineProperty(document, 'currentScript', {
-  get: function() {
-    var scripts = document.getElementsByTagName('script');
-    for (var i = 0, script; script = scripts[i]; i++) {
-      if (script.readyState === 'interactive') return script;
-    }
-    return null;
-  }
-});
-
 // To store the jinkela-class in styleSheet
 var head = document.documentElement.firstChild;
 var getStylePool = function() {
@@ -134,11 +123,6 @@ var createRender = function(name, handler) {
     }
   });
 };
-createRender('renderHere', function() {
-  var element = document.currentScript;
-  if (!element || !element.parentNode) throw new Error('Jinkela: "renderHere" must call synchronously');
-  element.parentNode.insertBefore(this.element, element);
-});
 createRender('renderTo', function(target) {
   if (target instanceof Jinkela) target = target.element;
   target.appendChild(this.element);

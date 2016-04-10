@@ -24,13 +24,13 @@ class Foo extends Jinkela {
 </div>
 <div class="green">
   <script>
-  a.renderHere();
-  b.renderHere();
+  a.renderTo(document.querySelector('.green'));
+  b.renderTo(document.querySelector('.green'));
   </script>
 </div>
 <div class="blue">
   <script>
-  b.renderHere();
+  b.renderTo(document.querySelector('.blue'));
   </script>
   <meta id="c" />
 </div>
@@ -51,13 +51,6 @@ Tester.assert(c.element.parentNode.className === 'red', 'e must be red');
 Tester.assert(d.element.parentNode === c.element, 'parent of d must be c');
 
 setTimeout(() => {
-  var result;
-  try {
-    a.renderHere();
-  } catch(error) {
-    result = error;
-  }
-  Tester.assert(!!result, 'async renderHerer must be error');
   Tester.feedback(true);
 });
 </script>

@@ -12,6 +12,6 @@ class Foo extends Jinkela {
     return `<a href="JavaScript:" on-click="{onClick}">Jinkela</a>`;
   }
 }
-var foo = new Foo().renderHere();
+var foo = new Foo().renderTo(document.body);
 foo.element.click();
 </script>
