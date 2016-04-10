@@ -32,7 +32,7 @@ class MyComponent extends Jinkela {
     return `
       <div>
         <h1>Hello <span>{value}</span></h1>
-        <input value={value} on-input={onInput} />
+        <input value="{value}" on-input="{onInput}" />
       </div>
     `;
   }
@@ -45,4 +45,4 @@ addEventListener('DOMContentLoaded', () => {
 });
 ```
 
-<img src="demo.png" width="512" />
+<a href="https://yanagieiichi.github.io/jinkela/demo.html" target="_blank">Live Demo</a>
