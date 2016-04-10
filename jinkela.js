@@ -90,7 +90,7 @@ var buildTempalte = function(that) {
     if (styleSheetList.length) {
       var classId = createId();
       target.jinkela.setAttribute('jinkela-class', classId);
-      var styleSheet = styleSheetList.reverse().join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
+      styleSheet = styleSheetList.reverse().join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
       getStylePool().insertAdjacentHTML('beforeend', styleSheet);
     }
@@ -99,7 +99,7 @@ var buildTempalte = function(that) {
 };
 
 // Main Constructor
-var Jinkela = function(raw) {
+var Jinkela = function() {
   Object.defineProperty(this, 'element', { value: buildTempalte(this) });
   parseTempalte(this);
   // Extends each arguments to this

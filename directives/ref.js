@@ -1,5 +1,5 @@
 Jinkela.register('ref', function(that, node, ownerElement) {
-  var desc = Object.getOwnPropertyDescriptor(that, node.value);
+  // var desc = Object.getOwnPropertyDescriptor(that, node.value);
   // TODO: Consider shaded props
   Object.defineProperty(that, node.value, {
     configurable: true,

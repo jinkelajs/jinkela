@@ -11,7 +11,7 @@ class Red extends Color { get color() { return 'red'; } }
 class Green extends Color { get color() { return 'green'; } }
 class Blue extends Color { get color() { return 'blue'; } }
 
-[ Red, Green, Blue ].forEach(E => new E().renderHere());
+[ Red, Green, Blue ].forEach(E => new E().renderTo(document.body));
 
 var divs = document.querySelectorAll('div');
 var red = divs[0];
