@@ -113,7 +113,14 @@ var Jinkela = function() {
 };
 
 // Method Definations
-Object.defineProperty(Jinkela.prototype, 'didMountHandlers', { value: [] });
+Object.defineProperty(Jinkela.prototype, 'didMountHandlers', {
+  configurable: true,
+  get: function() {
+    var value = [];
+    Object.defineProperty(this, 'didMountHandlers', { value: value });
+    return value;
+  }
+});
 var createRender = function(name, handler) {
   Object.defineProperty(Jinkela.prototype, name, {
     value: function() {
