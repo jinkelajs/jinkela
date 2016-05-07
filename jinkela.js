@@ -3,9 +3,9 @@
 
 var STRICT_TAG = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table' };
 var NODE_TYPE_NAME = { 2: 'value', 3: 'data' };
-var inc = 1;
+var increment = 1;
 
-// Utils Defination
+// Util Definitions
 var getShadedProps = function(that, propName) {
   var list = [];
   for (var i = that; i; i = Object.getPrototypeOf(i)) {
@@ -30,12 +30,12 @@ var parseTempalte = function(that) {
   void function callee(node, ownerElement) {
     var attrs, child, handler, attr, i;
     // Try to match directive
-    if (directives[node.nodeName]) {
-      handler = directives[node.nodeName](that, node, ownerElement);
+    if (directivesWithType[node.nodeName]) {
+      handler = directivesWithType[node.nodeName](that, node, ownerElement);
     } else {
-      for (i = 0; i < directivesR.length; i++) {
-        if (directivesR[i].regexp.test(node.nodeName)) {
-          handler = directivesR[i].factory(that, node, ownerElement);
+      for (i = 0; i < directivesWithRegExp.length; i++) {
+        if (directivesWithRegExp[i].regexp.test(node.nodeName)) {
+          handler = directivesWithRegExp[i].factory(that, node, ownerElement);
           break;
         }
       }
@@ -72,12 +72,11 @@ var parseTempalte = function(that) {
 
 // Main Constructor
 var Jinkela = function() {
+  if (typeof this.beforeParse === 'function') this.beforeParse();
   parseTempalte(this);
   // Extends each arguments to this
-  for (var i = 0; i < arguments.length; i++) {
-    var arg = arguments[i];
-    if (arg instanceof Object) for (var j in arg) this[j] = arg[j];
-  }
+  if (typeof this.beforeExtends === 'function') this.beforeExtends();
+  this.extends.apply(this, arguments);
   // Find all "init" method list in prototype chain and call they
   var list = getShadedProps(this, 'init');
   while (list.length) list.pop().apply(this, arguments);
@@ -86,28 +85,28 @@ var Jinkela = function() {
 // Prototype Properties
 getOnce(Jinkela.prototype, 'element', function() {
   var target = this.constructor;
-  if (!target.hasOwnProperty('jinkela')) {
+  if (!target.hasOwnProperty('domCache')) {
     var template = this.template || '<div></div>';
     // Some element require specifial parent element
     var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
     // Build template
-    target.jinkela = document.createElement(STRICT_TAG[tagName] || 'jinkela');
-    target.jinkela.innerHTML = template;
-    if (target.jinkela.children.length !== 1) throw new Error('Jinkela: Template require 1 root element');
-    target.jinkela = target.jinkela.firstElementChild;
+    var element = target.domCache = document.createElement(STRICT_TAG[tagName] || 'jinkela');
+    element.innerHTML = template;
+    if (element.children.length !== 1) throw new Error('Jinkela: Template require 1 root element');
+    element = target.domCache = element.firstElementChild;
     // Build styleSheet as a style tag
     var styleSheet = this.styleSheet;
     // Find all shaded "styleSheet" from prototype chain
     var styleSheetList = getShadedProps(this, 'styleSheet');
     if (styleSheetList.length) {
-      var classId = inc++;
-      target.jinkela.setAttribute('jinkela-class', classId);
+      var classId = increment++;
+      element.setAttribute('jinkela-class', classId);
       styleSheet = styleSheetList.reverse().join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
       Jinkela.style.insertAdjacentHTML('beforeend', styleSheet);
     }
   }
-  return target.jinkela.cloneNode(true);
+  return target.domCache.cloneNode(true);
 });
 getOnce(Jinkela.prototype, 'didMountHandlers', function() { return []; });
 getOnce(Jinkela, 'style', function() {
@@ -115,6 +114,15 @@ getOnce(Jinkela, 'style', function() {
 });
 
 // Method Definations
+Object.defineProperty(Jinkela.prototype, 'extends', {
+  configurable: true,
+  value: function() {
+    for (var i = 0; i < arguments.length; i++) {
+      var arg = arguments[i];
+      if (arg instanceof Object) for (var j in arg) this[j] = arg[j];
+    }
+  }
+});
 var createRender = function(name, handler) {
   Object.defineProperty(Jinkela.prototype, name, {
     value: function() {
@@ -134,13 +142,13 @@ createRender('renderWith', function(target) {
 });
 
 // Directive register
-var directives = Object.create(null);
-var directivesR = [];
+var directivesWithType = Object.create(null);
+var directivesWithRegExp = [];
 Jinkela.register = function(type, factory) {
   if (type instanceof RegExp) {
-    directivesR.push({ regexp: type, factory: factory });
+    directivesWithRegExp.push({ regexp: type, factory: factory });
   } else {
-    directives[type] = factory;
+    directivesWithType[type] = factory;
   }
 };
 
