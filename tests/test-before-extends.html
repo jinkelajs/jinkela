@@ -1,0 +1,11 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  beforeExtends() {
+    Tester.feedback(this.a === void 0);
+  }
+}
+let foo = new Foo({ a: 1 });
+</script>

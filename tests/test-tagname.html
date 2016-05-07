@@ -1,0 +1,15 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get tagName() { return `span`; }
+}
+class Fee extends Jinkela {
+  get tagName() { return `span`; }
+  get template() { return `<a></a>`; }
+}
+let foo = new Foo();
+let fee = new Fee();
+Tester.feedback(foo.element.tagName === 'SPAN' && fee.element.tagName === 'A');
+</script>
