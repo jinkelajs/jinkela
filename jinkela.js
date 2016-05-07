@@ -6,12 +6,14 @@ var NODE_TYPE_NAME = { 2: 'value', 3: 'data' };
 var increment = 1;
 
 // Util Definitions
-var getShadedProps = function(that, propName) {
+var getShadedProps = function(that, propName, mapping) {
   var list = [];
   for (var i = that; i; i = Object.getPrototypeOf(i)) {
     var desc = Object.getOwnPropertyDescriptor(i, propName);
-    desc && list.push(desc.get ? desc.get.call(that) : desc.value);
+    if (desc) list.push(desc.get ? desc.get.call(that) : desc.value);
   }
+  list.reverse();
+  if (typeof mapping === 'function') for (var j = 0; j < list.length; j++) list[j] = mapping(list[j]);
   return list;
 };
 var getOnce = function(base, name, getter) {
@@ -78,35 +80,40 @@ var Jinkela = function() {
   if (typeof this.beforeExtends === 'function') this.beforeExtends();
   this.extends.apply(this, arguments);
   // Find all "init" method list in prototype chain and call they
-  var list = getShadedProps(this, 'init');
-  while (list.length) list.pop().apply(this, arguments);
+  var args = [ this, arguments ];
+  getShadedProps(this, 'init', function(init) { init.apply.apply(init, args); });
 };
 
 // Prototype Properties
 getOnce(Jinkela.prototype, 'element', function() {
   var target = this.constructor;
-  if (!target.hasOwnProperty('domCache')) {
-    var template = this.template || '<div></div>';
-    // Some element require specifial parent element
-    var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
-    // Build template
-    var element = target.domCache = document.createElement(STRICT_TAG[tagName] || 'jinkela');
-    element.innerHTML = template;
-    if (element.children.length !== 1) throw new Error('Jinkela: Template require 1 root element');
-    element = target.domCache = element.firstElementChild;
-    // Build styleSheet as a style tag
-    var styleSheet = this.styleSheet;
-    // Find all shaded "styleSheet" from prototype chain
+  var key = '@@domCache';
+  if (!target.hasOwnProperty(key)) {
+    var element;
+    var template = this.template; // Call once getter handler
+    if (template) {
+      // Get first tagName from template
+      var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
+      // Build template
+      element = document.createElement(STRICT_TAG[tagName] || 'div');
+      element.innerHTML = template;
+      if (element.children.length !== 1) throw new Error('Jinkela: Template require 1 root element');
+      element = element.firstElementChild;
+    } else {
+      element = document.createElement(this.tagName || 'div');
+    }
+    // Find all shaded "styleSheet" from prototype chain and build
     var styleSheetList = getShadedProps(this, 'styleSheet');
     if (styleSheetList.length) {
       var classId = increment++;
       element.setAttribute('jinkela-class', classId);
-      styleSheet = styleSheetList.reverse().join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
+      var styleSheet = styleSheetList.join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
       Jinkela.style.insertAdjacentHTML('beforeend', styleSheet);
     }
+    Object.defineProperty(target, key, { configurable: true, value: element });
   }
-  return target.domCache.cloneNode(true);
+  return target[key].cloneNode(true);
 });
 getOnce(Jinkela.prototype, 'didMountHandlers', function() { return []; });
 getOnce(Jinkela, 'style', function() {
