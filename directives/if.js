@@ -3,7 +3,7 @@ Jinkela.register(/^if(-not)?$/, function(that, node, ownerElement) {
   var replacement = new Comment(' ' + node.name + '="' + node.value + '" ');
   var state = true;
   var name = /^\{(.*)\}$|$/.exec(node.value)[1];
-  that.didMountHandlers.push(function() { this[name] = this[name]; });
+  that['@@didMountHandlers'].push(function() { this[name] = this[name]; });
   return function(value) {
     value = !!value ^ not;
     if (state === value) return;

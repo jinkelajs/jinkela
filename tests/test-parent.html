@@ -1,0 +1,18 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  didMount() {
+    Tester.feedback(this.parent instanceof Fee);
+  }
+}
+
+class Fee extends Jinkela {
+  init() {
+    new Foo().renderTo(this);
+  }
+}
+
+new Fee().renderTo(document.body);
+</script>

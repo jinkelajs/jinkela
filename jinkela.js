@@ -22,6 +22,7 @@ var define = function(base, name, desc) {
 var getOnce = function(base, name, getter) {
   define(base, name, { get: function() { return define(this, name, { value: getter.call(this) })[name]; } });
 };
+var callArray = function(array, that) { for (var i = 0; i < array.length; i++) array[i].call(that); };
 
 // Walk the tree and change "{xxx}" template to accessor properties.
 var parseTempalte = function(that) {
@@ -72,10 +73,10 @@ var parseTempalte = function(that) {
 
 // Main Constructor
 var Jinkela = function() {
-  if (typeof this.beforeParse === 'function') this.beforeParse();
+  if (typeof this.beforeParse === 'function') this.beforeParse(); // Expirimental
   parseTempalte(this);
   // Extends each arguments to this
-  if (typeof this.beforeExtends === 'function') this.beforeExtends();
+  if (typeof this.beforeExtends === 'function') this.beforeExtends(); // Expirimental
   this.extends.apply(this, arguments);
   // Find all "init" method list in prototype chain and call they
   var args = [ this, arguments ];
@@ -113,12 +114,12 @@ getOnce(Jinkela.prototype, 'element', function() {
   }
   return target[key].cloneNode(true);
 });
-getOnce(Jinkela.prototype, 'didMountHandlers', function() { return []; });
 getOnce(Jinkela, 'style', function() {
   return document.documentElement.firstChild.appendChild(document.createElement('style'));
 });
-
-// Method Definations
+getOnce(Jinkela.prototype, '@@didMountHandlers', function() {
+  return [ function() { callArray(getShadedProps(this, 'didMount'), this); }.bind(this) ];
+});
 define(Jinkela.prototype, 'extends', { value: function() {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i];
@@ -127,10 +128,10 @@ define(Jinkela.prototype, 'extends', { value: function() {
 } });
 var createRender = function(name, handler) {
   define(Jinkela.prototype, name, { value: function(target) {
-    if (!this.hasOwnProperty('parent')) define(this, 'parent', target);
+    if (!this.hasOwnProperty('parent')) define(this, 'parent', { value: target });
     if (target instanceof Jinkela) target = target.element;
     handler.call(this, target);
-    for (var i = 0, f; f = this.didMountHandlers[i]; i++) f.call(this, target);
+    callArray(this['@@didMountHandlers'], this);
     return this;
   } });
 };

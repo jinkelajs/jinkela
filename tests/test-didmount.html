@@ -1,0 +1,23 @@
+<script src="bower_components/tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+expection = new Tester.Expection(1, 2);
+expection.feedback();
+
+class Foo extends Jinkela {
+  didMount() {
+    Tester.log(1);
+    expection.answer(1);
+  }
+}
+
+class Fee extends Foo {
+  didMount() {
+    Tester.log(2);
+    expection.answer(2);
+  }
+}
+
+new Fee().renderTo(document.body);
+</script>
