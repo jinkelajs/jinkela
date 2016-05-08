@@ -31,12 +31,12 @@ var parseTempalte = function(that) {
   void function callee(node, ownerElement) {
     var attrs, child, handler, attr, i;
     // Try to match directive
-    if (directivesWithType[node.nodeName]) {
-      handler = directivesWithType[node.nodeName](that, node, ownerElement);
+    if (directives.type[node.nodeName]) {
+      handler = directives.type[node.nodeName](that, node, ownerElement);
     } else {
-      for (i = 0; i < directivesWithRegExp.length; i++) {
-        if (directivesWithRegExp[i].regexp.test(node.nodeName)) {
-          handler = directivesWithRegExp[i].factory(that, node, ownerElement);
+      for (i = 0; i < directives.regexp.length; i++) {
+        if (directives.regexp[i].regexp.test(node.nodeName)) {
+          handler = directives.regexp[i].factory(that, node, ownerElement);
           break;
         }
       }
@@ -139,13 +139,12 @@ createRender('renderTo', function(target) { target.appendChild(this.element); })
 createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
 
 // Directive register
-var directivesWithType = Object.create(null);
-var directivesWithRegExp = [];
+var directives = { type: Object.create(null), regexp: [] };
 Jinkela.register = function(type, factory) {
   if (type instanceof RegExp) {
-    directivesWithRegExp.push({ regexp: type, factory: factory });
+    directives.regexp.push({ regexp: type, factory: factory });
   } else {
-    directivesWithType[type] = factory;
+    directives.type[type] = factory;
   }
 };
 
