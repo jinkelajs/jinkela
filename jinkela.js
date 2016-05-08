@@ -16,13 +16,11 @@ var getShadedProps = function(that, propName, mapping) {
   if (typeof mapping === 'function') for (var j = 0; j < list.length; j++) list[j] = mapping(list[j]);
   return list;
 };
+var define = function(base, name, desc) {
+  return Object.defineProperty(base, name, Object.create(desc, { configurable: { value: true } }));
+};
 var getOnce = function(base, name, getter) {
-  Object.defineProperty(base, name, {
-    configurable: true,
-    get: function() {
-      return Object.defineProperty(this, name, { value: getter.call(this) })[name];
-    }
-  });
+  define(base, name, { get: function() { return define(this, name, { value: getter.call(this) })[name]; } });
 };
 
 // Walk the tree and change "{xxx}" template to accessor properties.
@@ -55,7 +53,7 @@ var parseTempalte = function(that) {
     var list = watches[name];
     var value = that[name];
     var cache;
-    Object.defineProperty(that, name, {
+    define(that, name, {
       get: function() { return cache; },
       set: function(value) {
         cache = value;
@@ -111,7 +109,7 @@ getOnce(Jinkela.prototype, 'element', function() {
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
       Jinkela.style.insertAdjacentHTML('beforeend', styleSheet);
     }
-    Object.defineProperty(target, key, { configurable: true, value: element });
+    define(target, key, { value: element });
   }
   return target[key].cloneNode(true);
 });
@@ -121,32 +119,23 @@ getOnce(Jinkela, 'style', function() {
 });
 
 // Method Definations
-Object.defineProperty(Jinkela.prototype, 'extends', {
-  configurable: true,
-  value: function() {
-    for (var i = 0; i < arguments.length; i++) {
-      var arg = arguments[i];
-      if (arg instanceof Object) for (var j in arg) this[j] = arg[j];
-    }
+define(Jinkela.prototype, 'extends', { value: function() {
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i];
+    if (arg instanceof Object) for (var j in arg) this[j] = arg[j];
   }
-});
+} });
 var createRender = function(name, handler) {
-  Object.defineProperty(Jinkela.prototype, name, {
-    value: function() {
-      handler.apply(this, arguments);
-      for (var i = 0; i < this.didMountHandlers.length; i++) this.didMountHandlers[i].call(this);
-      return this;
-    }
-  });
+  define(Jinkela.prototype, name, { value: function(target) {
+    if (!this.hasOwnProperty('parent')) define(this, 'parent', target);
+    if (target instanceof Jinkela) target = target.element;
+    handler.call(this, target);
+    for (var i = 0, f; f = this.didMountHandlers[i]; i++) f.call(this, target);
+    return this;
+  } });
 };
-createRender('renderTo', function(target) {
-  if (target instanceof Jinkela) target = target.element;
-  target.appendChild(this.element);
-});
-createRender('renderWith', function(target) {
-  if (target instanceof Jinkela) target = target.element;
-  target.parentNode.replaceChild(this.element, target);
-});
+createRender('renderTo', function(target) { target.appendChild(this.element); });
+createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
 
 // Directive register
 var directivesWithType = Object.create(null);
