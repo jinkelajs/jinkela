@@ -1,7 +1,7 @@
 /**/ 'use strict';
 /**/ void function() { /**/
 
-var STRICT_TAG = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table' };
+var STRICT_TAG = { td: 'tr', 'th': 'tr', tr: 'tbody', tbody: 'table', thead: 'table', tfoot: 'table', caption: 'table' };
 var NODE_TYPE_NAME = { 2: 'value', 3: 'data' };
 var increment = 1;
 
