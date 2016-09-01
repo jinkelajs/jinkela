@@ -1,8 +1,11 @@
 {
   "name": "jinkela",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A Modularization Solution of Front-End ",
   "main": "jinkela.js",
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "cd tests && make && cd .. && open http://127.0.0.1:8000/tests/ && python -m SimpleHTTPServer"
+  }
 }

@@ -71,13 +71,26 @@ var parseTempalte = function(that) {
   }(name);
 };
 
+// Extend special fields to instance before parse
+var specialFileds = [ 'tagName', 'template', 'styleSheet' ];
+var extendSpecialFileds = function(that, params) {
+  for (var key, i = 0; key = specialFileds[i]; i++) {
+    if (key in params) {
+      Object.defineProperty(that, key, { configurable: true, value: params[key] });
+      delete params[key];
+    }
+  }
+};
+
 // Main Constructor
 var Jinkela = function() {
-  if (typeof this.beforeParse === 'function') this.beforeParse(); // Expirimental
+  var params = {};
+  this.extends.apply(params, arguments);
+  extendSpecialFileds(this, params);
   parseTempalte(this);
   // Extends each arguments to this
   if (typeof this.beforeExtends === 'function') this.beforeExtends(); // Expirimental
-  this.extends.apply(this, arguments);
+  this.extends(params);
   // Find all "init" method list in prototype chain and call they
   var args = [ this, arguments ];
   getShadedProps(this, 'init', function(init) { init.apply.apply(init, args); });

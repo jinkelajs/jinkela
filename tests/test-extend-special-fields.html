@@ -3,10 +3,10 @@
 <body>
 <script>
 class Foo extends Jinkela {
-  beforeParse() {
-    this.template = `<div>{a}</div>`;
+  get template() {
+    return `<div>hehe</div>`;
   }
 }
-let foo = new Foo({ a: 123 });
-Tester.feedback(foo.element.textContent === '123');
+let foo = new Foo({ template: `<div>ok</div>` });
+Tester.feedback(foo.element.textContent === 'ok');
 </script>
