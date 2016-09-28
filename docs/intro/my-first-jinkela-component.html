@@ -1,0 +1,19 @@
+<script src="/jinkela/jinkela.js"></script>
+<script>
+class MyFirstComponentComponent extends Jinkela {
+  get template() {
+    return `<div>{text}</div>`;
+  }
+  get styleSheet() {
+    return `
+      :scope {
+        color: red;
+      }
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new MyFirstComponentComponent({ text: 'Jinkela' }).renderTo(document.body);
+});
+</script>

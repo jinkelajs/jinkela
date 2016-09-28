@@ -1,0 +1,40 @@
+<script src="/jinkela/jinkela.js"></script>
+<script>
+class MyFirstComponent extends Jinkela {
+  get template() {
+    return `<div>{text}</div>`;
+  }
+  get styleSheet() {
+    return `
+      :scope {
+        color: red;
+      }
+    `;
+  }
+}
+
+class MyUnderline extends MyFirstComponent {
+  get styleSheet() {
+    return `
+      :scope {
+        text-decoration: underline;
+      }
+    `;
+  }
+}
+
+class MyBig extends MyFirstComponent {
+  get styleSheet() {
+    return `
+      :scope {
+        font-size: 24px;
+      }
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new MyUnderline({ text: 'Jinkela Bold' }).renderTo(document.body);
+  new MyBig({ text: 'Jinkela Big' }).renderTo(document.body);
+});
+</script>

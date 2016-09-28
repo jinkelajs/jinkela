@@ -1,0 +1,29 @@
+<script src="/jinkela/jinkela.js"></script>
+<script>
+class TextField extends Jinkela {
+  get styleSheet() {
+    return `
+      :scope { border: 1px solid #ccc; margin: .5em; padding: .2em .3em; }
+    `;
+  }
+  get template() { return '<input type="text" />'; }
+  get value() { return this.element.value; }
+  set value(value) { return this.element.value = value; }
+  init() {
+    this.element.addEventListener('input', () => this.onInput && this.onInput());
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  let inputs = Array.from({ length: 100 }, () => {
+    let input = new TextField({
+      onInput() {
+        inputs.forEach(i => {
+          if (i !== input) i.value = input.value;
+        });
+      }
+    }).renderTo(document.body);
+    return input;
+  });
+});
+</script>

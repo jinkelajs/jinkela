@@ -1,0 +1,23 @@
+<script src="/jinkela/jinkela.js"></script>
+<script src="/jinkela/directives/ref.js"></script>
+<script>
+class Demo extends Jinkela {
+  init() {
+    this.span1.textContent = 'span1';
+    this.span2.textContent = 'span2';
+  }
+  get template() {
+    return `
+      <div>
+        <span ref="span1"></span>
+        <hr/>
+        <span ref="span2"></span>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new Demo().renderTo(document.body);
+});
+</script>

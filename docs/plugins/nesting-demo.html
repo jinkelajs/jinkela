@@ -1,0 +1,32 @@
+<script src="/jinkela/jinkela.js"></script>
+<script src="/jinkela/plugins/nesting.js"></script>
+<script>
+class Demo extends Jinkela {
+  get template() {
+    return `
+      <div> [ <span>hehe</span> ] </div>
+    `;
+  }
+  get styleSheet() {
+    return `
+      :scope {
+        color: green;
+        span {
+          color: red;
+        }
+        &::before {
+          color: blue;
+          content: 'before';
+        }
+        &::after {
+          color: orange;
+          content: 'after';
+        }
+      }
+    `;
+  }
+}
+addEventListener('DOMContentLoaded', () => {
+  new Demo().renderTo(document.body);
+});
+</script>

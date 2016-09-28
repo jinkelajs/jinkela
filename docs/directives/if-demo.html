@@ -1,0 +1,23 @@
+<script src="/jinkela/jinkela.js"></script>
+<script src="/jinkela/directives/if.js"></script>
+<script>
+class Demo extends Jinkela {
+  init() {
+    setInterval(() => {
+      this.condition ^= 1;
+    }, 200);
+  }
+  get template() {
+    return `
+      <div>
+        <div if="{condition}">A</div>
+        <div if-not="{condition}">B</div>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new Demo().renderTo(document.body);
+});
+</script>

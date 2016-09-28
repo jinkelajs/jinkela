@@ -1,0 +1,20 @@
+<script src="/jinkela/jinkela.js"></script>
+<script src="/jinkela/directives/on.js"></script>
+<script>
+class Demo extends Jinkela {
+  click() {
+    alert('haha~');
+  }
+  get template() {
+    return `
+      <div>
+        <input type="button" on-click="{click}" value="Click Me" />
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new Demo().renderTo(document.body);
+});
+</script>
