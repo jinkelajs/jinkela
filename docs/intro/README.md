@@ -1,6 +1,6 @@
 ## The Jinkela
 
-Jinkela is a modularization solution of front-end.
+Jinkela is a modularization solution of frontend.
 
 ## Getting Started
 
