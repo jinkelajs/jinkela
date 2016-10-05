@@ -148,6 +148,7 @@ var createRender = function(name, handler) {
     return this;
   } });
 };
+createRender('to', function(target) { target.appendChild(this.element); });
 createRender('renderTo', function(target) { target.appendChild(this.element); });
 createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
 
