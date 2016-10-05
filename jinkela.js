@@ -55,6 +55,7 @@ var parseTempalte = function(that) {
     var value = that[name];
     var cache;
     define(that, name, {
+      enumerable: true,
       get: function() { return cache; },
       set: function(value) {
         cache = value;
