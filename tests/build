@@ -1,0 +1,10 @@
+cd "$(dirname "$0")"
+echo '<script src="../node_modules/ui-tester/tester.js"></script>' > index.html
+echo '<script>' >> index.html
+echo 'Tester.run([' >> index.html
+for i in $(find . -name 'test-*.html' -maxdepth 1)
+do
+  echo "  '$i'," >> index.html
+done
+echo ']);' >> index.html
+echo '</script>' >> index.html

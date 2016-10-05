@@ -6,7 +6,7 @@
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
   "license": "MIT",
   "scripts": {
-    "test": "cd tests && make && cd .. && open http://127.0.0.1:8000/tests/ && python -m SimpleHTTPServer"
+    "test": "./tests/build && ui-tester-start"
   },
   "reciperConfig": {
     "name": "Jinkela",
@@ -14,13 +14,32 @@
     "normalColor": "#666",
     "primaryColor": "#000",
     "logoUrl": "//fuss10.elemecdn.com/9/ca/f88b429d6278cdf69e0027dfea51ejpeg.jpeg",
-    "languages": [ "xml", "markdown", "bash", "javascript" ],
+    "languages": [
+      "xml",
+      "markdown",
+      "bash",
+      "javascript"
+    ],
     "home": "/jinkela/",
     "items": [
-      { "text": "Introduction", "href": "/jinkela/docs/intro/" },
-      { "text": "Directives", "href": "/jinkela/docs/directives/" },
-      { "text": "Plugins", "href": "/jinkela/docs/plugins/" },
-      { "text": "Github", "href": "//github.com/YanagiEiichi/jinkela", "target": "_blank" }
+      {
+        "text": "Introduction",
+        "href": "/jinkela/docs/intro/"
+      },
+      {
+        "text": "Directives",
+        "href": "/jinkela/docs/directives/"
+      },
+      {
+        "text": "Plugins",
+        "href": "/jinkela/docs/plugins/"
+      },
+      {
+        "text": "Github",
+        "href": "//github.com/YanagiEiichi/jinkela",
+        "target": "_blank"
+      }
     ]
   }
+
 }
