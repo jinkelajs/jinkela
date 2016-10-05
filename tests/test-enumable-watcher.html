@@ -1,0 +1,26 @@
+<script src="../node_modules/ui-tester/tester.js"></script>
+<script src="../jinkela.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div><span>{str}</span><span>{int}</span><span>{bool}</span></div>
+    `; 
+  }
+}
+
+let raw = {
+  str: 'hehe',
+  int: 233,
+  bool: true,
+  prop: { a: 1 }
+};
+
+let foo = new Foo(raw).to(document.body);
+
+Tester.assert(foo.element.textContent === 'hehe233true');
+Tester.assert(JSON.stringify(foo) === JSON.stringify(raw));
+
+Tester.feedback(true);
+</script>
