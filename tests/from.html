@@ -1,0 +1,36 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/plugins/from.js"></script>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `<span>{text}</span>`;
+  }
+}
+
+let raw = [
+  { text: 'a' },
+  { text: 'b' },
+  { text: 'c' }
+];
+
+let list = Foo.from(raw);
+
+const DESC = '{"writable":false,"enumerable":false,"configurable":true}';
+Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(list, 'to')) ===  DESC);
+Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(list, 'renderTo')) ===  DESC);
+Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(Jinkela, 'from')) ===  DESC);
+Tester.assert(list.length === raw.length);
+Tester.assert(list.every(item => item instanceof Foo))
+Tester.assert(Object.keys(list).length === list.length);
+
+let hehe1 = Foo.from({ text: 'hehe' });
+let hehe2 = new Foo({ text: 'hehe' });
+Tester.assert(JSON.stringify(hehe1) === JSON.stringify(hehe2));
+
+addEventListener('DOMContentLoaded', () => {
+  list.renderTo(document.body);
+  Tester.assert(document.body.textContent === raw.reduce((result, item) => result + item.text, ''));
+  Tester.feedback(true);
+});
+</script>

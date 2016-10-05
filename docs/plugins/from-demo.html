@@ -1,0 +1,28 @@
+<script src="/jinkela/jinkela.js"></script>
+<script src="/jinkela/plugins/from.js"></script>
+<script>
+class Item extends Jinkela {
+  get template() {
+    return `
+      <li>{text}</li>
+    `;
+  }
+}
+
+class List extends Jinkela {
+  init() {
+    Item.from(this.data).renderTo(this);
+  }
+  get tagName() { return 'ol'; }
+}
+
+let data = [
+  { text: 'item1' },
+  { text: 'item2' },
+  { text: 'item3' }
+];
+
+addEventListener('DOMContentLoaded', () => {
+  new List({ data }).renderTo(document.body);
+});
+</script>
