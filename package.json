@@ -6,7 +6,7 @@
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
   "license": "MIT",
   "scripts": {
-    "test": "./tests/build && ui-tester-start"
+    "test": "ui-tester-start tests"
   },
   "reciperConfig": {
     "name": "Jinkela",
@@ -40,6 +40,8 @@
         "target": "_blank"
       }
     ]
+  },
+  "devDependencies": {
+    "ui-tester": "~1.1.2"
   }
-
 }
