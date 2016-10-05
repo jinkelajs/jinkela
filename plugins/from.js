@@ -1,4 +1,4 @@
-Object.defineProperty(Jinkela, 'from',  {
+Object.defineProperty(Jinkela, 'from', {
   configurable: true,
   value: function(raw) {
     if (raw instanceof Array) {
@@ -8,8 +8,8 @@ Object.defineProperty(Jinkela, 'from',  {
         for (var i = 0; i < raw.length; i++) result[i].to(target);
         return this;
       };
-      Object.defineProperty(result, 'renderTo',  { configurable: true, value: to });
-      Object.defineProperty(result, 'to',  { configurable: true, value: to });
+      Object.defineProperty(result, 'renderTo', { configurable: true, value: to });
+      Object.defineProperty(result, 'to', { configurable: true, value: to });
       return result;
     } else {
       return new this(raw);
