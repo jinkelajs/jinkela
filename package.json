@@ -19,26 +19,6 @@
       "markdown",
       "bash",
       "javascript"
-    ],
-    "home": "/jinkela/",
-    "items": [
-      {
-        "text": "Introduction",
-        "href": "/jinkela/docs/intro/"
-      },
-      {
-        "text": "Directives",
-        "href": "/jinkela/docs/directives/"
-      },
-      {
-        "text": "Plugins",
-        "href": "/jinkela/docs/plugins/"
-      },
-      {
-        "text": "Github",
-        "href": "//github.com/YanagiEiichi/jinkela",
-        "target": "_blank"
-      }
     ]
   },
   "devDependencies": {
