@@ -129,7 +129,7 @@ getOnce(Jinkela.prototype, 'element', function() {
   return target[key].cloneNode(true);
 });
 getOnce(Jinkela, 'style', function() {
-  return document.documentElement.firstChild.appendChild(document.createElement('style'));
+  return document.head.appendChild(document.createElement('style'));
 });
 getOnce(Jinkela.prototype, '@@didMountHandlers', function() {
   return [ function() { callArray(getShadedProps(this, 'didMount'), this); }.bind(this) ];

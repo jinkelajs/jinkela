@@ -1,0 +1,23 @@
+<html>
+  <!-- :joy: -->
+  <head>
+    <script src="/tester.js"></script>
+    <script src="/jinkela.js"></script>
+    <script src="/directives/ref.js"></script>
+  </head>
+  <body>
+    <script>
+    class Foo extends Jinkela {
+      get template() { return `<div>red</div>`; }
+      get styleSheet() { return `:scope { color: red; }`; }
+    }
+    try {
+      new Foo().to(document.head);
+      Tester.feedback(true);
+    } catch (error) {
+      Tester.log(error.message);
+      Tester.feedback(false);
+    }
+    </script>
+  </body>
+</html>
