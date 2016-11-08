@@ -1,0 +1,29 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/on.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() { return `<span>{text}</span>`; }
+}
+
+class Fee extends Jinkela {
+  get text() { return 'hehe'; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo on-click="{click}" ref="foo" text="{text}"></jkl-foo>
+      </div>
+    `;
+  }
+  click() {
+    Tester.feedback(true);
+  }
+}
+
+let fee = new Fee().renderTo(document.body);
+
+fee.foo.element.click();
+</script>

@@ -1,4 +1,5 @@
 Jinkela.register(/^if(-not)?$/, function(that, node, ownerElement) {
+  if (ownerElement.component) ownerElement = ownerElement.component.element;
   var not = !!RegExp.$1;
   var replacement = new Comment(' ' + node.name + '="' + node.value + '" ');
   var state = true;

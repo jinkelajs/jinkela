@@ -1,0 +1,34 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/if.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  init() {
+    this.element.style.color = this.color;
+  }
+  get template() { return `<span>{text}</span>`; }
+}
+
+class Fee extends Jinkela {
+  get text() { return 'hehe'; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo if="{cond}" color="red" text="{text}"></jkl-foo>
+        <div ref="div"></div>
+      </div>
+    `;
+  }
+}
+
+let fee = new Fee().renderTo(document.body);
+Tester.assert(fee.element.firstChild.nextSibling.nodeType === 8, 'nodeType must be 8');
+
+fee.cond = true;
+Tester.assert(fee.element.firstChild.nextSibling.nodeType === 1, 'nodeType must be 1');
+Tester.assert(fee.element.firstChild.nextSibling.tagName === 'SPAN', 'tagName must be SPAN');
+
+Tester.feedback(true);
+</script>
