@@ -1,0 +1,43 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  init() {
+    this.element.style.color = this.color;
+  }
+  get template() { return `<span>{text}</span>`; }
+}
+
+class Fee extends Jinkela {
+  get text() {
+    return 'hehe';
+  }
+  get template() {
+    return `
+      <div>
+        <jkl-foo ref="foo" color="red" text="{text}"></jkl-foo>
+      </div>
+    `;
+  }
+}
+
+let fee = new Fee().renderTo(document.body);
+
+Tester.assert(fee.element.firstElementChild.tagName === 'SPAN', 'tagName must be "hehe"');
+Tester.assert(fee.foo instanceof Jinkela, 'foo must be instance of jinkela');
+Tester.assert(fee.foo.color === 'red', 'color must be "red"');
+Tester.assert(fee.element.firstElementChild.style.color === 'red', 'style.color must be "red"');
+
+Tester.assert(fee.text === 'hehe', 'text must be "hehe"');
+Tester.assert(fee.foo.text === 'hehe', 'foo.text must be "hehe"');
+Tester.assert(fee.element.firstElementChild.textContent === 'hehe', 'textContent must be "hehe"');
+fee.text = 'haha';
+Tester.assert(fee.text === 'haha', 'text must be "haha"');
+Tester.assert(fee.foo.text === 'haha', 'foo.text must be "haha"');
+Tester.assert(fee.element.firstElementChild.textContent === 'haha', 'textContent must be "haha"');
+
+Tester.feedback(true);
+</script>

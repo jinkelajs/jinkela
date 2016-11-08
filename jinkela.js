@@ -27,6 +27,7 @@ var callArray = function(array, that) { for (var i = 0; i < array.length; i++) a
 // Walk the tree and change "{xxx}" template to accessor properties.
 var parseTempalte = function(that) {
   var watches = Object.create(null);
+  define(that, '@@watches', { value: watches });
   // Walking and match special templates into "watches"
   void function callee(node, ownerElement) {
     var attrs, child, handler, attr, i;

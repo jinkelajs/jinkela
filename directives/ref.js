@@ -4,7 +4,9 @@ Jinkela.register('ref', function(that, node, ownerElement) {
   Object.defineProperty(that, node.value, {
     configurable: true,
     enumerable: true,
-    get: function() { return ownerElement; },
+    get: function() {
+      return ownerElement.component || ownerElement;
+    },
     set: function(element) {
       if (element instanceof Jinkela) element = element.element;
       var parent = ownerElement.parentNode;

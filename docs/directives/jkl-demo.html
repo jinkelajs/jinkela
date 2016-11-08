@@ -1,0 +1,30 @@
+<script src="//jinkelajs.org/jinkela.js"></script>
+<script src="//jinkelajs.org/directives/jkl.js"></script>
+<script src="//jinkelajs.org/directives/ref.js"></script>
+<script>
+class Foo extends Jinkela {
+  init() {
+    this.element.style.color = this.color;
+  }
+  get template() { return `<span>{text}</span>`; }
+}
+
+class Fee extends Jinkela {
+  get text() { return 0; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo ref="foo" color="red" text="{text}"></jkl-foo>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  let fee = new Fee().renderTo(document.body);
+  console.log(fee.foo instanceof Foo);
+  setInterval(() => {
+    fee.text = +fee.text + 1;
+  }, 16);
+});
+</script>

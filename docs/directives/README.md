@@ -93,6 +93,41 @@ class Demo extends Jinkela {
 
 [Live Demo](if-demo.html)
 
+### 4. JKL-*
+
+Initialize a component with custom html tag.
+
+#### 3.1. Include
+
+```html
+<script src="//yanagieiichi.github.io/jinkela/directives/jkl.js"></script>
+```
+
+#### 3.2. Demo
+
+```js
+class Foo extends Jinkela {
+  init() {
+    this.element.style.color = this.color;
+  }
+  get template() { return `<span>{text}</span>`; }
+}
+
+class Fee extends Jinkela {
+  get text() { return 0; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo ref="foo" color="red" text="{text}"></jkl-foo>
+      </div>
+    `;
+  }
+}
+```
+
+[Live Demo](jkl-demo.html)
+
+
 ## Custom Directives
 
 You can hook component building handler to create your custom directive.
