@@ -30,7 +30,7 @@ var parseTempalte = function(that) {
   define(that, '@@watches', { value: watches });
   // Walking and match special templates into "watches"
   void function callee(node, ownerElement) {
-    var attrs, child, handler, attr, i;
+    var attrs, handler, attr, i;
     // Try to match directive
     if (directives.type[node.nodeName]) {
       handler = directives.type[node.nodeName](that, node, ownerElement);
@@ -48,7 +48,13 @@ var parseTempalte = function(that) {
     }
     // Traversing as a binary tree
     if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr, node);
-    if (child = node.firstChild) do { callee(child); } while (child = child.nextSibling);
+    var child = node.firstChild;
+    var sibling;
+    while (child) {
+      sibling = child.nextSibling;
+      callee(child);
+      child = sibling;
+    }
   }(that.element);
   // Change "watches" to accessor properties
   for (var name in watches) void function(name) {
