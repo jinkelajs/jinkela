@@ -1,0 +1,51 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/slot.js"></script>
+<script src="/directives/if.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <slot name="before"></slot>
+        <ul>
+          <slot></slot>
+        </ul>
+        <slot name="after"></slot>
+      </div>
+    `;
+  }
+}
+
+class After extends Jinkela {
+  get tagName() { return 'p'; }
+  init() {
+    this.element.textContent = 'after';
+  }
+}
+
+class Fee extends Jinkela {
+  get text() { return 'hehe'; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo>
+          <div slot="before">before</div>
+          <li>a</li>
+          <li>b</li>
+          <li>c</li>
+          <jkl-after slot="after">after</jkl-after>
+        </jkl-foo>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  let fee = new Fee().to(document.body);
+  Tester.assert(fee.element.textContent.replace(/\s/g, '') === 'beforeabcafter', '...');
+  Tester.feedback(true);
+});
+</script>

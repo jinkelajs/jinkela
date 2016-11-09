@@ -30,7 +30,15 @@ var parseTempalte = function(that) {
   define(that, '@@watches', { value: watches });
   // Walking and match special templates into "watches"
   void function callee(node, ownerElement) {
-    var attrs, handler, attr, i;
+    var attrs, sibling, handler, attr, i;
+    var child = node.firstChild;
+    if (node.nodeType === 1) {
+      while (child) {
+        sibling = child.nextSibling;
+        callee(child);
+        child = sibling;
+      }
+    }
     // Try to match directive
     if (directives.type[node.nodeName]) {
       handler = directives.type[node.nodeName](that, node, ownerElement);
@@ -46,15 +54,7 @@ var parseTempalte = function(that) {
     if (/^\{([$_a-zA-Z][$\w]*)\}$/.test(node[NODE_TYPE_NAME[node.nodeType]])) {
       (RegExp.$1 in watches ? watches[RegExp.$1] : watches[RegExp.$1] = []).push(handler || node);
     }
-    // Traversing as a binary tree
     if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr, node);
-    var child = node.firstChild;
-    var sibling;
-    while (child) {
-      sibling = child.nextSibling;
-      callee(child);
-      child = sibling;
-    }
   }(that.element);
   // Change "watches" to accessor properties
   for (var name in watches) void function(name) {
@@ -80,7 +80,7 @@ var parseTempalte = function(that) {
 };
 
 // Extend special fields to instance before parse
-var specialFileds = [ 'tagName', 'template', 'styleSheet' ];
+var specialFileds = [ 'tagName', 'template', 'styleSheet', 'children' ];
 var extendSpecialFileds = function(that, params) {
   for (var key, i = 0; key = specialFileds[i]; i++) {
     if (key in params) {

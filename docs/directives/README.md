@@ -133,6 +133,55 @@ setInterval(() => {
 
 [Live Demo](jkl-demo.html)
 
+### 5. SLOT
+
+To refer the jkl children on child component.
+
+#### 5.1. Include
+
+```html
+<script src="//yanagieiichi.github.io/jinkela/directives/slot.js"></script>
+```
+
+#### 5.2. Demo
+
+```js
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <slot name="before"></slot>
+        <ul>
+          <slot></slot>
+        </ul>
+        <slot name="after"></slot>
+      </div>
+    `;
+  }
+}
+
+class Fee extends Jinkela {
+  get text() { return 'hehe'; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo>
+          <div slot="before">before</div>
+          <li>a</li>
+          <li>b</li>
+          <li>c</li>
+          <div slot="after">after</div>
+        </jkl-foo>
+      </div>
+    `;
+  }
+}
+
+new Fee().to(document.body);
+```
+
+[Live Demo](jkl-slot.html)
+
 
 ## Custom Directives
 

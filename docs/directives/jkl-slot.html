@@ -1,0 +1,39 @@
+<script src="//jinkelajs.org/jinkela.js"></script>
+<script src="//jinkelajs.org/directives/jkl.js"></script>
+<script src="//jinkelajs.org/directives/slot.js"></script>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <slot name="before"></slot>
+        <ul>
+          <slot></slot>
+        </ul>
+        <slot name="after"></slot>
+      </div>
+    `;
+  }
+}
+
+class Fee extends Jinkela {
+  get text() { return 'hehe'; }
+  get template() {
+    return `
+      <div>
+        <jkl-foo>
+          <div slot="before">before</div>
+          <li>a</li>
+          <li>b</li>
+          <li>c</li>
+          <div slot="after">after</div>
+        </jkl-foo>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new Fee().to(document.body);
+});
+</script>
