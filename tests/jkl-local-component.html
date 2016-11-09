@@ -1,0 +1,35 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  init() {
+    this.element.textContent = 'a';
+  }
+}
+
+class Fee extends Jinkela {
+  get Foo() {
+    return class Foo extends Jinkela {
+      init() {
+        this.element.textContent = 'b';
+      }
+    }
+  }
+  get template() {
+    return `
+      <div>
+        <jkl-foo ref="foo"></jkl-foo>
+      </div>
+    `;
+  }
+}
+
+let fee = new Fee().renderTo(document.body);
+
+Tester.assert(fee.foo.element.textContent === 'b', 'textContent must be "b"');
+
+Tester.feedback(true);
+</script>

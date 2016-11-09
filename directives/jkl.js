@@ -4,7 +4,7 @@ Jinkela.register(/^JKL(?:-[A-Z0-9]+)+$/, function(that, node) {
     return str.length > 1 ? str[1] : str.toLowerCase();
   });
   // Get component class
-  var Component = this[name] || new Function('return typeof ' + name + ' === \'function\' && ' + name + ';')();
+  var Component = that[name] || new Function('return typeof ' + name + ' === \'function\' && ' + name + ';')();
   if (!Component) throw new Error('No component can be matched with ' + node.tagName);
   // Prepare constructing args
   var args = {};
