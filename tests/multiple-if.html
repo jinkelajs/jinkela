@@ -1,0 +1,56 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/if.js"></script>
+<script src="/directives/jkl.js"></script>
+<script>
+class Fee extends Jinkela {
+  get template() {
+    return `
+      <div>cond3</div>
+    `;
+  }
+}
+
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div if="{cond1}">
+        <div>cond1</div>
+        <div if="{cond2}">
+          <div>cond2</div>
+          <jkl-fee if="{cond3}"></jkl-fee>
+        </div>
+      </div>
+    `;
+  }
+  get styleSheet() {
+    return `
+      :scope {
+        border: 1px solid red;
+      }
+    `; 
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  let tasks = [];
+  let list = [ 'cond1', 'cond2', 'cond3' ];
+  for (let i of list) {
+    for (let j of list) {
+      if (i === j) continue;
+      for (let k of list) {
+        if (i === k || j === k) continue;
+        let foo = new Foo().to(document.body);
+        let task = Promise.resolve().then(() => foo[i] = true).then(() => foo[j] = true).then(() => foo[k] = true);
+        task = task.then(() => {
+          Tester.assert(foo.element.textContent.replace(/\s/g, '') === 'cond1cond2cond3');
+        });
+        tasks.push(task);
+      }
+    }
+  }
+  Promise.all(tasks).then(() => {
+    Tester.feedback(true);
+  });
+});
+</script>
