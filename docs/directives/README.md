@@ -97,13 +97,13 @@ class Demo extends Jinkela {
 
 Initialize a component with custom html tag.
 
-#### 3.1. Include
+#### 4.1. Include
 
 ```html
 <script src="//yanagieiichi.github.io/jinkela/directives/jkl.js"></script>
 ```
 
-#### 3.2. Demo
+#### 4.2. Demo
 
 ```js
 class Foo extends Jinkela {
@@ -123,6 +123,12 @@ class Fee extends Jinkela {
     `;
   }
 }
+
+let fee = new Fee().renderTo(document.body);
+console.log(fee.foo instanceof Foo);
+setInterval(() => {
+  fee.text = +fee.text + 1;
+}, 16);
 ```
 
 [Live Demo](jkl-demo.html)
