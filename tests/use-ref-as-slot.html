@@ -1,0 +1,50 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<script src="/directives/jkl.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <h3>children-</h3>
+        <p style="border: 1px solid red;">
+          <meta ref="children" />
+        </p>
+      </div>
+    `;
+  }
+}
+
+class Span extends Jinkela {
+  get template() { return `<span><meta ref="children" /></span>`; }
+}
+
+class Fee extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <jkl-foo ref="foo">
+          <span>before</span> -
+          <jkl-span>after</jkl-span>
+        </jkl-foo>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+
+  let fee = new Fee().to(document.body);
+  Tester.assert(fee.element.textContent.replace(/\s/g, '') === 'children-before-after', 'textContent mismatched');
+  Tester.assert(fee.foo.children.length === 5, 'length must be 5');
+
+  fee.foo.children = [ 'a', new Text('b'), new Span({ children: 'c' }) ];
+  Tester.assert(fee.element.textContent.replace(/\s/g, '') === 'children-abc', 'textContent mismatched');
+  Tester.assert(fee.foo.children.length === 3, 'length must be 3');
+
+  Tester.feedback(true);
+
+});
+</script>
