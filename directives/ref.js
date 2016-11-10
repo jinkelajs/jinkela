@@ -1,6 +1,6 @@
 Jinkela.register('ref', function(that, node, ownerElement) {
   var fixNode = function(item) {
-    if (item == null) item = new Comment(' ' + item + ' ');
+    if (item == null) item = new Comment(' ' + item + ' '); // eslint-disable-line
     if (item instanceof Jinkela) item = item.element;
     if (!(item instanceof Node)) item = new Text(item);
     return item;
@@ -23,7 +23,7 @@ Jinkela.register('ref', function(that, node, ownerElement) {
       if (element instanceof Array) {
         if (element.length) {
           var fragment = new DocumentFragment();
-          element.forEach(item => fragment.appendChild(fixNode(item)));
+          element.forEach(function(item) { fragment.appendChild(fixNode(item)); });
           fragment.originalList = element;
           element = fragment;
         } else {
@@ -32,17 +32,16 @@ Jinkela.register('ref', function(that, node, ownerElement) {
       } else {
         element = fixNode(element);
       }
+      var parent;
       if (ownerElement instanceof DocumentFragment) {
         var first = ownerElement.originalList[0];
-        var parent = first.parentNode;
-        if (parent) {
+        if (parent = first.parentNode) {
           parent.insertBefore(element, first);
-          ownerElement.originalList.forEach(item => item.remove());
+          ownerElement.originalList.forEach(function(item) { item.remove(); });
         }
         ownerElement = element;
       } else {
-        var parent = ownerElement.parentNode;
-        if (parent) {
+        if (parent = ownerElement.parentNode) {
           parent.insertBefore(element, ownerElement);
           ownerElement.remove();
         }
