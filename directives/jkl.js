@@ -17,9 +17,9 @@ Jinkela.register(/^JKL(?:-[A-Z0-9]+)+$/, function(that, node) {
     if (matches) {
       var propName = matches[1];
       var listeners = propName in watches ? watches[propName] : watches[propName] = [];
-      listeners.push(function(propName, value) {
-        if (component) component[propName] = value;
-      }.bind(null, propName));
+      listeners.push(function(nodeName, value) {
+        if (component) component[nodeName] = value;
+      }.bind(null, nodeName));
     } else {
       args[nodeName] = value;
     }
