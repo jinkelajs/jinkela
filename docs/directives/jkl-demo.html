@@ -1,12 +1,12 @@
-<script src="//jinkelajs.org/jinkela.js"></script>
-<script src="//jinkelajs.org/directives/jkl.js"></script>
-<script src="//jinkelajs.org/directives/ref.js"></script>
+<script src="../../jinkela.js"></script>
+<script src="../../directives/jkl.js"></script>
+<script src="../../directives/ref.js"></script>
 <script>
 class Foo extends Jinkela {
   init() {
     this.element.style.color = this.color;
   }
-  get template() { return `<span>{text}</span>`; }
+  get template() { return `<span><meta ref="children" />: <span>{text}</span></span>`; }
 }
 
 class Fee extends Jinkela {
@@ -14,7 +14,7 @@ class Fee extends Jinkela {
   get template() {
     return `
       <div>
-        <jkl-foo ref="foo" color="red" text="{text}"></jkl-foo>
+        <jkl-foo ref="foo" color="red" text="{text}">counter</jkl-foo>
       </div>
     `;
   }
