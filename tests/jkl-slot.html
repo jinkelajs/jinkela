@@ -2,7 +2,6 @@
 <script src="/jinkela.js"></script>
 <script src="/directives/jkl.js"></script>
 <script src="/directives/slot.js"></script>
-<script src="/directives/if.js"></script>
 <body>
 <script>
 class Foo extends Jinkela {
@@ -27,7 +26,6 @@ class After extends Jinkela {
 }
 
 class Fee extends Jinkela {
-  get text() { return 'hehe'; }
   get template() {
     return `
       <div>
