@@ -80,7 +80,7 @@ var parseTempalte = function(that) {
 };
 
 // Extend special fields to instance before parse
-var specialFileds = [ 'tagName', 'template', 'styleSheet', 'children' ];
+var specialFileds = [ 'tagName', 'template', 'styleSheet' ];
 var extendSpecialFileds = function(that, params) {
   for (var key, i = 0; key = specialFileds[i]; i++) {
     if (key in params) {
