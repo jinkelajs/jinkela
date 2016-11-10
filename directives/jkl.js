@@ -24,8 +24,7 @@ Jinkela.register(/^JKL(?:-[A-Z0-9]+)+$/, function(that, node) {
     args[nodeName] = value;
   }
   // Init component instance
-  let children = [].map.call(node.children, child => child);
-  var component = Component && new Component(args, { children });
+  var component = Component && new Component(args, { children: [].slice.call(node.children, 0) });
   if (args.slot) component.element.setAttribute('slot', args.slot);
   node.component = component;
   component.renderWith(node);
