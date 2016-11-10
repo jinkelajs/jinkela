@@ -1,0 +1,43 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<script src="/directives/jkl.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <meta ref="before" />
+        <hr/>
+        -
+        <hr/>
+        <meta ref="after" />
+      </div>
+    `;
+  }
+}
+
+class Span extends Jinkela {
+  get template() { return `<span>{text}</span>`; }
+}
+
+class Panel extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <jkl-foo before="{before}" after="{after}">
+          <jkl-span ref="before" text="before"><jkl-span>
+          <jkl-span ref="after" text="after"><jkl-span>
+        </jkl-foo>
+      </div>
+    `;
+  }
+}
+
+var panel = new Panel().to(document.body);
+
+Tester.assert(panel.element.textContent.replace(/\s/g, '') === 'before-after');
+
+Tester.feedback(true);
+</script>

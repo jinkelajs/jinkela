@@ -8,7 +8,9 @@ Jinkela.register('ref', function(that, node, ownerElement) {
       return ownerElement.component || ownerElement;
     },
     set: function(element) {
+      if (element == null) element = new Comment(' ' + element + ' ');
       if (element instanceof Jinkela) element = element.element;
+      if (!(element instanceof Node)) element = new Text(element);
       var parent = ownerElement.parentNode;
       if (parent) {
         parent.insertBefore(element, ownerElement);

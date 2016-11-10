@@ -1,0 +1,32 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <meta ref="before" />
+        <hr/>
+        -
+        <hr/>
+        <meta ref="after" />
+      </div>
+    `;
+  }
+}
+
+class Span extends Jinkela {
+  get template() { return `<span>{text}</span>`; }
+}
+
+let before = new Span({ text: 'before' });
+let after = new Span({ text: 'after' });
+
+var foo = new Foo({ before, after }).renderTo(document.body);
+
+Tester.assert(foo.element.textContent.replace(/\s/g, '') === 'before-after');
+
+Tester.feedback(true);
+</script>

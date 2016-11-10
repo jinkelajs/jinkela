@@ -17,14 +17,16 @@ Jinkela.register(/^JKL(?:-[A-Z0-9]+)+$/, function(that, node) {
     if (matches) {
       var propName = matches[1];
       var listeners = propName in watches ? watches[propName] : watches[propName] = [];
-      listeners.push(function(value) {
+      listeners.push(function(propName, value) {
         if (component) component[propName] = value;
-      });
+      }.bind(null, propName));
+    } else {
+      args[nodeName] = value;
     }
-    args[nodeName] = value;
   }
   // Init component instance
-  var component = Component && new Component(args, { children: [].slice.call(node.children, 0) });
+  var component;
+  component = Component && new Component(args, { children: [].slice.call(node.children, 0) });
   if (args.slot) component.element.setAttribute('slot', args.slot);
   node.component = component;
   component.renderWith(node);
