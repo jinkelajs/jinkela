@@ -25,7 +25,7 @@ var getOnce = function(base, name, getter) {
 var callArray = function(array, that) { for (var i = 0; i < array.length; i++) array[i].call(that); };
 
 // Walk the tree and change "{xxx}" template to accessor properties.
-var parseTempalte = function(that) {
+var parseTemplate = function(that) {
   var watches = Object.create(null);
   define(that, '@@watches', { value: watches });
   // Walking and match special templates into "watches"
@@ -80,9 +80,9 @@ var parseTempalte = function(that) {
 };
 
 // Extend special fields to instance before parse
-var specialFileds = [ 'tagName', 'template', 'styleSheet' ];
-var extendSpecialFileds = function(that, params) {
-  for (var key, i = 0; key = specialFileds[i]; i++) {
+var specialFields = [ 'tagName', 'template', 'styleSheet' ];
+var extendSpecialFields = function(that, params) {
+  for (var key, i = 0; key = specialFields[i]; i++) {
     if (key in params) {
       Object.defineProperty(that, key, { configurable: true, value: params[key] });
       delete params[key];
@@ -94,8 +94,8 @@ var extendSpecialFileds = function(that, params) {
 var Jinkela = function() {
   var params = {};
   this.extends.apply(params, arguments);
-  extendSpecialFileds(this, params);
-  parseTempalte(this);
+  extendSpecialFields(this, params);
+  parseTemplate(this);
   // Extends each arguments to this
   if (typeof this.beforeExtends === 'function') this.beforeExtends(); // Expirimental
   this.extends(params);
