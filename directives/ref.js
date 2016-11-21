@@ -40,7 +40,7 @@ Jinkela.register('ref', function(that, node, ownerElement) {
           ownerElement.originalList.forEach(function(item) { item.remove(); });
         }
         ownerElement = element;
-      } else {
+      } else if (element !== ownerElement) {
         if (parent = ownerElement.parentNode) {
           parent.insertBefore(element, ownerElement);
           ownerElement.remove();

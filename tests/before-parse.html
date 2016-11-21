@@ -1,0 +1,29 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script>
+class Div extends Jinkela {
+  init() {
+    if (this.text) this.element.textContent = this.text;
+  }
+}
+
+class Foo extends Jinkela {
+  beforeParse(params) {
+    this.text = params.text;
+  }
+  get template() {
+    return `
+      <div>
+        <jkl-div text="{text}"></jkl-div>
+      </div>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  let foo = new Foo({ text: 'hehe' }).to(document.body);
+  Tester.assert(document.body.textContent.replace(/\s*/g, '') === 'hehe');
+  Tester.feedback(true);
+});
+</script>

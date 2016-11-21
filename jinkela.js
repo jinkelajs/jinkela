@@ -94,6 +94,7 @@ var extendSpecialFields = function(that, params) {
 var Jinkela = function() {
   var params = {};
   this.extends.apply(params, arguments);
+  if (typeof this.beforeParse === 'function') this.beforeParse(params); // Expirimental
   extendSpecialFields(this, params);
   parseTemplate(this);
   // Extends each arguments to this

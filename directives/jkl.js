@@ -20,6 +20,7 @@ Jinkela.register(/^JKL(?:-[A-Z0-9]+)+$/, function(that, node) {
       listeners.push(function(nodeName, value) {
         if (component) component[nodeName] = value;
       }.bind(null, nodeName));
+      args[nodeName] = that[propName];
     } else {
       args[nodeName] = value;
     }

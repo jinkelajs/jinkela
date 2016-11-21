@@ -111,21 +111,29 @@ let inputs = Array.from({ length: 100 }, () => {
 
 When a Jinkela class is operated with `new`, The following steps are taken:
 
-#### 1. Build DOM
+#### 1. Parepare
 
-##### 1.1. Build Element
+##### 1.1. Execute `beforeParse` Handler
+
+#### 2. Build DOM
+
+##### 2.1. Build Element
 
 Read HTML tempalte from `template` or `tagName` properties, and build to a html element as `element` property.
 
-##### 1.2. Build Style
+##### 2.2. Build Style
 
 Read and merge all `styleSheet` form prototype chains.
 
-#### 2. Copy Properties
+#### 3. Copy Properties
+
+##### 3.1. Execute `beforeExtends` Handler
+
+##### 3.2. Extend Params
 
 Copy each properties of each parameters to instance.
 
-#### 3. Execute `init`
+#### 4. Execute `init`
 
 Execute `init` method of instance (auto super with whole prototype chains).
 
