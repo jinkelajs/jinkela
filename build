@@ -3,6 +3,7 @@ for js in $(find jinkela.js plugins directives -type f)
 do
   cat $js >> amd.js
 done
+echo '  return Jinkela;' >> amd.js
 echo '});' >> amd.js
 echo create amd.js ok
 amd2umd amd.js > umd.js && echo create umd.js ok
