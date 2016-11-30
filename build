@@ -1,0 +1,9 @@
+echo 'define(function() {' > amd.js
+for js in $(find jinkela.js plugins directives -type f)
+do
+  cat $js >> amd.js
+done
+echo '});' >> amd.js
+echo create amd.js ok
+./node_modules/.bin/amd2umd amd.js > umd.js
+echo create umd.js ok

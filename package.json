@@ -1,12 +1,13 @@
 {
   "name": "jinkela",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "A MODULARIZATION SOLUTION OF FRONTEND ",
-  "main": "jinkela.js",
+  "main": "umd.js",
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
   "license": "MIT",
   "scripts": {
-    "test": "ui-tester-start tests"
+    "test": "ui-tester-start tests",
+    "install": "./build"
   },
   "reciperConfig": {
     "name": "Jinkela",
@@ -23,5 +24,8 @@
   },
   "devDependencies": {
     "ui-tester": "~1.1.2"
+  },
+  "dependencies": {
+    "amd2umd": "0.0.5"
   }
 }
