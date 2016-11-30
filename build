@@ -5,5 +5,4 @@ do
 done
 echo '});' >> amd.js
 echo create amd.js ok
-./node_modules/.bin/amd2umd amd.js > umd.js
-echo create umd.js ok
+amd2umd amd.js > umd.js && echo create umd.js ok
