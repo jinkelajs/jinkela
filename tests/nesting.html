@@ -54,7 +54,7 @@ var foo = new class extends Jinkela {
   get template() {
     return `
       <div class="a">
-        <span x="{">Jinkela</a>
+        <span x="{&quot;/*blah*/">Jinkela</a>
       </div>
     `;
   }
@@ -62,11 +62,13 @@ var foo = new class extends Jinkela {
     return `
       :scope {
         &.a {
-          /* haha shabi */
+          /* haha // shabi */
+          // /*
           animation: anime 200ms ease forwards;
-          [x="{"] {
+          [x="{\\"/*blah*/"] {
             color: red;
           }
+          // */
         }
       }
       @keyframes anime {
@@ -82,6 +84,7 @@ foo.renderTo(document.body);
 Tester.assert(getComputedStyle(foo.element.firstElementChild).color === 'rgb(255, 0, 0)', 'color must be red')
 
 foo.element.addEventListener('animationend', () => {
+  Tester.assert(getComputedStyle(foo.element).opacity === '0', 'opacity must be zero');
   Tester.feedback(true);
 });
 </script>
