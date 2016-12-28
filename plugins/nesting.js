@@ -9,16 +9,16 @@ Jinkela.cssPreprocessor = function (styleSheet) {
         | ({)                       # block start
         | (})                       # block end
         | (;)                       # property end
-        | ((@media\b[^{]+)\{)       # media query block start
+        | ((@[^{]+)\{)              # at block start
         | (.)                       # other character
   */
-  var tokenize = /((['"])(?:\\\2|.)*?\2)|({)|(})|(;)|((@media\b[^{]+)\{)|(.)/g;
+  var tokenize = /((['"])(?:\\\2|.)*?\2)|({)|(})|(;)|((@[^{]+)\{)|(.)/g;
   var gen = [];
   var startPos = 0;
   var selectorStack = [ [ '' ] ];
   var propertyStack = [];
   var properties = [];
-  var inMediaQuery = 0;
+  var inAtBlock = 0;
   for (var match; (match = tokenize.exec(styleSheet)); ) {
     var warn = function (message) {
       var parsed = styleSheet.slice(0, match.index + 1);
@@ -31,7 +31,7 @@ Jinkela.cssPreprocessor = function (styleSheet) {
       case match[3] !== void 0:
         propertyStack.push(properties);
         properties = [];
-        if (inMediaQuery > 0) inMediaQuery++;
+        if (inAtBlock > 0) inAtBlock++;
         var outer = selectorStack[selectorStack.length - 1];
         var inner = styleSheet.slice(startPos, match.index).replace(/^\s+|\s+$/g, '').split(/\s*,\s*/g);
         var mixed = [];
@@ -51,7 +51,7 @@ Jinkela.cssPreprocessor = function (styleSheet) {
         }
         properties.push(styleSheet.slice(startPos, match.index));
         var selector = selectorStack.pop();
-        if (inMediaQuery > 0 && --inMediaQuery === 0) {
+        if (inAtBlock > 0 && --inAtBlock === 0) {
           gen.push('}', '\n');
         } else {
           gen.push(selector.join(', '), '{', properties.join('\n'), '}', '\n');
@@ -64,18 +64,18 @@ Jinkela.cssPreprocessor = function (styleSheet) {
         properties.push(styleSheet.slice(startPos, match.index + 1));
         startPos = match.index + 1;
         break;
-      // media query block start
+      // at block start
       case match[6] !== void 0:
         if (selectorStack.length > 1) {
-          warn('unexpected media query');
+          warn('unexpected @ block');
           return styleSheet;
         }
         propertyStack.push(properties);
         properties = [];
-        inMediaQuery++;
-        gen.push(match[9], '{', '\n');
+        inAtBlock++;
+        gen.push(match[7], '{', '\n');
         selectorStack.push([ '' ]);
-        startPos = match.index + 1;
+        startPos = match.index + match[6].length + 1;
         break;
     }
   }
