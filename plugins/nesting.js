@@ -17,11 +17,8 @@ Jinkela.cssPreprocessor = function (styleSheet) {
   var startPos = 0;
   var selectorStack = [ [ '' ] ];
   var propertyStack = [];
+  var properties = [];
   var inMediaQuery = 0;
-  var pushProperty = function (property) {
-    if (!(property = property.replace(/^\s+|\s+$/g, ''))) return;
-    propertyStack[propertyStack.length - 1].push(property);
-  };
   for (var match; (match = tokenize.exec(styleSheet)); ) {
     var warn = function (message) {
       var parsed = styleSheet.slice(0, match.index + 1);
@@ -32,6 +29,8 @@ Jinkela.cssPreprocessor = function (styleSheet) {
     switch (true) {
       // block start
       case match[3] !== void 0:
+        propertyStack.push(properties);
+        properties = [];
         if (inMediaQuery > 0) inMediaQuery++;
         var outer = selectorStack[selectorStack.length - 1];
         var inner = styleSheet.slice(startPos, match.index).replace(/^\s+|\s+$/g, '').split(/\s*,\s*/g);
@@ -42,7 +41,6 @@ Jinkela.cssPreprocessor = function (styleSheet) {
           }
         }
         selectorStack.push(mixed);
-        propertyStack.push([]);
         startPos = match.index + 1;
         break;
       // block end
@@ -51,19 +49,19 @@ Jinkela.cssPreprocessor = function (styleSheet) {
           warn('unexpected block end');
           return styleSheet;
         }
-        pushProperty(styleSheet.slice(startPos, match.index));
+        properties.push(styleSheet.slice(startPos, match.index));
         var selector = selectorStack.pop();
-        var properties = propertyStack.pop();
         if (inMediaQuery > 0 && --inMediaQuery === 0) {
           gen.push('}', '\n');
         } else {
           gen.push(selector.join(', '), '{', properties.join('\n'), '}', '\n');
         }
+        properties = propertyStack.pop();
         startPos = match.index + 1;
         break;
       // property end
       case match[5] !== void 0:
-        pushProperty(styleSheet.slice(startPos, match.index + 1));
+        properties.push(styleSheet.slice(startPos, match.index + 1));
         startPos = match.index + 1;
         break;
       // media query block start
@@ -72,10 +70,11 @@ Jinkela.cssPreprocessor = function (styleSheet) {
           warn('unexpected media query');
           return styleSheet;
         }
+        propertyStack.push(properties);
+        properties = [];
         inMediaQuery++;
         gen.push(match[9], '{', '\n');
         selectorStack.push([ '' ]);
-        propertyStack.push([]);
         startPos = match.index + 1;
         break;
     }
