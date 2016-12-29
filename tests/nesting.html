@@ -44,11 +44,11 @@ var fee = new class extends Jinkela {
 };
 
 fee.renderTo(document.body);
-Tester.assert(getComputedStyle(fee.a).color === 'rgb(255, 0, 0)', 'color must be red')
-Tester.assert(getComputedStyle(fee.b).color === 'rgb(0, 128, 0)', 'color must be green')
-Tester.assert(getComputedStyle(fee.c).color === 'rgb(0, 0, 255)', 'color must be blue')
-Tester.assert(getComputedStyle(fee.d).color === 'rgb(0, 128, 0)', 'color must be green')
-Tester.assert(getComputedStyle(fee.e).color === 'rgb(0, 0, 255)', 'color must be blue')
+Tester.assert(getComputedStyle(fee.a).color === 'rgb(255, 0, 0)', 'color must be red');
+Tester.assert(getComputedStyle(fee.b).color === 'rgb(0, 128, 0)', 'color must be green');
+Tester.assert(getComputedStyle(fee.c).color === 'rgb(0, 0, 255)', 'color must be blue');
+Tester.assert(getComputedStyle(fee.d).color === 'rgb(0, 128, 0)', 'color must be green');
+Tester.assert(getComputedStyle(fee.e).color === 'rgb(0, 0, 255)', 'color must be blue');
 
 var foo = new class extends Jinkela {
   get template() {
@@ -81,10 +81,39 @@ var foo = new class extends Jinkela {
 
 foo.renderTo(document.body);
 
-Tester.assert(getComputedStyle(foo.element.firstElementChild).color === 'rgb(255, 0, 0)', 'color must be red')
+Tester.assert(getComputedStyle(foo.element.firstElementChild).color === 'rgb(255, 0, 0)', 'color must be red');
 
 foo.element.addEventListener('animationend', () => {
   Tester.assert(getComputedStyle(foo.element).opacity === '0', 'opacity must be zero');
   Tester.feedback(true);
 });
+
+var bar = new class extends Jinkela {
+  get template() {
+    return `
+      <div>
+        <div class="a" ref="a">a</div>
+      </div>
+    `;
+  }
+  get styleSheet() {
+    return `
+      @media (min-width: 0) and (min-height: 0) {
+        :scope {
+          border: 1px solid red;
+          .a {
+            color: blue;
+          }
+          background-color: white;
+        }
+      }
+    `;
+  }
+};
+
+bar.renderTo(document.body);
+
+Tester.assert(getComputedStyle(bar.element).border === '1px solid rgb(255, 0, 0)', 'border must be 1px solid rgb(255, 0, 0)');
+Tester.assert(getComputedStyle(bar.element).backgroundColor === 'rgb(255, 255, 255)', 'backgroundColor must be white');
+Tester.assert(getComputedStyle(bar.a).color === 'rgb(0, 0, 255)', 'color must be blue');
 </script>
