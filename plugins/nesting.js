@@ -19,12 +19,12 @@ Jinkela.cssPreprocessor = function (styleSheet) {
   var propertyStack = [];
   var properties = [];
   var inAtBlock = 0;
-  for (var match; (match = tokenize.exec(styleSheet)); ) {
+  for (var match; (match = tokenize.exec(styleSheet));) {
     var warn = function (message) {
       var parsed = styleSheet.slice(0, match.index + 1);
       var ch = parsed.match(/.*$/)[0].length;
       var line = parsed.length - parsed.replace(/\n/g, '').length + 1;
-      console.warn(message + ' at line ' + line + ', column ' + ch + '\n' + parsed);
+      console.warn(message + ' at line ' + line + ', column ' + ch + '\n' + parsed); // eslint-disable-line
     };
     switch (true) {
       // block start
