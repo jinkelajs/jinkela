@@ -1,9 +1,13 @@
-echo 'define(function() {' > amd.js
+> module.js
 for js in $(find jinkela.js plugins directives -type f)
 do
-  cat $js >> amd.js
+  cat $js >> module.js
 done
+echo 'define(function() {' > amd.js
+cat module.js >> amd.js
 echo '  return Jinkela;' >> amd.js
 echo '});' >> amd.js
 echo create amd.js ok
+echo 'export default window.Jinkela;' >> module.js
+echo create module.js ok
 amd2umd amd.js > umd.js && echo create umd.js ok

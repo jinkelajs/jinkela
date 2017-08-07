@@ -4,3 +4,4 @@ tests/bower_components
 tests/index.html
 /amd.js
 /umd.js
+/module.js
