@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "test": "ui-tester-start tests",
-    "install": "./build"
+    "prepack": "./build",
+    "prepublishOnly": "./build"
   },
   "reciperConfig": {
     "name": "Jinkela",
