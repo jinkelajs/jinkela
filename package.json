@@ -1,14 +1,13 @@
 {
   "name": "jinkela",
-  "version": "1.2.21",
+  "version": "1.2.22",
   "description": "A MODULARIZATION SOLUTION OF FRONTEND ",
   "main": "umd.js",
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
   "license": "MIT",
   "scripts": {
     "test": "ui-tester-start tests",
-    "prepack": "./build",
-    "prepublishOnly": "./build"
+    "prepublish": "./build"
   },
   "reciperConfig": {
     "name": "Jinkela",

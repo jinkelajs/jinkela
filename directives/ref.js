@@ -1,8 +1,8 @@
 Jinkela.register('ref', function(that, node, ownerElement) {
   var fixNode = function(item) {
-    if (item == null) item = new Comment(' ' + item + ' '); // eslint-disable-line
+    if (item == null) item = document.createComment(' ' + item + ' '); // eslint-disable-line
     if (item instanceof Jinkela) item = item.element;
-    if (!(item instanceof Node)) item = new Text(item);
+    if (!(item instanceof Node)) item = document.createTextNode(item);
     return item;
   };
   // var desc = Object.getOwnPropertyDescriptor(that, node.value);
@@ -27,7 +27,7 @@ Jinkela.register('ref', function(that, node, ownerElement) {
           fragment.originalList = element;
           element = fragment;
         } else {
-          element = new Comment(' empty list ');
+          element = document.createComment(' empty list ');
         }
       } else {
         element = fixNode(element);
