@@ -1,1 +1,1 @@
-docs => http://yanagieiichi.github.io/jinkela/
+docs => http://jinkelajs.org/
