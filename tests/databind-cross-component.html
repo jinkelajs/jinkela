@@ -4,6 +4,8 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
+let setTextStorage = [];
+
 class Foo extends Jinkela {
   get template() {
     return `<div><jkl-fee ref="fee" text="{text}"></jkl-fee></a></div>`;
@@ -12,7 +14,7 @@ class Foo extends Jinkela {
     return 'Jinkela';
   }
   set text(value) {
-    console.log(value);
+    setTextStorage.push(value);
   }
 }
 
@@ -35,9 +37,12 @@ Tester.assert(foo.fee.element.textContent === 'hehe');
 Tester.assert(foo.fee.text === 'hehe');
 foo.fee.text = 'haha';
 
-Tester.assert(foo.text !== 'haha'); // !!!
+Tester.assert(foo.text === 'hehe', 'must still hehe');
 
 Tester.assert(foo.fee.element.textContent === 'haha');
 Tester.assert(foo.fee.text === 'haha');
+
+Tester.assert(JSON.stringify(setTextStorage) === JSON.stringify([ 'hehe' ]), 'setTextStorage error');
+
 Tester.feedback(true);
 </script>
