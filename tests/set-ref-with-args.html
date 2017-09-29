@@ -24,7 +24,7 @@ class Span extends Jinkela {
 let before = new Span({ text: 'before' });
 let after = new Span({ text: 'after' });
 
-var foo = new Foo({ before, after }).renderTo(document.body);
+var foo = new Foo({ before, after }).to(document.body);
 
 Tester.assert(foo.element.textContent.replace(/\s/g, '') === 'before-after');
 

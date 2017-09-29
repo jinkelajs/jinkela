@@ -18,7 +18,7 @@ let list = Foo.from(raw);
 
 const DESC = '{"writable":false,"enumerable":false,"configurable":true}';
 Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(list, 'to')) ===  DESC);
-Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(list, 'renderTo')) ===  DESC);
+Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(list, 'to')) ===  DESC);
 Tester.assert(JSON.stringify(Object.getOwnPropertyDescriptor(Jinkela, 'from')) ===  DESC);
 Tester.assert(list.length === raw.length);
 Tester.assert(list.every(item => item instanceof Foo))
@@ -29,7 +29,7 @@ let hehe2 = new Foo({ text: 'hehe' });
 Tester.assert(JSON.stringify(hehe1) === JSON.stringify(hehe2));
 
 addEventListener('DOMContentLoaded', () => {
-  list.renderTo(document.body);
+  list.to(document.body);
   Tester.assert(document.body.textContent === raw.reduce((result, item) => result + item.text, ''));
   Tester.feedback(true);
 });

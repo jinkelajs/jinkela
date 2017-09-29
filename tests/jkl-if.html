@@ -23,7 +23,7 @@ class Fee extends Jinkela {
   }
 }
 
-let fee = new Fee().renderTo(document.body);
+let fee = new Fee().to(document.body);
 Tester.assert(fee.element.firstChild.nextSibling.nodeType === 8, 'nodeType must be 8');
 
 fee.cond = true;

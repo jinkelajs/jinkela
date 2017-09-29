@@ -25,7 +25,7 @@ class Fee extends Jinkela {
   }
 }
 
-let fee = new Fee().renderTo(document.body);
+let fee = new Fee().to(document.body);
 
 Tester.assert(fee.div.tagName === 'DIV', 'tagName must be "DIV"');
 Tester.assert(fee.element.firstElementChild.tagName === 'SPAN', 'tagName must be "SPAN"');

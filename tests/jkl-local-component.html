@@ -27,7 +27,7 @@ class Fee extends Jinkela {
   }
 }
 
-let fee = new Fee().renderTo(document.body);
+let fee = new Fee().to(document.body);
 
 Tester.assert(fee.foo.element.textContent === 'b', 'textContent must be "b"');
 

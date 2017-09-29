@@ -3,48 +3,58 @@
 <script src="/directives/if.js"></script>
 <body>
 <script>
-class A extends Jinkela { get template() { return `<div if="{cond}"></div>`; } }
-class B extends Jinkela { get template() { return `<div><div if="{cond}"></div></div>`; } }
-var expection = new Tester.Expection(
-  true, true, true, true, true, true, true, true,
-  true, true
-).feedback();
+class A extends Jinkela { get template() { return `<div if="{cond}">A</div>`; } }
+class B extends Jinkela { get template() { return `<div><div if="{cond}">B</div></div>`; } }
+class C extends Jinkela { get template() { return `<div if-not="{cond}">C</div>`; } }
 </script>
 <script>
 // false to true for container
-var a = new A();
-a.renderTo(document.body);
-expection.answer(a.element.parentNode === null, 'parentNode must be null');
-a.cond = true;
-expection.answer(a.element.parentNode === document.body);
-// true to false for container
-var a = new A();
-a.cond = true;
-a.renderTo(document.body);
-expection.answer(a.element.parentNode === document.body);
-a.cond = false;
-expection.answer(a.element.parentNode === null, 'parentNode must be null');
-// falst to true for child
-var b = new B();
-b.renderTo(document.body);
-expection.answer(b.element.firstChild.nodeType === 8);
-b.cond = true;
-expection.answer(b.element.firstChild.nodeType === 1);
-// true to false for child
-var b = new B();
-b.cond = true;
-b.renderTo(document.body);
-expection.answer(b.element.firstChild.nodeType === 1);
-b.cond = false;
-expection.answer(b.element.firstChild.nodeType === 8);
-</script>
+{
+  let a = new A().to(document.body);
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+  a.cond = true;
+  Tester.assert(a.element.parentNode === document.body, 'parentNode must be body');
+}
 
-<script>
-class C extends Jinkela { get template() { return `<div if-not="{cond}"></div>`; } }
-var c = new C();
-c.cond = true;
-c.renderTo(document.body);
-expection.answer(c.element.parentNode === null, 'parentNode must be null');
-c.cond = false;
-expection.answer(c.element.parentNode === document.body);
+// true to false for container
+{
+  let a = new A({ cond: true }).to(document.body);
+  Tester.assert(a.element.parentNode === document.body);
+  a.cond = false;
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+}
+
+// falst to true for child
+{
+  let b = new B().to(document.body);
+  Tester.assert(b.element.firstChild.nodeType === 8);
+  b.cond = true;
+  Tester.assert(b.element.firstChild.nodeType === 1);
+}
+
+// true to false for child
+{
+  let b = new B({ cond: true }).to(document.body);
+  Tester.assert(b.element.firstChild.nodeType === 1);
+  b.cond = false;
+  Tester.assert(b.element.firstChild.nodeType === 8);
+}
+
+// false to true for container on "if-not"
+{
+  let a = new C().to(document.body);
+  Tester.assert(a.element.parentNode === document.body, 'parentNode must be body');
+  a.cond = true;
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+}
+
+// true to false for container on "if-not"
+{
+  let a = new C({ cond: true }).to(document.body);
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+  a.cond = false;
+  Tester.assert(a.element.parentNode === document.body);
+}
+
+Tester.feedback(true);
 </script>

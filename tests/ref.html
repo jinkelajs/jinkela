@@ -17,7 +17,7 @@ class Span extends Jinkela {
   get template() { return `<span>{text}</span>`; }
 }
 
-var foo = new Foo().renderTo(document.body);
+var foo = new Foo().to(document.body);
 Tester.assert(foo.a === foo.element.firstElementChild);
 
 var haha = foo.a = new Span({ text: 'haha' });

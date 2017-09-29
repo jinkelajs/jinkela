@@ -20,7 +20,7 @@ var foo = new class extends Jinkela {
 }, {
   L: 'L',
   O: 'O'
-}).renderTo(document.body);
+}).to(document.body);
 Tester.assert(foo.element.textContent.replace(/\s+/g, '') === 'HELLO', 'result must be HELLO');
 Tester.feedback(true);
 </script>

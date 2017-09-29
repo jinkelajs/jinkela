@@ -24,13 +24,13 @@ class Foo extends Jinkela {
 </div>
 <div class="green">
   <script>
-  a.renderTo(document.querySelector('.green'));
-  b.renderTo(document.querySelector('.green'));
+  a.to(document.querySelector('.green'));
+  b.to(document.querySelector('.green'));
   </script>
 </div>
 <div class="blue">
   <script>
-  b.renderTo(document.querySelector('.blue'));
+  b.to(document.querySelector('.blue'));
   </script>
   <meta id="c" />
 </div>
@@ -39,13 +39,13 @@ Tester.assert(a.element.parentNode.className === 'green', 'a must be gree');
 Tester.assert(b.element.parentNode.className === 'blue', 'a must be blue');
 
 var c = new Foo({ text: 'c' }).renderWith(document.getElementById('c'));
-var d = new Foo({ text: 'd' }).renderTo(c);
-var e = new Foo({ text: 'e' }).renderTo(document.querySelector('.red'));
+var d = new Foo({ text: 'd' }).to(c);
+var e = new Foo({ text: 'e' }).to(document.querySelector('.red'));
 Tester.assert(c.element.parentNode.className === 'blue', 'c must be blue');
 Tester.assert(d.element.parentNode === c.element, 'parent of d must be c');
 Tester.assert(e.element.parentNode.className === 'red', 'e must be red');
 c.renderWith(e);
-e.renderTo(document.querySelector('.green'));
+e.to(document.querySelector('.green'));
 Tester.assert(e.element.parentNode.className === 'green', 'e must be green');
 Tester.assert(c.element.parentNode.className === 'red', 'e must be red');
 Tester.assert(d.element.parentNode === c.element, 'parent of d must be c');
