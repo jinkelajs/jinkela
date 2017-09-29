@@ -146,7 +146,6 @@ define(Jinkela.prototype, 'extends', { value: function() {
 } });
 var createRender = function(name, handler) {
   define(Jinkela.prototype, name, { value: function(target) {
-    if (!this.hasOwnProperty('parent')) define(this, 'parent', { value: target });
     if (target instanceof Jinkela) target = target.element;
     handler.call(this, target);
     return this;
