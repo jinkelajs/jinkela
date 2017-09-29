@@ -22,7 +22,6 @@ var define = function(base, name, desc) {
 var getOnce = function(base, name, getter) {
   define(base, name, { get: function() { return define(this, name, { value: getter.call(this) })[name]; } });
 };
-var callArray = function(array, that) { for (var i = 0; i < array.length; i++) array[i].call(that); };
 
 // Walk the tree and change "{xxx}" template to accessor properties.
 var parseTemplate = function(that) {
@@ -139,9 +138,6 @@ getOnce(Jinkela.prototype, 'element', function() {
 getOnce(Jinkela, 'style', function() {
   return document.head.appendChild(document.createElement('style'));
 });
-getOnce(Jinkela.prototype, '@@didMountHandlers', function() {
-  return [ function() { callArray(getShadedProps(this, 'didMount'), this); }.bind(this) ];
-});
 define(Jinkela.prototype, 'extends', { value: function() {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i];
@@ -153,7 +149,6 @@ var createRender = function(name, handler) {
     if (!this.hasOwnProperty('parent')) define(this, 'parent', { value: target });
     if (target instanceof Jinkela) target = target.element;
     handler.call(this, target);
-    callArray(this['@@didMountHandlers'], this);
     return this;
   } });
 };

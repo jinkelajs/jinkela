@@ -4,20 +4,28 @@ Jinkela.register(/^if(-not)?$/, function(that, node, ownerElement) {
   var replacement = document.createComment(' ' + node.name + '="' + node.value + '" ');
   var state = true;
   var name = /^\{(.*)\}$|$/.exec(node.value)[1];
-  that['@@didMountHandlers'].push(function() { this[name] = this[name]; });
   return function(value) {
     value = !!value ^ not;
     if (state === value) return;
     if (value) {
       if (replacement.parentNode) {
         replacement.parentNode.replaceChild(ownerElement, replacement);
-        state = value;
       }
+      state = value;
     } else {
       if (ownerElement.parentNode) {
         ownerElement.parentNode.replaceChild(replacement, ownerElement);
-        state = value;
+      } else if (that.element === ownerElement) {
+        var to = that.to;
+        Object.defineProperty(that, 'to', {
+          configurable: true,
+          value: function(element) {
+            to.call(state ? that : { element: replacement }, element);
+            return that;
+          }
+        });
       }
+      state = value;
     }
   };
 });
