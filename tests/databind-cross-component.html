@@ -1,0 +1,43 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `<div><jkl-fee ref="fee" text="{text}"></jkl-fee></a></div>`;
+  }
+  get text() {
+    return 'Jinkela';
+  }
+  set text(value) {
+    console.log(value);
+  }
+}
+
+class Fee extends Jinkela {
+  get template() {
+    return `<a href="javascript:">{text}</a>`;
+  }
+}
+
+
+let foo = new Foo().to(document.body);
+Tester.assert(foo.element.textContent === 'Jinkela');
+Tester.assert(foo.text === 'Jinkela');
+Tester.assert(foo.fee.element.textContent === 'Jinkela');
+Tester.assert(foo.fee.text === 'Jinkela');
+foo.text = 'hehe';
+Tester.assert(foo.element.textContent === 'hehe');
+Tester.assert(foo.text === 'hehe');
+Tester.assert(foo.fee.element.textContent === 'hehe');
+Tester.assert(foo.fee.text === 'hehe');
+foo.fee.text = 'haha';
+
+Tester.assert(foo.text !== 'haha'); // !!!
+
+Tester.assert(foo.fee.element.textContent === 'haha');
+Tester.assert(foo.fee.text === 'haha');
+Tester.feedback(true);
+</script>
