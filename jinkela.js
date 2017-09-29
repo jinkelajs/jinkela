@@ -125,7 +125,7 @@ getOnce(Jinkela.prototype, 'element', function() {
     // Find all shaded "styleSheet" from prototype chain and build
     var styleSheetList = getShadedProps(this, 'styleSheet');
     if (styleSheetList.length) {
-      var classId = increment++;
+      var classId = target.name + '-' + increment++;
       element.setAttribute('jinkela-class', classId);
       var styleSheet = styleSheetList.join('\n').replace(/:scope\b/g, '[jinkela-class="' + classId + '"]');
       if (typeof Jinkela.cssPreprocessor === 'function') styleSheet = Jinkela.cssPreprocessor(styleSheet);
