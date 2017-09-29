@@ -58,8 +58,9 @@ var parseTemplate = function(that) {
   // Change "watches" to accessor properties
   for (var name in watches) void function(name) {
     var list = watches[name];
-    var value = that[name];
-    var cache;
+    var desc, cache;
+    for (var i = that; i && !desc; i = Object.getPrototypeOf(i)) desc = Object.getOwnPropertyDescriptor(i, name);
+    if (desc && desc.set) list.push(desc.set);
     define(that, name, {
       enumerable: true,
       get: function() { return cache; },
@@ -74,7 +75,7 @@ var parseTemplate = function(that) {
         }
       }
     });
-    that[name] = value;
+    that[name] = desc && (desc.get ? desc.get.call(that) : desc.value);
   }(name);
 };
 

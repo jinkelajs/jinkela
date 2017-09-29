@@ -2,31 +2,39 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
+let setTextStorage = [];
+
 class Foo extends Jinkela {
   get template() {
     return `<a href="{href}">{text}</div>`;
   }
-  get text() {
-    return 'Jinkela';
-  }
   get href() {
-    return 'JavaScript:';
+    return 'javascript:';
   }
   get text() {
     return 'Jinkela';
+  }
+  set text(value) {
+    setTextStorage.push(value);
   }
 }
+
 var foo = new Foo().to(document.body);
-setTimeout(() => {
-  Tester.assert(foo.text === 'Jinkela', 'text error');
-  Tester.assert(foo.href === 'JavaScript:', 'href error');
-  foo.text = 'Jinkela hehe';
-  foo.href = 'JavaScript: void 233;';
-  setTimeout(() => {
-    Tester.assert(foo.text === 'Jinkela hehe', 'hehe error');
-    Tester.assert(foo.href === 'JavaScript: void 233;', 'href error');
-    Tester.assert(foo.href === foo.element.getAttribute('href'), 'href attr error');
-    Tester.feedback(true);
-  });
-});
+
+Tester.assert(foo.text === 'Jinkela', 'text error');
+Tester.assert(foo.element.textContent === 'Jinkela', 'textContent error');
+Tester.assert(foo.href === 'javascript:', 'href error');
+Tester.assert(foo.href === foo.element.getAttribute('href'), 'href attr error');
+
+foo.text = 'Jinkela HEHE';
+foo.href = 'javascript: void 233;';
+
+Tester.assert(foo.text === 'Jinkela HEHE', 'text error');
+Tester.assert(foo.element.textContent === 'Jinkela HEHE', 'textContent error');
+Tester.assert(foo.href === 'javascript: void 233;', 'href error');
+Tester.assert(foo.href === foo.element.getAttribute('href'), 'href attr error');
+
+Tester.assert(JSON.stringify(setTextStorage) === JSON.stringify([ 'Jinkela', 'Jinkela HEHE' ]), 'setTextStorage error');
+
+Tester.feedback(true);
 </script>
