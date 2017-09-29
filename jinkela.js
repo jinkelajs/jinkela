@@ -154,7 +154,6 @@ var createRender = function(name, handler) {
 };
 createRender('to', function(target) { target.appendChild(this.element); });
 createRender('prependTo', function(target) { target.insertBefore(this.element, target.firstElementChild); });
-createRender('renderTo', function(target) { target.appendChild(this.element); });
 createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
 
 // Directive register
