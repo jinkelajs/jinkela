@@ -1,0 +1,7 @@
+---
+globals:
+  Jinkela: true
+  env:
+    browser: true
+  extends: 
+    eslint:recommended
