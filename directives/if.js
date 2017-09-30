@@ -1,21 +1,23 @@
 Jinkela.register(/^if(-not)?$/, function(that, node, ownerElement) {
-  if (ownerElement.component) ownerElement = ownerElement.component.element;
   var not = !!RegExp.$1;
   var replacement = document.createComment(' ' + node.name + '="' + node.value + '" ');
   var state = true;
   var name = /^\{(.*)\}$|$/.exec(node.value)[1];
-  return function(value) {
+
+  var change = function() {
+    var realOwnerElement = ownerElement.component ? ownerElement.component.element : ownerElement;
+    var value = 'jinkelaValue' in node ? node.jinkelaValue : node.value;
     value = !!value ^ not;
     if (state === value) return;
     if (value) {
       if (replacement.parentNode) {
-        replacement.parentNode.replaceChild(ownerElement, replacement);
+        replacement.parentNode.replaceChild(realOwnerElement, replacement);
       }
       state = value;
     } else {
-      if (ownerElement.parentNode) {
-        ownerElement.parentNode.replaceChild(replacement, ownerElement);
-      } else if (that.element === ownerElement) {
+      if (realOwnerElement.parentNode) {
+        realOwnerElement.parentNode.replaceChild(replacement, realOwnerElement);
+      } else if (that.element === realOwnerElement) {
         var to = that.to;
         Object.defineProperty(that, 'to', {
           configurable: true,
@@ -28,4 +30,10 @@ Jinkela.register(/^if(-not)?$/, function(that, node, ownerElement) {
       state = value;
     }
   };
+
+  that['@@beforeInit'].push(function() {
+    change();
+    node.addEventListener('change', change);
+  });
+
 });

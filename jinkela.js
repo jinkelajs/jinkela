@@ -25,8 +25,7 @@ var getOnce = function(base, name, getter) {
 
 // Walk the tree and change "{xxx}" template to accessor properties.
 var parseTemplate = function(that, params) {
-  var watches = Object.create(null);
-  define(that, '@@watches', { value: watches });
+  var watches = that['@@watches'];
   // Walking and match special templates into "watches"
   void function callee(node, ownerElement) {
     var attrs, sibling, handler, attr, i;
@@ -58,7 +57,8 @@ var parseTemplate = function(that, params) {
   // Change "watches" to accessor properties
   for (var name in watches) void function(name) {
     var list = watches[name];
-    var desc, cache;
+    var cache = that[name];
+    var desc;
     for (var i = that; i && !desc; i = Object.getPrototypeOf(i)) desc = Object.getOwnPropertyDescriptor(i, name);
     define(that, name, {
       enumerable: true,
@@ -69,21 +69,18 @@ var parseTemplate = function(that, params) {
           if (typeof list[i] === 'function') {
             list[i].call(that, value);
           } else {
-            list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
+            list[i].jinkelaValue = list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
+            var event = document.createEvent('event');
+            event.initEvent('change', false, false);
+            list[i].dispatchEvent(event);
           }
         }
       }
     });
-    // Get default value from jinkela object first
-    if (desc && (desc.get || 'value' in desc)) {
-      that[name] = desc.get ? desc.get.call(that) : desc.value;
-    } else if (!(name in params)) { // Touch params[name] if no default value provided
-      params[name] = void 0;
-    }
-    // Push desc.set as a watching handler if existed
+    if (!(name in params)) that[name] = cache;
+    // Push desc.set to handler list as a watching handler if existed
     if (desc && desc.set) list.push(desc.set);
   }(name);
-  for (name in params) that[name] = params[name];
 };
 
 // Extend special fields to instance before parse
@@ -104,12 +101,16 @@ var Jinkela = function() {
   if (typeof this.beforeParse === 'function') this.beforeParse(params); // Expirimental
   extendSpecialFields(this, params);
   parseTemplate(this, params);
+  for (name in params) this[name] = params[name]; // Extends
+  for(var i = 0; i < this['@@beforeInit'].length; i++) this['@@beforeInit'][i](); // Exec all beforeInit handlers
   // Find all "init" method list in prototype chain and call they
   var args = [ this, arguments ];
   getShadedProps(this, 'init', function(init) { init.apply.apply(init, args); });
 };
 
 // Prototype Properties
+getOnce(Jinkela.prototype, '@@watches', function() { return Object.create(null); });
+getOnce(Jinkela.prototype, '@@beforeInit', function() { return []; });
 getOnce(Jinkela.prototype, 'element', function() {
   var target = this.constructor;
   var key = '@@domCache';

@@ -1,0 +1,45 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<body>
+<script>
+class Foo extends Jinkela {
+  get template() { return '<div>text="<span>{text}</span>" color="<span>{color}</span>"</div>'; }
+  get log() {
+    let value = [];
+    Object.defineProperty(this, 'log', { configurable: true, value });
+    return value;
+  }
+  get color() {
+    return 'green';
+    this.log.push(`get color`);
+  }
+  set color(value) {
+    this.log.push(`set color value=${value} and this.color=${this.color}`);
+  }
+  get text() {
+    this.log.push(`get text`);
+    return 'haha';
+  }
+  set text(value) {
+    this.log.push(`set text value=${value} and this.text=${this.text}`);
+  }
+}
+
+var f1 = new Foo({ text: 'hehe', color: 'red' }).to(document.body);
+Tester.assert(JSON.stringify(f1.log), JSON.stringify([
+  'get color',
+  'get text',
+  'set text value=hehe and this.text=hehe',
+  'set color value=red and this.color=red'
+]), 'f1.log is not correct');
+Tester.assert(f1.element.textContent === 'text="hehe" color="red"', 'f1 textContent is not correct');
+
+var f2 = new Foo().to(document.body);
+Tester.assert(JSON.stringify(f2.log), JSON.stringify([
+  'get color',
+  'get text'
+]), 'f2.log is not correct');
+Tester.assert(f2.element.textContent === 'text="haha" color="green"', 'f2 textContent is not correct');
+
+Tester.feedback(true);
+</script>

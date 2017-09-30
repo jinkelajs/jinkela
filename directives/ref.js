@@ -1,6 +1,7 @@
 Jinkela.register('ref', function(that, node, ownerElement) {
   var fixNode = function(item) {
     if (item == null) item = document.createComment(' ' + item + ' '); // eslint-disable-line
+    if (item instanceof Node && item.component) item = item.component;
     if (item instanceof Jinkela) item = item.element;
     if (!(item instanceof Node)) item = document.createTextNode(item);
     return item;

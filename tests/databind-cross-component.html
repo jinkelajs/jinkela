@@ -4,45 +4,64 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-let setTextStorage = [];
+class Log extends Jinkela {
+  get log() {
+    let value = [];
+    Object.defineProperty(this, 'log', { configurable: true, value });
+    return value;
+  }
+}
 
-class Foo extends Jinkela {
+class Foo extends Log {
   get template() {
-    return `<div><jkl-fee ref="fee" text="{text}"></jkl-fee></a></div>`;
+    return `<div><jkl-fee ref="fee" text="{text}" color="{color}"></jkl-fee></a></div>`;
   }
   get text() {
-    return 'Jinkela';
+    return 'hehe';
   }
   set text(value) {
-    setTextStorage.push(value);
+    this.log.push(`set foo text ${value}`);
   }
 }
 
-class Fee extends Jinkela {
+class Fee extends Log {
+  set text(value) {
+    this.log.push(`set fee text ${value}`);
+  }
+  set color(value) {
+    this.log.push(`set fee color ${value}`);
+  }
   get template() {
-    return `<a href="javascript:">{text}</a>`;
+    return `<div><span>{text}</span>-<span>{color}</span></div>`;
   }
 }
 
+let foo = new Foo({ color: 'red' }).to(document.body);
+Tester.assert(foo.element.textContent === 'hehe-red', 'foo.element.textContent must be hehe-red');
+Tester.assert(foo.text === 'hehe', 'foo.text must be hehe');
+Tester.assert(foo.color === 'red', 'foo.color must be red');
+Tester.assert(foo.fee.element.textContent === 'hehe-red');
 
-let foo = new Foo().to(document.body);
-Tester.assert(foo.element.textContent === 'Jinkela');
-Tester.assert(foo.text === 'Jinkela');
-Tester.assert(foo.fee.element.textContent === 'Jinkela');
-Tester.assert(foo.fee.text === 'Jinkela');
-foo.text = 'hehe';
-Tester.assert(foo.element.textContent === 'hehe');
-Tester.assert(foo.text === 'hehe');
-Tester.assert(foo.fee.element.textContent === 'hehe');
-Tester.assert(foo.fee.text === 'hehe');
-foo.fee.text = 'haha';
+foo.text = 'haha';
 
-Tester.assert(foo.text === 'hehe', 'must still hehe');
+Tester.assert(foo.element.textContent === 'haha-red', `foo.element.textContent must be haha-red but ${foo.element.textContent}`);
+Tester.assert(foo.text === 'haha', 'foo.text must be haha');
+Tester.assert(foo.fee.element.textContent === 'haha-red', 'foo.fee.element.textContent must be haha-red');
 
-Tester.assert(foo.fee.element.textContent === 'haha');
-Tester.assert(foo.fee.text === 'haha');
+foo.fee.text = 'hoho';
 
-Tester.assert(JSON.stringify(setTextStorage) === JSON.stringify([ 'hehe' ]), 'setTextStorage error');
+Tester.assert(foo.text === 'haha', 'must still hehe');
+Tester.assert(foo.fee.element.textContent === 'hoho-red', 'foo.fee.element.textContent must be hoho-red');
+Tester.assert(foo.fee.text === 'hoho');
+
+Tester.assert(JSON.stringify(foo.log) === JSON.stringify([ 'set foo text haha' ]), `foo.log is not correct`);
+
+Tester.assert(JSON.stringify(foo.fee.log) === JSON.stringify([
+  'set fee text hehe',
+  'set fee color red',
+  'set fee text haha',
+  'set fee text hoho'
+]), `fee.log is not correct`);
 
 Tester.feedback(true);
 </script>
