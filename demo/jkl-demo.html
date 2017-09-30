@@ -1,6 +1,6 @@
-<script src="../../jinkela.js"></script>
-<script src="../../directives/jkl.js"></script>
-<script src="../../directives/ref.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../directives/jkl.js"></script>
+<script src="../directives/ref.js"></script>
 <script>
 class Foo extends Jinkela {
   init() {
@@ -21,7 +21,7 @@ class Fee extends Jinkela {
 }
 
 addEventListener('DOMContentLoaded', () => {
-  let fee = new Fee().renderTo(document.body);
+  let fee = new Fee().to(document.body);
   console.log(fee.foo instanceof Foo);
   setInterval(() => {
     fee.text = +fee.text + 1;

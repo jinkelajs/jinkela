@@ -9,21 +9,24 @@
       if (!window.Promise) document.write('<script src="https://github.elemecdn.com/jakearchibald/es6-promise/v3.0.2/dist/es6-promise.min.js"><\/script>');
       if (!window.fetch) document.write('<script src="https://github.elemecdn.com/uglifyjs!github/fetch/v0.11.0/fetch.js"><\/script>');
     </script>
-    <script src="https://github.elemecdn.com/YanagiEiichi/reciper/0.1.6/index.es5.js"></script>
+    <script src="https://github.elemecdn.com/YanagiEiichi/reciper/0.1.9/index.es5.js"></script>
     <script>
-      var ROOT = location.pathname.match(/^\/jinkela|$/)[0];
-      fetch(ROOT + '/package.json').then(function(response) { return response.json(); }).then(function(pkg) {
-        var config = pkg.reciperConfig;
-        config.description = pkg.description;
-        config.home = ROOT + '/';
-        config.logoHref = ROOT + '/docs/intro/';
-        config.items = [
+      var ROOT = location.pathname.match(/.*?(?=\/docs)|.*(?=\/)/)[0];
+      reciper({
+        name: 'Jinkela',
+        darkColor: '#333',
+        normalColor: '#666',
+        primaryColor: '#000',
+        logoUrl: '//fuss10.elemecdn.com/9/ca/f88b429d6278cdf69e0027dfea51ejpeg.jpeg',
+        description: 'A MODULARIZATION SOLUTION OF FRONTEND',
+        languages: [ 'xml', 'markdown', 'bash', 'javascript' ],
+        home: ROOT + '/',
+        items: [
           { 'text': 'Introduction', 'href': ROOT + '/docs/intro/' },
           { 'text': 'Directives', 'href': ROOT + '/docs/directives/' },
           { 'text': 'Plugins', 'href': ROOT + '/docs/plugins/' },
-          { 'text': 'Github', 'href': '//github.com/YanagiEiichi/jinkela', 'target': '_blank' }
-        ];
-        reciper(config);
+          { 'text': 'Github', 'href': '//github.com/jinkelajs', 'target': '_blank' }
+        ]
       });
     </script>
     <style>

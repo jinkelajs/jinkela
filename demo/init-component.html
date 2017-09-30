@@ -1,4 +1,4 @@
-<script src="../../jinkela.js"></script>
+<script src="../jinkela.js"></script>
 <script>
 class MyCounter extends Jinkela {
   init() {
@@ -15,6 +15,6 @@ class MyCounter extends Jinkela {
 }
 
 addEventListener('DOMContentLoaded', () => {
-  new MyCounter({ name: 'Counter', from: 10086 }).renderTo(document.body);
+  new MyCounter({ name: 'Counter', from: 10086 }).to(document.body);
 });
 </script>

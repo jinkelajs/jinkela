@@ -1,4 +1,4 @@
-<script src="../../jinkela.js"></script>
+<script src="../jinkela.js"></script>
 <script>
 class MyFirstComponentComponent extends Jinkela {
   get template() {
@@ -14,6 +14,6 @@ class MyFirstComponentComponent extends Jinkela {
 }
 
 addEventListener('DOMContentLoaded', () => {
-  new MyFirstComponentComponent({ text: 'Jinkela' }).renderTo(document.body);
+  new MyFirstComponentComponent({ text: 'Jinkela' }).to(document.body);
 });
 </script>

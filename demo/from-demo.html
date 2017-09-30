@@ -1,5 +1,5 @@
-<script src="../../jinkela.js"></script>
-<script src="../../plugins/from.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../plugins/from.js"></script>
 <script>
 class Item extends Jinkela {
   get template() {
@@ -11,7 +11,7 @@ class Item extends Jinkela {
 
 class List extends Jinkela {
   init() {
-    Item.from(this.data).renderTo(this);
+    Item.from(this.data).to(this);
   }
   get tagName() { return 'ol'; }
 }
@@ -23,6 +23,6 @@ let data = [
 ];
 
 addEventListener('DOMContentLoaded', () => {
-  new List({ data }).renderTo(document.body);
+  new List({ data }).to(document.body);
 });
 </script>

@@ -1,4 +1,4 @@
-<script src="../../jinkela.js"></script>
+<script src="../jinkela.js"></script>
 <script>
 class TextField extends Jinkela {
   get styleSheet() {
@@ -22,7 +22,7 @@ addEventListener('DOMContentLoaded', () => {
           if (i !== input) i.value = input.value;
         });
       }
-    }).renderTo(document.body);
+    }).to(document.body);
     return input;
   });
 });

@@ -1,26 +1,13 @@
 {
   "name": "jinkela",
   "version": "1.2.22",
-  "description": "A MODULARIZATION SOLUTION OF FRONTEND ",
+  "description": "A MODULARIZATION SOLUTION OF FRONTEND",
   "main": "umd.js",
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
   "license": "MIT",
   "scripts": {
     "test": "ui-tester-start tests",
     "prepublish": "./build"
-  },
-  "reciperConfig": {
-    "name": "Jinkela",
-    "darkColor": "#333",
-    "normalColor": "#666",
-    "primaryColor": "#000",
-    "logoUrl": "//fuss10.elemecdn.com/9/ca/f88b429d6278cdf69e0027dfea51ejpeg.jpeg",
-    "languages": [
-      "xml",
-      "markdown",
-      "bash",
-      "javascript"
-    ]
   },
   "devDependencies": {
     "ui-tester": "~1.1.2"

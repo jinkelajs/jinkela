@@ -20,10 +20,10 @@ class MyFirstComponent extends Jinkela {
   }
 }
 
-new MyFirstComponent({ text: 'Jinkela' }).renderTo(document.body);
+new MyFirstComponent({ text: 'Jinkela' }).to(document.body);
 ```
 
-<a href="my-first-jinkela-component.html">Live Demo</a>
+[Live Demo](../../demo/my-first-jinkela-component.html)
 
 ### 2. Component Extending
 
@@ -48,11 +48,11 @@ class MyBig extends MyFirstComponent {
   }
 }
 
-new MyUnderline({ text: 'Jinkela Bold' }).renderTo(document.body);
-new MyBig({ text: 'Jinkela Big' }).renderTo(document.body);
+new MyUnderline({ text: 'Jinkela Bold' }).to(document.body);
+new MyBig({ text: 'Jinkela Big' }).to(document.body);
 ```
 
-<a href="component-extending.html">Live Demo</a>
+[Live Demo](../../demo/component-extending.html)
 
 ### 3. Init Component
 
@@ -71,10 +71,10 @@ class MyCounter extends Jinkela {
   }
 }
 
-new MyCounter({ name: 'Counter', from: 10086 }).renderTo(document.body);
+new MyCounter({ name: 'Counter', from: 10086 }).to(document.body);
 ```
 
-<a href="init-component.html">Live Demo</a>
+[Live Demo](../../demo/init-component.html)
 
 ### 4. Add Event Listener
 
@@ -100,12 +100,12 @@ let inputs = Array.from({ length: 100 }, () => {
         if (i !== input) i.value = input.value;
       });
     }
-  }).renderTo(document.body);
+  }).to(document.body);
   return input;
 });
 ```
 
-<a href="add-event-listener.html">Live Demo</a>
+[Live Demo](../../demo/add-event-listener.html)
 
 ## Component Running Steps
 
@@ -127,9 +127,7 @@ Read and merge all `styleSheet` form prototype chains.
 
 #### 3. Copy Properties
 
-##### 3.1. Execute `beforeExtends` Handler
-
-##### 3.2. Extend Params
+##### 3.1. Extend Params
 
 Copy each properties of each parameters to instance.
 
@@ -146,4 +144,4 @@ Execute `init` method of instance (auto super with whole prototype chains).
 | styleSheet    | The styleSheet of component.                          |
 | element       | Raw DOM element of component.                         |
 | init          | The initializing function of component.               |
-| renderTo      | Append element of this component to a parent element. |
+| to            | Append element of this component to a parent element. |

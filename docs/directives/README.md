@@ -30,7 +30,7 @@ class Demo extends Jinkela {
 }
 ```
 
-[Live Demo](ref-demo.html)
+[Live Demo](../../demo/ref-demo.html)
 
 ### 2. On-*
 
@@ -59,7 +59,7 @@ class Demo extends Jinkela {
 }
 ```
 
-[Live Demo](on-demo.html)
+[Live Demo](../../demo/on-demo.html)
 
 ### 3. If / If-Not
 
@@ -91,7 +91,7 @@ class Demo extends Jinkela {
 }
 ```
 
-[Live Demo](if-demo.html)
+[Live Demo](../../demo/if-demo.html)
 
 ### 4. JKL-*
 
@@ -131,7 +131,7 @@ setInterval(() => {
 }, 16);
 ```
 
-[Live Demo](jkl-demo.html)
+[Live Demo](../../demo/jkl-demo.html)
 
 ## Custom Directives
 
@@ -183,4 +183,4 @@ class Demo extends Jinkela {
 }
 ```
 
-[Live Demo](custom-directive-demo.html)
+[Live Demo](../../demo/custom-directive-demo.html)

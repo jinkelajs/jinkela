@@ -1,5 +1,5 @@
-<script src="../../jinkela.js"></script>
-<script src="../../directives/if.js"></script>
+<script src="../jinkela.js"></script>
+<script src="../directives/if.js"></script>
 <script>
 Jinkela.register('X-FOO', (ownerComponent, node, ownerElement) => {
   node.style.color = 'red';
@@ -22,6 +22,6 @@ class Demo extends Jinkela {
 }
 
 addEventListener('DOMContentLoaded', () => {
-  new Demo().renderTo(document.body);
+  new Demo().to(document.body);
 });
 </script>

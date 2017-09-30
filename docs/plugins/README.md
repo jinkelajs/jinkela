@@ -38,7 +38,7 @@ class Demo extends Jinkela {
 }
 ```
 
-[Live Demo](nesting-demo.html)
+[Live Demo](../../demo/nesting-demo.html)
 
 ## From
 
@@ -63,7 +63,7 @@ class Item extends Jinkela {
 
 class List extends Jinkela {
   init() {
-    Item.from(this.data).renderTo(this);
+    Item.from(this.data).to(this);
   }
   get tagName() { return 'ol'; }
 }
@@ -74,7 +74,7 @@ let data = [
   { text: 'item3' }
 ];
 
-new List({ data }).renderTo(document.body);
+new List({ data }).to(document.body);
 ```
 
-[Live Demo](from-demo.html)
+[Live Demo](../../demo/from-demo.html)
