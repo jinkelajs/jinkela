@@ -112,8 +112,9 @@ var bar = new class extends Jinkela {
 };
 
 bar.to(document.body);
-
-Tester.assert(getComputedStyle(bar.element).border === '1px solid rgb(255, 0, 0)', 'border must be 1px solid rgb(255, 0, 0)');
+Tester.assert(getComputedStyle(bar.element).borderTopWidth === '1px', 'must be 1px');
+Tester.assert(getComputedStyle(bar.element).borderTopColor === 'rgb(255, 0, 0)', 'must be rgb(255, 0, 0)');
+Tester.assert(getComputedStyle(bar.element).borderTopStyle === 'solid', 'must be solid');
 Tester.assert(getComputedStyle(bar.element).backgroundColor === 'rgb(255, 255, 255)', 'backgroundColor must be white');
 Tester.assert(getComputedStyle(bar.a).color === 'rgb(0, 0, 255)', 'color must be blue');
 </script>
