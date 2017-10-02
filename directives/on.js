@@ -5,7 +5,7 @@ Jinkela.register(/^on-/, function(that, node, ownerElement) {
     if (ownerElement.component) ownerElement = ownerElement.component.element;
     var handler = typeof node.jinkelaValue === 'function' && node.jinkelaValue.bind(that);
     if (handler) ownerElement.addEventListener(eventName, handler);
-    node.addEventListener('change', function() {
+    node['@@subscribers'].push(function() {
       if (handler) ownerElement.removeEventListener(eventName, handler);
       handler = typeof node.jinkelaValue === 'function' && node.jinkelaValue.bind(that);
       if (handler) ownerElement.addEventListener(eventName, handler);

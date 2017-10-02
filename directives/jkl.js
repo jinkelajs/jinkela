@@ -14,9 +14,7 @@ Jinkela.register(/^JKL(?:-[A-Z0-9]+)+$/, function(that, node) {
     // Init component instance
     var component = node.component = Component && new Component(args, { children: [].slice.call(node.childNodes, 0) }).renderWith(node);
     for (var i = 0; i < attrs.length; i++) {
-      attrs[i].addEventListener('change', function(event) {
-        component[event.target.nodeName] = event.target.jinkelaValue;
-      });
+      attrs[i]['@@subscribers'].push(function(target) { component[target.nodeName] = target.jinkelaValue; });
     }
   });
 

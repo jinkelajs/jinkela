@@ -70,9 +70,8 @@ var parseTemplate = function(that, params) {
             list[i].call(that, value);
           } else {
             list[i].jinkelaValue = list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
-            var event = document.createEvent('event');
-            event.initEvent('change', false, false);
-            list[i].dispatchEvent(event);
+            var subscribers = list[i]['@@subscribers'];
+            if (subscribers) for (var j = 0; j < subscribers.length; j++) subscribers[j](list[i]);
           }
         }
       }
@@ -154,6 +153,9 @@ var createRender = function(name, handler) {
 createRender('to', function(target) { target.appendChild(this.element); });
 createRender('prependTo', function(target) { target.insertBefore(this.element, target.firstElementChild); });
 createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
+
+// To save subscribers in DOM node
+getOnce(Node.prototype, '@@subscribers', function() { return []; });
 
 // Directive register
 var directives = { type: Object.create(null), regexp: [] };

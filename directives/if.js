@@ -33,7 +33,7 @@ Jinkela.register(/^if(-not)?$/, function(that, node, ownerElement) {
 
   that['@@beforeInit'].push(function() {
     change();
-    node.addEventListener('change', change);
+    node['@@subscribers'].push(change);
   });
 
 });
