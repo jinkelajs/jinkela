@@ -2,25 +2,26 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-var foo = new class extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <span>{H}</span>
-        <span>{E}</span>
-        <span>{L}</span>
-        <span>{L}</span>
-        <span>{O}</span>
-      </div>
-    `;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  beforeParse: {
+    configurable: true,
+    value: function(params) {
+      this.text = params.text;
+    }
+  },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div> <span>{H}</span> <span>{E}</span> <span>{L}</span> <span>{L}</span> <span>{O}</span> </div>';
+    }
   }
-}({
-  H: 'H',
-  E: 'E'
-}, {
-  L: 'L',
-  O: 'O'
-}).to(document.body);
+});
+
+var foo = new Foo({ H: 'H', E: 'E' }, { L: 'L', O: 'O' }).to(document.body);
+
 Tester.assert(foo.element.textContent.replace(/\s+/g, '') === 'HELLO', 'result must be HELLO');
+
 Tester.feedback(true);
 </script>

@@ -10,7 +10,7 @@
     "prepublish": "./build"
   },
   "devDependencies": {
-    "ui-tester": "~1.1.2"
+    "ui-tester": "~1.1.4"
   },
   "dependencies": {
     "amd2umd": "0.0.5"

@@ -2,27 +2,44 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-class Text extends Jinkela {
-  get template() { return '<div>Jinkela</div>'; }
-}
+var Text = function() { Jinkela.apply(this, arguments); };
+Text.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Text },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<span>Jinkela</span>';
+    }
+  }
+});
 
-class RedText extends Text {
-  get styleSheet() { return ':scope { font-size: 12px; color: red; }'; }
-}
+var RedText = function() { Text.apply(this, arguments); };
+RedText.prototype = Object.create(Text.prototype, {
+  constructor: { configurable: true, value: RedText },
+  styleSheet: {
+    configurable: true,
+    get: function() {
+      return ':scope { font-size: 12px; color: red; }';
+    }
+  }
+});
 
-class BigRedText extends RedText {
-  get styleSheet() { return ':scope { font-size: 32px; }'; }
-}
-
-
+var BigRedText = function() { RedText.apply(this, arguments); };
+BigRedText.prototype = Object.create(RedText.prototype, {
+  constructor: { configurable: true, value: BigRedText },
+  styleSheet: {
+    configurable: true,
+    get: function() {
+      return ':scope { font-size: 32px; }';
+    }
+  }
+});
 
 var redText = new RedText().to(document.body);
 
 var style = getComputedStyle(redText.element)
 
 Tester.assert(style.color === 'rgb(255, 0, 0)', 'color must be red');
-
-
 
 var bigRedText = new BigRedText().to(document.body);
 

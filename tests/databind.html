@@ -2,22 +2,31 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-let setTextStorage = [];
-
-class Foo extends Jinkela {
-  get template() {
-    return `<a href="{href}">{text}</div>`;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    value: '<a href="{href}">{text}</div>'
+  },
+  log: {
+    configurable: true,
+    get: function() {
+      var value = [];
+      Object.defineProperty(this, 'log', { configurable: true, value: value });
+      return value;
+    }
+  },
+  href: {
+    configurable: true,
+    get: function() { return 'javascript:'; }
+  },
+  text: {
+    configurable: true,
+    set: function(value) { this.log.push(value); },
+    get: function() { return 'Jinkela'; }
   }
-  get href() {
-    return 'javascript:';
-  }
-  get text() {
-    return 'Jinkela';
-  }
-  set text(value) {
-    setTextStorage.push(value);
-  }
-}
+});
 
 var foo = new Foo().to(document.body);
 
@@ -34,7 +43,7 @@ Tester.assert(foo.element.textContent === 'Jinkela HEHE', 'textContent error');
 Tester.assert(foo.href === 'javascript: void 233;', 'href error');
 Tester.assert(foo.href === foo.element.getAttribute('href'), 'href attr error');
 
-Tester.assert(JSON.stringify(setTextStorage) === JSON.stringify([ 'Jinkela HEHE' ]), 'setTextStorage error');
+Tester.assert(JSON.stringify(foo.log) === JSON.stringify([ 'Jinkela HEHE' ]), 'setTextStorage error');
 
 Tester.feedback(true);
 </script>

@@ -2,11 +2,17 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get template() {
-    return `<div>hehe</div>`;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div>hehe</div>';
+    }
   }
-}
-let foo = new Foo({ template: `<div>ok</div>` });
+});
+
+var foo = new Foo({ template: '<div>ok</div>' });
 Tester.feedback(foo.element.textContent === 'ok');
 </script>

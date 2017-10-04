@@ -3,54 +3,39 @@
 <script src="/directives/if.js"></script>
 <script src="/directives/jkl.js"></script>
 <script>
-class Fee extends Jinkela {
-  get template() {
-    return `
-      <div>cond3</div>
-    `;
-  }
-}
+var Fee = function() { Jinkela.apply(this, arguments); };
+Fee.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Fee },
+  template: { configurable: true, get: function() { return '<div>cond3</div>'; } }
+});
 
-class Foo extends Jinkela {
-  get template() {
-    return `
-      <div if="{cond1}">
-        <div>cond1</div>
-        <div if="{cond2}">
-          <div>cond2</div>
-          <jkl-fee if="{cond3}"></jkl-fee>
-        </div>
-      </div>
-    `;
-  }
-  get styleSheet() {
-    return `
-      :scope {
-        border: 1px solid red;
-      }
-    `; 
-  }
-}
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: { configurable: true, get: function() {
+    return '<div if="{cond1}"> <div>cond1</div> <div if="{cond2}"> <div>cond2</div> <jkl-fee if="{cond3}"></jkl-fee> </div> </div>';
+  } },
+  styleSheet: { configurable: true, get: function() {
+    return ':scope { border: 1px solid red; }';
+  } }
+});
 
-addEventListener('DOMContentLoaded', () => {
-  let tasks = [];
-  let list = [ 'cond1', 'cond2', 'cond3' ];
-  for (let i of list) {
-    for (let j of list) {
+addEventListener('DOMContentLoaded', function() {
+  var list = [ 'cond1', 'cond2', 'cond3' ];
+  var i, j, k;
+  for (i = 0; i < list.length; i++) {
+    for (j = 0; j < list.length; j++) {
       if (i === j) continue;
-      for (let k of list) {
+      for (k = 0; k < list.length; k++) {
         if (i === k || j === k) continue;
-        let foo = new Foo().to(document.body);
-        let task = Promise.resolve().then(() => foo[i] = true).then(() => foo[j] = true).then(() => foo[k] = true);
-        task = task.then(() => {
-          Tester.assert(foo.element.textContent.replace(/\s/g, '') === 'cond1cond2cond3');
-        });
-        tasks.push(task);
+        var foo = new Foo().to(document.body);
+        foo[list[i]] = true;
+        foo[list[j]] = true;
+        foo[list[k]] = true;
+        Tester.assert(foo.element.textContent.replace(/\s/g, '') === 'cond1cond2cond3');
       }
     }
   }
-  Promise.all(tasks).then(() => {
-    Tester.feedback(true);
-  });
+  Tester.feedback(true);
 });
 </script>

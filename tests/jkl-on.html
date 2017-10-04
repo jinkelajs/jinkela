@@ -5,25 +5,23 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get template() { return `<span>{text}</span>`; }
-}
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: { configurable: true, get: function() { return '<span>{text}</span>'; } }
+});
 
-class Fee extends Jinkela {
-  get text() { return 'hehe'; }
-  get template() {
-    return `
-      <div>
-        <jkl-foo on-click="{click}" ref="foo" text="{text}"></jkl-foo>
-      </div>
-    `;
-  }
-  click() {
-    Tester.feedback(true);
-  }
-}
+var Fee = function() { Jinkela.apply(this, arguments); };
+Fee.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Fee },
+  text: { configurable: true, get: function() { return 'hehe'; } },
+  template: { configurable: true, get: function() {
+    return '<div> <jkl-foo on-click="{click}" ref="foo" text="{text}"></jkl-foo> </div>';
+  } },
+  click: { configurable: true, value: function() { return Tester.feedback(true); } }
+});
 
-let fee = new Fee().to(document.body);
+var fee = new Fee().to(document.body);
 
 fee.foo.element.click();
 </script>

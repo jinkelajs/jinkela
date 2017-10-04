@@ -4,20 +4,28 @@
 <table>
   <tbody>
     <script>
-    class Foo extends Jinkela {
-      get template() {
-        return `<tr><td>{text}</td></tr>`;
+    var Foo = function() { Jinkela.apply(this, arguments); };
+    Foo.prototype = Object.create(Jinkela.prototype, {
+      constructor: { configurable: true, value: Foo },
+      template: {
+        configurable: true,
+        get: function() {
+          return '<tr><td>{text}</td></tr>';
+        }
+      },
+      text: {
+        configurable: true,
+        get: function() {
+          return 'Jinkela';
+        }
       }
-      get text() {
-        return 'Jinkela';
-      }
-    }
+    });
     new Foo().to(document.querySelector('tbody'));
     </script>
   </tbody>
 <table>
 <script>
-setTimeout(() => {
+setTimeout(function() {
   var td = document.querySelector('td');
   Tester.assert(td.tagName === 'TD');
   Tester.assert(td.parentNode.tagName === 'TR');

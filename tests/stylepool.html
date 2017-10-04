@@ -3,15 +3,53 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-class Color extends Jinkela {
-  get template() { return `<div>${this.color}</div>`; }
-  get styleSheet() { return `:scope { color: ${this.color}; }`; }
-}
-class Red extends Color { get color() { return 'red'; } }
-class Green extends Color { get color() { return 'green'; } }
-class Blue extends Color { get color() { return 'blue'; } }
+var Color = function() { Jinkela.apply(this, arguments); };
+Color.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Color },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div>{color}</div>';
+    }
+  },
+  styleSheet: {
+    configurable: true,
+    get: function() {
+      return ':scope { color: ' + this.color + '; }'
+    }
+  }
+});
 
-[ Red, Green, Blue ].forEach(E => new E().to(document.body));
+var Red = function() { Color.apply(this, arguments); };
+Red.prototype = Object.create(Color.prototype, {
+  constructor: { configurable: true, value: Red },
+  color: {
+    configurable: true,
+    get: function() { return 'red'; }
+  }
+});
+
+var Green = function() { Color.apply(this, arguments); };
+Green.prototype = Object.create(Color.prototype, {
+  constructor: { configurable: true, value: Green },
+  color: {
+    configurable: true,
+    get: function() { return 'green'; }
+  }
+});
+
+var Blue = function() { Color.apply(this, arguments); };
+Blue.prototype = Object.create(Color.prototype, {
+  constructor: { configurable: true, value: Blue },
+  color: {
+    configurable: true,
+    get: function() { return 'blue'; }
+  }
+});
+
+new Red().to(document.body);
+new Green().to(document.body);
+new Blue().to(document.body);
 
 var divs = document.querySelectorAll('div');
 var red = divs[0];

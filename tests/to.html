@@ -2,9 +2,12 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {}
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+});
 
-let foo = new Foo().to(document.body);
+var foo = new Foo().to(document.body);
 
 Tester.feedback(foo.element.parentNode === document.body);
 </script>

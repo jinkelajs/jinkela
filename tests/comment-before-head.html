@@ -7,10 +7,24 @@
   </head>
   <body>
     <script>
-    class Foo extends Jinkela {
-      get template() { return `<div>red</div>`; }
-      get styleSheet() { return `:scope { color: red; }`; }
-    }
+    var Foo = function() { Jinkela.apply(this, arguments); };
+    Foo.prototype = Object.create(Jinkela.prototype, {
+      constructor: { configurable: true, value: Foo },
+      beforeParse: {
+        configurable: true,
+        value: function(params) {
+          this.text = params.text;
+        }
+      },
+      template: {
+        configurable: true,
+        get: function() { return '<div>red</div>'; }
+      },
+      styleSheet: {
+        configurable: true,
+        get: function() { return ':scope { color: red; }'; }
+      }
+    });
     try {
       new Foo().to(document.head);
       Tester.feedback(true);

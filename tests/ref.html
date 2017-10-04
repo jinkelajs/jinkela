@@ -3,19 +3,27 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <a href="JavaScript:" ref="a">Jinkela</a>
-      </div>
-    `;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div> <a href="JavaScript:" ref="a">Jinkela</a> </div>';
+    }
   }
-}
+});
 
-class Span extends Jinkela {
-  get template() { return `<span>{text}</span>`; }
-}
+var Span = function() { Jinkela.apply(this, arguments); };
+Span.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Span },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<span>{text}</span>';
+    }
+  }
+});
 
 var foo = new Foo().to(document.body);
 Tester.assert(foo.a === foo.element.firstElementChild);

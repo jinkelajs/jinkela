@@ -2,28 +2,37 @@
 <script src="/jinkela.js"></script>
 <script src="/directives/jkl.js"></script>
 <script>
-class Div extends Jinkela {
-  init() {
-    if (this.text) this.element.textContent = this.text;
+var Div = function() { Jinkela.apply(this, arguments); };
+Div.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Div },
+  init: {
+    configurable: true,
+    value: function() {
+      if (this.text) this.element.textContent = this.text;
+    }
   }
-}
+});
 
-class Foo extends Jinkela {
-  beforeParse(params) {
-    this.text = params.text;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  beforeParse: {
+    configurable: true,
+    value: function(params) {
+      this.text = params.text;
+    }
+  },
+  template: {
+    configurable: true,
+    get: function() {
+      return ' <div> <jkl-div text="{text}"></jkl-div> </div> ';
+    }
   }
-  get template() {
-    return `
-      <div>
-        <jkl-div text="{text}"></jkl-div>
-      </div>
-    `;
-  }
-}
+});
 
-addEventListener('DOMContentLoaded', () => {
-  let foo = new Foo({ text: 'hehe' }).to(document.body);
-  Tester.assert(document.body.textContent.replace(/\s*/g, '') === 'hehe');
+addEventListener('DOMContentLoaded', function() {
+  var foo = new Foo({ text: 'hehe' }).to(document.body);
+  Tester.assert(document.body.textContent.replace(/\s*/g, '') === 'hehe', document.body.textContent);
   Tester.feedback(true);
 });
 </script>

@@ -4,32 +4,23 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  init() {
-    this.element.textContent = 'a';
-  }
-}
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  init: { configurable: true, value: function() { this.element.textContent = 'a'; } },
+  template: { configurable: true, get: function() { return '<span>{text}</span>'; } }
+});
 
-class Fee extends Jinkela {
-  get Foo() {
-    return class Foo extends Jinkela {
-      init() {
-        this.element.textContent = 'b';
-      }
-    }
-  }
-  get template() {
-    return `
-      <div>
-        <jkl-foo ref="foo"></jkl-foo>
-      </div>
-    `;
-  }
-}
+var Fee = function() { Jinkela.apply(this, arguments); };
+Fee.Foo = Foo;
+Fee.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Fee },
+  template: { configurable: true, get: function() { return '<div> <jkl-foo ref="foo"></jkl-foo> </div>'; } }
+});
 
-let fee = new Fee().to(document.body);
+var fee = new Fee().to(document.body);
 
-Tester.assert(fee.foo.element.textContent === 'b', 'textContent must be "b"');
+Tester.assert(fee.foo.element.textContent === 'a', 'textContent must be "a"');
 
 Tester.feedback(true);
 </script>

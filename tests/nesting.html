@@ -4,114 +4,133 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-var fee = new class extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <div class="a" ref="a">
-          a
-          <div class="b" ref="b">
-            b
-            <div class="c" ref="c">
-              c
-            </div>
-          </div>
-          <div class="d" ref="d">
-            d
-            <div class="e" ref="e">
-              e
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
+var Fee = function() { Jinkela.apply(this, arguments); };
+Fee.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Fee },
+  template: {
+    configurable: true,
+    get: function() {
+      return [
+        '<div>',
+        '  <div class="a" ref="a"> a',
+        '    <div class="b" ref="b"> b',
+        '      <div class="c" ref="c"> c </div>',
+        '    </div>',
+        '    <div class="d" ref="d"> d',
+        '      <div class="e" ref="e"> e </div>',
+        '    </div>',
+        '  </div>',
+        '</div>'
+      ].join('\n');
+    }
+  },
+  styleSheet: {
+    configurable: true,
+    get: function() {
+      return [
+        ':scope {',
+        '  .a {',
+        '    color: red;',
+        '    .b, .d {',
+        '      color: green;',
+        '      .c, .e {',
+        '        color: blue;',
+        '      }',
+        '    }',
+        '  }',
+        '}',
+      ].join('\n');
+    }
   }
-  get styleSheet() {
-    return `
-      :scope {
-        .a {
-          color: red;
-          .b, .d {
-            color: green;
-            .c, .e {
-              color: blue;
-            }
-          }
-        }
-      }
-    `;
-  }
-};
+});
 
-fee.to(document.body);
+var fee = new Fee().to(document.body);
+
 Tester.assert(getComputedStyle(fee.a).color === 'rgb(255, 0, 0)', 'color must be red');
 Tester.assert(getComputedStyle(fee.b).color === 'rgb(0, 128, 0)', 'color must be green');
 Tester.assert(getComputedStyle(fee.c).color === 'rgb(0, 0, 255)', 'color must be blue');
 Tester.assert(getComputedStyle(fee.d).color === 'rgb(0, 128, 0)', 'color must be green');
 Tester.assert(getComputedStyle(fee.e).color === 'rgb(0, 0, 255)', 'color must be blue');
 
-var foo = new class extends Jinkela {
-  get template() {
-    return `
-      <div class="a">
-        <span x="{&quot;/*blah*/">Jinkela</a>
-      </div>
-    `;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return [
+        '<div class="a">',
+        '  <span x="{&quot;/*blah*/">Jinkela</a>',
+        '</div>'
+      ].join('\n');
+    }
+  },
+  styleSheet: {
+    configurable: true,
+    get: function() {
+      return [
+        ':scope {',
+        '  &.a {',
+        '    /* haha // shabi */',
+        '    // /*',
+        '    animation: anime 200ms ease forwards;',
+        '    [x="{\\"/*blah*/"] {',
+        '      color: red;',
+        '    }',
+        '    // */',
+        '  }',
+        '}',
+        '@keyframes anime {',
+        '  0% { opacity: 1; }',
+        '  100% { opacity: 0; }',
+        '}'
+      ].join('\n');
+    }
   }
-  get styleSheet() {
-    return `
-      :scope {
-        &.a {
-          /* haha // shabi */
-          // /*
-          animation: anime 200ms ease forwards;
-          [x="{\\"/*blah*/"] {
-            color: red;
-          }
-          // */
-        }
-      }
-      @keyframes anime {
-        0% { opacity: 1; }
-        100% { opacity: 0; }
-      }
-    `;
-  }
-};
+});
 
-foo.to(document.body);
+var foo = new Foo().to(document.body);
 
 Tester.assert(getComputedStyle(foo.element.firstElementChild).color === 'rgb(255, 0, 0)', 'color must be red');
 
-foo.element.addEventListener('animationend', () => {
+foo.element.addEventListener('animationend', function() {
   Tester.assert(getComputedStyle(foo.element).opacity === '0', 'opacity must be zero');
   Tester.feedback(true);
 });
 
-var bar = new class extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <div class="a" ref="a">a</div>
-      </div>
-    `;
+var Bar = function() { Jinkela.apply(this, arguments); };
+Bar.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Bar },
+  template: {
+    configurable: true,
+    get: function() {
+      return [
+        '<div>',
+        '  <div class="a" ref="a">a</div>',
+        '</div>'
+      ].join('\n');
+    }
+  },
+  styleSheet: {
+    configurable: true,
+    get: function() {
+      return [
+        '@media (min-width: 0) and (min-height: 0) {',
+        '  :scope {',
+        '    border: 1px solid red;',
+        '    .a {',
+        '      color: blue;',
+        '    }',
+        '    background-color: white;',
+        '  }',
+        '}'
+      ].join('\n');
+    }
   }
-  get styleSheet() {
-    return `
-      @media (min-width: 0) and (min-height: 0) {
-        :scope {
-          border: 1px solid red;
-          .a {
-            color: blue;
-          }
-          background-color: white;
-        }
-      }
-    `;
-  }
-};
+});
 
-bar.to(document.body);
+var bar = new Bar().to(document.body);
+
 Tester.assert(getComputedStyle(bar.element).borderTopWidth === '1px', 'must be 1px');
 Tester.assert(getComputedStyle(bar.element).borderTopColor === 'rgb(255, 0, 0)', 'must be rgb(255, 0, 0)');
 Tester.assert(getComputedStyle(bar.element).borderTopStyle === 'solid', 'must be solid');

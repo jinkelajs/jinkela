@@ -3,28 +3,32 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <meta ref="before" />
-        <hr/>
-        -
-        <hr/>
-        <meta ref="after" />
-      </div>
-    `;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div> <meta ref="before" /> <hr/> - <hr/> <meta ref="after" /> </div>';
+    }
   }
-}
+});
 
-class Span extends Jinkela {
-  get template() { return `<span>{text}</span>`; }
-}
+var Span = function() { Jinkela.apply(this, arguments); };
+Span.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Span },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<span>{text}</span>';
+    }
+  }
+});
 
-let before = new Span({ text: 'before' });
-let after = new Span({ text: 'after' });
+var before = new Span({ text: 'before' });
+var after = new Span({ text: 'after' });
 
-var foo = new Foo({ before, after }).to(document.body);
+var foo = new Foo({ before: before, after: after }).to(document.body);
 
 Tester.assert(foo.element.textContent.replace(/\s/g, '') === 'before-after');
 

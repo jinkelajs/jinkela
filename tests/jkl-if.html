@@ -4,26 +4,26 @@
 <script src="/directives/if.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  init() {
-    this.element.style.color = this.color;
-  }
-  get template() { return `<span>{text}</span>`; }
-}
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  init: { configurable: true, value: function() { this.element.style.color = this.color; } },
+  template: { configurable: true, get: function() { return '<span>{text}</span>'; } }
+});
 
-class Fee extends Jinkela {
-  get text() { return 'hehe'; }
-  get template() {
-    return `
-      <div>
-        <jkl-foo if="{cond}" color="red" text="{text}"></jkl-foo>
-        <div ref="div"></div>
-      </div>
-    `;
+var Fee = function() { Jinkela.apply(this, arguments); };
+Fee.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Fee },
+  text: { configurable: true, get: function() { return 'hehe'; } },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div> <jkl-foo if="{cond}" color="red" text="{text}"></jkl-foo> <div ref="div"></div> </div>';
+    }
   }
-}
+});
 
-let fee = new Fee().to(document.body);
+var fee = new Fee().to(document.body);
 Tester.assert(fee.element.firstChild.nextSibling.nodeType === 8, 'nodeType must be 8');
 
 fee.cond = true;

@@ -4,36 +4,45 @@
 <script src="/directives/jkl.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <meta ref="before" />
-        <hr/>
-        -
-        <hr/>
-        <meta ref="xxx" />
-      </div>
-    `;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div> <meta ref="before" /> <hr/> - <hr/> <meta ref="xxx" /> </div>';
+    }
   }
-}
+});
 
-class Span extends Jinkela {
-  get template() { return `<span>{text}</span>`; }
-}
-
-class Panel extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <jkl-foo before="{before}" xxx="{after}">
-          <jkl-span ref="before" text="before"><jkl-span>
-          <jkl-span ref="after" text="after"><jkl-span>
-        </jkl-foo>
-      </div>
-    `;
+var Span = function() { Jinkela.apply(this, arguments); };
+Span.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Span },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<span>{text}</span>';
+    }
   }
-}
+});
+
+var Panel = function() { Jinkela.apply(this, arguments); };
+Panel.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Panel },
+  template: {
+    configurable: true,
+    get: function() {
+      return [
+        '<div>',
+        '  <jkl-foo before="{before}" xxx="{after}">',
+        '    <jkl-span ref="before" text="before"><jkl-span>',
+        '    <jkl-span ref="after" text="after"><jkl-span>',
+        '  </jkl-foo>',
+        '</div>'
+      ].join('\n');
+    }
+  }
+});
 
 var panel = new Panel().to(document.body);
 

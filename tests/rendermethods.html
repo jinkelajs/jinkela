@@ -6,15 +6,16 @@
 .blue { color: blue; }
 </style>
 <script>
-class Foo extends Jinkela {
-  constructor(raw) {
-    super();
-    this.text = raw.text;
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div>{text}</div>';
+    }
   }
-  get template() {
-    return '<div>{text}</div>';
-  }
-};
+});
 </script>
 <div class="red">
   <script>
@@ -50,7 +51,7 @@ Tester.assert(e.element.parentNode.className === 'green', 'e must be green');
 Tester.assert(c.element.parentNode.className === 'red', 'e must be red');
 Tester.assert(d.element.parentNode === c.element, 'parent of d must be c');
 
-setTimeout(() => {
+setTimeout(function() {
   Tester.feedback(true);
 });
 </script>

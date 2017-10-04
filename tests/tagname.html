@@ -2,14 +2,35 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  get tagName() { return `span`; }
-}
-class Fee extends Jinkela {
-  get tagName() { return `span`; }
-  get template() { return `<a></a>`; }
-}
-let foo = new Foo();
-let fee = new Fee();
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  tagName: {
+    configurable: true,
+    get: function() {
+      return 'span';
+    }
+  }
+});
+
+var Fee = function() { Jinkela.apply(this, arguments); };
+Fee.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Fee },
+  tagName: {
+    configurable: true,
+    get: function() {
+      return 'span';
+    }
+  },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<a></a>';
+    }
+  }
+});
+
+var foo = new Foo();
+var fee = new Fee();
 Tester.feedback(foo.element.tagName === 'SPAN' && fee.element.tagName === 'A');
 </script>

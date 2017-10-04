@@ -2,37 +2,35 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-var expection = new Tester.Expection(void 0, 1);
-expection.catch(() => {
-  setTimeout(() => {
-    throw new Error('value dismatched in handler funciton');
-  });
-  Tester.feedback(false);
-})
-Jinkela.register('test', (that, node) => {
-  setTimeout(() => {
-    Tester.assert(that === foo, '"this" must be instance in factory function');
-    var attrs = foo.element.firstElementChild.attributes;
-    for (var i = 0; i < attrs.length; i++) if (attrs[i] === node) break;
-    Tester.assert(i < attrs.length, 'node must in attrs');
-    Tester.feedback(true);
-  });
+Jinkela.register('test', function(that, node, ownElement) {
+  var attrs = ownElement.attributes;
+  for (var i = 0; i < attrs.length; i++) if (attrs[i] === node) break;
+  Tester.assert(i < attrs.length, 'node must in attrs');
+  that.a = 1;
   return function(value) {
-    setTimeout(() => {
-      Tester.assert(this === foo, '"this" must be instance in handler function');
-    });
-    expection.answer(value);
+    if (value === void 0) return;
+    that.a++;
   };
 });
-class Foo extends Jinkela {
-  get template() {
-    return `
-      <div>
-        <a test="{test}" href="JavaScript:">Jinkela</a>
-      </div>
-    `;
+
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div><a test="{test}" href="javascript:">{test}</a></div>';
+    }
   }
-}
+});
+
 var foo = new Foo().to(document.body);
-foo.test = 1;
+Tester.assert(foo.a === 1, 'foo.a must be 1');
+Tester.assert(foo.test === void 0, 'foo.a must be undefined');
+Tester.assert(foo.element.textContent === 'undefined', 'textContent must be undefined');
+foo.test = 'Jinkela';
+Tester.assert(foo.test === 'Jinkela', 'foo.a must be Jinkela');
+Tester.assert(foo.a === 2, 'foo.a must be 2');
+Tester.assert(foo.element.textContent === 'Jinkela', 'textContent must be Jinkela');
+Tester.feedback(true);
 </script>

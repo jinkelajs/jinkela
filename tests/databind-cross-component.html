@@ -4,39 +4,51 @@
 <script src="/directives/ref.js"></script>
 <body>
 <script>
-class Log extends Jinkela {
-  get log() {
-    let value = [];
-    Object.defineProperty(this, 'log', { configurable: true, value });
-    return value;
+var Log = function() { Jinkela.apply(this, arguments); };
+Log.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Log },
+  log: {
+    configurable: true,
+    get: function() {
+      var value = [];
+      Object.defineProperty(this, 'log', { configurable: true, value: value });
+      return value;
+    }
   }
-}
+});
 
-class Foo extends Log {
-  get template() {
-    return `<div><jkl-fee ref="fee" text="{text}" color="{color}"></jkl-fee></a></div>`;
-  }
-  get text() {
-    return 'hehe';
-  }
-  set text(value) {
-    this.log.push(`set foo text ${value}`);
-  }
-}
+var Foo = function() { Log.apply(this, arguments); };
+Foo.prototype = Object.create(Log.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    value: '<div><jkl-fee ref="fee" text="{text}" color="{color}"></jkl-fee></a></div>'
+  },
+  text: {
+    configurable: true,
+    set: function(value) { this.log.push('set foo text ' + value); },
+    get: function() { return 'hehe'; }
+  },
+});
 
-class Fee extends Log {
-  set text(value) {
-    this.log.push(`set fee text ${value}`);
+var Fee = function() { Log.apply(this, arguments); };
+Fee.prototype = Object.create(Log.prototype, {
+  constructor: { configurable: true, value: Fee },
+  template: {
+    configurable: true,
+    value: '<div><span>{text}</span>-<span>{color}</span></div>'
+  },
+  text: {
+    configurable: true,
+    set: function(value) { this.log.push('set fee text ' + value); },
+  },
+  color: {
+    configurable: true,
+    set: function(value) { this.log.push('set fee color ' + value); },
   }
-  set color(value) {
-    this.log.push(`set fee color ${value}`);
-  }
-  get template() {
-    return `<div><span>{text}</span>-<span>{color}</span></div>`;
-  }
-}
+});
 
-let foo = new Foo({ color: 'red' }).to(document.body);
+var foo = new Foo({ color: 'red' }).to(document.body);
 Tester.assert(foo.element.textContent === 'hehe-red', 'foo.element.textContent must be hehe-red');
 Tester.assert(foo.text === 'hehe', 'foo.text must be hehe');
 Tester.assert(foo.color === 'red', 'foo.color must be red');
@@ -44,7 +56,7 @@ Tester.assert(foo.fee.element.textContent === 'hehe-red');
 
 foo.text = 'haha';
 
-Tester.assert(foo.element.textContent === 'haha-red', `foo.element.textContent must be haha-red but ${foo.element.textContent}`);
+Tester.assert(foo.element.textContent === 'haha-red', 'foo.element.textContent must be haha-red but ' + foo.element.textContent);
 Tester.assert(foo.text === 'haha', 'foo.text must be haha');
 Tester.assert(foo.fee.element.textContent === 'haha-red', 'foo.fee.element.textContent must be haha-red');
 
@@ -54,14 +66,14 @@ Tester.assert(foo.text === 'haha', 'must still hehe');
 Tester.assert(foo.fee.element.textContent === 'hoho-red', 'foo.fee.element.textContent must be hoho-red');
 Tester.assert(foo.fee.text === 'hoho');
 
-Tester.assert(JSON.stringify(foo.log) === JSON.stringify([ 'set foo text haha' ]), `foo.log is not correct`);
+Tester.assert(JSON.stringify(foo.log) === JSON.stringify([ 'set foo text haha' ]), 'foo.log is not correct');
 
-Tester.assert(JSON.stringify(foo.fee.log) === JSON.stringify([
+Tester.assert(JSON.stringify(foo.fee.log.sort()) === JSON.stringify([
   'set fee text hehe',
   'set fee color red',
   'set fee text haha',
   'set fee text hoho'
-]), `fee.log is not correct`);
+].sort()), 'fee.log is not correct ' + JSON.stringify(foo.fee.log));
 
 Tester.feedback(true);
 </script>

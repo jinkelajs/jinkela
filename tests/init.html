@@ -2,37 +2,41 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-var series = Array.from({ length: 9 }, (v, i) => i + 1);
-var expection = new Tester.Expection(...series).feedback();
-class A extends Jinkela {
-  constructor() {
-    expection.answer(3);
-    super();
-    expection.answer(7);
-  }
-  init() {
-    expection.answer(4);
-  }
-}
-class B extends A {
-  constructor() {
-    expection.answer(2);
-    super();
-    expection.answer(8);
-  }
-  init() {
-    expection.answer(5);
-  }
-}
-class C extends B {
-  constructor() {
-    expection.answer(1);
-    super();
-    expection.answer(9);
-  }
-  init() {
-    expection.answer(6);
-  }
-}
+var series = [];
+for (var i = 0; i < 9; i++) series.push(i + 1);
+var expection = Object.create(Tester.Expection.prototype);
+Tester.Expection.apply(expection, series);
+expection.feedback();
+
+var A = function() {
+  expection.answer(3);
+  Jinkela.apply(this, arguments);
+  expection.answer(7);
+};
+A.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: A },
+  init: { configurable: true, value: function() { return expection.answer(4); } }
+});
+
+var B = function() {
+  expection.answer(2);
+  A.apply(this, arguments);
+  expection.answer(8);
+};
+B.prototype = Object.create(A.prototype, {
+  constructor: { configurable: true, value: B },
+  init: { configurable: true, value: function() { return expection.answer(5); } }
+});
+
+var C = function() {
+  expection.answer(1);
+  B.apply(this, arguments);
+  expection.answer(9);
+};
+C.prototype = Object.create(B.prototype, {
+  constructor: { configurable: true, value: C },
+  init: { configurable: true, value: function() { return expection.answer(6); } }
+});
+
 new C;
 </script>

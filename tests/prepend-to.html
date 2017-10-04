@@ -1,0 +1,15 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<body>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo }
+});
+
+var foo = new Foo().prependTo(document.body);
+Tester.feedback(document.body.firstElementChild === foo.element);
+
+var bar = new Foo().prependTo(document.body);
+Tester.feedback(document.body.firstElementChild === bar.element);
+</script>

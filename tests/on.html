@@ -3,15 +3,24 @@
 <script src="/directives/on.js"></script>
 <body>
 <script>
-class Foo extends Jinkela {
-  onClick(e) {
-    Tester.assert(e.target === this.element);
-    Tester.feedback(true);
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<a href="JavaScript:" on-click="{onClick}">Jinkela</a>';
+    }
+  },
+  onClick: {
+    configurable: true,
+    value: function(e) {
+      Tester.assert(e.target === this.element);
+      Tester.feedback(true);
+    }
   }
-  get template() {
-    return `<a href="JavaScript:" on-click="{onClick}">Jinkela</a>`;
-  }
-}
+});
+
 var foo = new Foo().to(document.body);
 foo.element.click();
 </script>
