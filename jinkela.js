@@ -28,7 +28,7 @@ var parseTemplate = function(that, params) {
   var watches = that['@@watches'];
   // Walking and match special templates into "watches"
   void function callee(node, ownerElement) {
-    var attrs, sibling, handler, attr, i;
+    var attrs, sibling, attr, i;
     var child = node.firstChild;
     if (node.nodeType === 1) {
       while (child) {
@@ -40,18 +40,18 @@ var parseTemplate = function(that, params) {
     // Try to match directive
     node['@@subscribers'] = [];
     if (directives.type[node.nodeName]) {
-      handler = directives.type[node.nodeName](that, node, ownerElement);
+      directives.type[node.nodeName](that, node, ownerElement);
     } else {
       for (i = 0; i < directives.regexp.length; i++) {
         if (directives.regexp[i].regexp.test(node.nodeName)) {
-          handler = directives.regexp[i].factory(that, node, ownerElement);
+          directives.regexp[i].factory(that, node, ownerElement);
           break;
         }
       }
     }
     // Try to match binding node (textNode or attrNode) and save if matched
     if (/^\{([$_a-zA-Z][$\w]*)\}$/.test(node[NODE_TYPE_NAME[node.nodeType]])) {
-      (RegExp.$1 in watches ? watches[RegExp.$1] : watches[RegExp.$1] = []).push(handler || node);
+      (RegExp.$1 in watches ? watches[RegExp.$1] : watches[RegExp.$1] = []).push(node);
     }
     if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr, node);
   }(that.element);
@@ -59,27 +59,24 @@ var parseTemplate = function(that, params) {
   for (var name in watches) void function(name) {
     var list = watches[name];
     var cache = that[name];
-    var desc;
+    var desc, handler;
     for (var i = that; i && !desc; i = Object.getPrototypeOf(i)) desc = Object.getOwnPropertyDescriptor(i, name);
     define(that, name, {
       enumerable: true,
       get: function() { return cache; },
       set: function(value) {
         cache = value;
+        if (handler) handler(value);
         for (var i = 0; i < list.length; i++) {
-          if (typeof list[i] === 'function') {
-            list[i].call(that, value);
-          } else {
-            list[i].jinkelaValue = list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
-            var subscribers = list[i]['@@subscribers'];
-            if (subscribers) for (var j = 0; j < subscribers.length; j++) subscribers[j](list[i]);
-          }
+          list[i].jinkelaValue = list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
+          var subscribers = list[i]['@@subscribers'];
+          if (subscribers) for (var j = 0; j < subscribers.length; j++) subscribers[j](list[i]);
         }
       }
     });
     if (!(name in params)) that[name] = cache;
     // Push desc.set to handler list as a watching handler if existed
-    if (desc && desc.set) list.push(desc.set);
+    if (desc && desc.set) handler = desc.set.bind(that);
   }(name);
 };
 

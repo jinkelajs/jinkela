@@ -7,10 +7,10 @@ Jinkela.register('test', function(that, node, ownElement) {
   for (var i = 0; i < attrs.length; i++) if (attrs[i] === node) break;
   Tester.assert(i < attrs.length, 'node must in attrs');
   that.a = 1;
-  return function(value) {
-    if (value === void 0) return;
+  node['@@subscribers'].push(function(node) {
+    if (node.jinkelaValue === void 0) return;
     that.a++;
-  };
+  });
 });
 
 var Foo = function() { Jinkela.apply(this, arguments); };

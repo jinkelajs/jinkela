@@ -140,10 +140,11 @@ You can hook component building handler to create your custom directive.
 ```js
 let handler = (ownerComponent, node, ownerElement) => {
   // TODO
-  let receiver = value => {
+  let receiver = node => {
     // TODO
+    node.jinkelaValue;
   };
-  return receiver;
+  node['@@subscribers'].push(reciver);
 };
 
 Jinkela.register(matcher, handler);

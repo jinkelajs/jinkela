@@ -43,7 +43,7 @@ Tester.assert(foo.element.textContent === 'Jinkela HEHE', 'textContent error');
 Tester.assert(foo.href === 'javascript: void 233;', 'href error');
 Tester.assert(foo.href === foo.element.getAttribute('href'), 'href attr error');
 
-Tester.assert(JSON.stringify(foo.log) === JSON.stringify([ 'Jinkela HEHE' ]), 'setTextStorage error');
+Tester.assert(JSON.stringify(foo.log) === JSON.stringify([ 'Jinkela HEHE' ]), 'foo.log error');
 
 Tester.feedback(true);
 </script>
