@@ -23,7 +23,7 @@ Jinkela.register('ref', function(that, node, ownerElement) {
       if (element instanceof DocumentFragment) element = [].slice.call(element.childNodes);
       if (element instanceof Array) {
         if (element.length) {
-          var fragment = new DocumentFragment();
+          var fragment = document.createDocumentFragment();
           element.forEach(function(item) { fragment.appendChild(fixNode(item)); });
           fragment.originalList = element;
           element = fragment;
@@ -38,13 +38,15 @@ Jinkela.register('ref', function(that, node, ownerElement) {
         var first = ownerElement.originalList[0];
         if (parent = first.parentNode) {
           parent.insertBefore(element, first);
-          ownerElement.originalList.forEach(function(item) { item.remove(); });
+          ownerElement.originalList.forEach(function(item) {
+            if (item.parentNode) item.parentNode.removeChild(item);
+          });
         }
         ownerElement = element;
       } else if (element !== ownerElement) {
         if (parent = ownerElement.parentNode) {
           parent.insertBefore(element, ownerElement);
-          ownerElement.remove();
+          if (ownerElement.parentNode) ownerElement.parentNode.removeChild(ownerElement);
         }
         ownerElement = element;
       }

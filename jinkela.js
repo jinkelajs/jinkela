@@ -38,6 +38,7 @@ var parseTemplate = function(that, params) {
       }
     }
     // Try to match directive
+    node['@@subscribers'] = [];
     if (directives.type[node.nodeName]) {
       handler = directives.type[node.nodeName](that, node, ownerElement);
     } else {
@@ -153,9 +154,6 @@ var createRender = function(name, handler) {
 createRender('to', function(target) { target.appendChild(this.element); });
 createRender('prependTo', function(target) { target.insertBefore(this.element, target.firstElementChild); });
 createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
-
-// To save subscribers in DOM node
-getOnce(Node.prototype, '@@subscribers', function() { return []; });
 
 // Directive register
 var directives = { type: Object.create(null), regexp: [] };
