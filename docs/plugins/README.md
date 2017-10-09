@@ -47,7 +47,7 @@ Support "from" static method.
 #### Include
 
 ```html
-<script src="http://jinkelajs.org/plugins/static.js"></script>
+<script src="http://jinkelajs.org/plugins/from.js"></script>
 ```
 
 #### Demo
