@@ -135,42 +135,58 @@ setInterval(() => {
 
 ## Custom Directives
 
+#### Jinkela.register(...)
+
 You can hook component building handler to create your custom directive.
 
 ```js
-let handler = (ownerComponent, node, ownerElement) => {
-  // TODO
-  let receiver = node => {
-    // TODO
-    node.jinkelaValue;
-  };
-  node['@@subscribers'].push(reciver);
-};
-
-Jinkela.register(matcher, handler);
+Jinkela.register({ pattern, priority, handler });
 ```
 
-| Parameter Name | Description                                                          |
-| -------------  | -------------------------------------------------------------------- |
-| matcher        | Node matcher, it's RegExp or String.                                 |
-| handler        | Handler function will be executed on node matched. If a reciver funciton is returned, it will create a property binding to watch the value change. |
-| ownerComponent | Owner component.                                                     |
-| node           | Matched node (may be attribute node or element node).                |
-| ownerElement   | Owner element of attribute node.                                     |
-| receiver       | Receiver function will be executed on binding property assigned.     |
-| value          | Changed value.                                                       |
+| Parameter Name   | Description                                                          |
+| ---------------- | -------------------------------------------------------------------- |
+| `pattern`        | A RegExp object, to match node name.                                 |
+| `priority`       | The priority of directive.                                           |
+| `handler`        | Handler function will be executed on node matched.                   |
 
-#### Custom Directive Demo
+About the `handler` function:
 
 ```js
-Jinkela.register('X-FOO', (ownerComponent, node, ownerElement) => {
-  node.style.color = 'red';
+let handler = (ownerComponent, matchedNode, ownerElement) => {
+  // TODO
+  let receiver = matchedNode => {
+    // TODO
+    matchedNode.jinkelaValue;
+  };
+  matchedNode['@@subscribers'].push(reciver);
+};
+```
+
+| Arguments           | Description                                                          |
+| ------------------- | -------------------------------------------------------------------- |
+| 0: `ownerComponent` | Owner component.                                                     |
+| 1: `matchedNode`    | Matched node (may be any type of node).                              |
+| 2: `ownerElement`   | Owner element of the matched node (may be itself).                   |
+
+#### Demo
+
+```js
+Jinkela.register({
+  pattern: /^X-FOO$/,
+  priority: 100,
+  handler: (ownerComponent, node, ownerElement) => {
+    node.style.color = 'red';
+  }
 });
 
-Jinkela.register('data-tip', (ownerComponent, node, ownerElement) => {
-  node.addEventListener('click', () => {
-    alert(node.getAttribute('data-tip'));
-  });
+Jinkela.register({
+  pattern: /^data-tip$/,
+  priority: 200,
+  handler: (ownerComponent, node, ownerElement) => {
+    ownerElement.addEventListener('click', () => {
+      alert(ownerElement.getAttribute('data-tip'));
+    });
+  }
 });
 
 class Demo extends Jinkela {

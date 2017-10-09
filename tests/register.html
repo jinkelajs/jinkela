@@ -2,15 +2,21 @@
 <script src="/jinkela.js"></script>
 <body>
 <script>
-Jinkela.register('test', function(that, node, ownElement) {
-  var attrs = ownElement.attributes;
-  for (var i = 0; i < attrs.length; i++) if (attrs[i] === node) break;
-  Tester.assert(i < attrs.length, 'node must in attrs');
-  that.a = 1;
-  node['@@subscribers'].push(function(node) {
-    if (node.jinkelaValue === void 0) return;
-    that.a++;
-  });
+Jinkela.register({
+
+  pattern: /^test$/,
+  priority: 100,
+  handler: function(that, node, ownElement) {
+    var attrs = ownElement.attributes;
+    for (var i = 0; i < attrs.length; i++) if (attrs[i] === node) break;
+    Tester.assert(i < attrs.length, 'node must in attrs');
+    that.a = 1;
+    node['@@subscribers'].push(function(node) {
+      if (node.jinkelaValue === void 0) return;
+      that.a++;
+    });
+  }
+
 });
 
 var Foo = function() { Jinkela.apply(this, arguments); };

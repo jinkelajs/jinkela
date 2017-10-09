@@ -28,7 +28,7 @@ var parseTemplate = function(that, params) {
   var watches = that['@@watches'];
   // Walking and match special templates into "watches"
   void function callee(node, ownerElement) {
-    var attrs, sibling, attr, i;
+    var attrs, sibling, attr, i, directive;
     var child = node.firstChild;
     if (node.nodeType === 1) {
       while (child) {
@@ -39,15 +39,8 @@ var parseTemplate = function(that, params) {
     }
     // Try to match directive
     node['@@subscribers'] = [];
-    if (directives.type[node.nodeName]) {
-      directives.type[node.nodeName](that, node, ownerElement);
-    } else {
-      for (i = 0; i < directives.regexp.length; i++) {
-        if (directives.regexp[i].regexp.test(node.nodeName)) {
-          directives.regexp[i].factory(that, node, ownerElement);
-          break;
-        }
-      }
+    for (i = 0; directive = directiveList[i]; i++) {
+      if (directive.pattern.test(node.nodeName)) directive.handler(that, node, ownerElement);
     }
     // Try to match binding node (textNode or attrNode) and save if matched
     if (/^\{([$_a-zA-Z][$\w]*)\}$/.test(node[NODE_TYPE_NAME[node.nodeType]])) {
@@ -153,13 +146,10 @@ createRender('prependTo', function(target) { target.insertBefore(this.element, t
 createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
 
 // Directive register
-var directives = { type: Object.create(null), regexp: [] };
-Jinkela.register = function(type, factory) {
-  if (type instanceof RegExp) {
-    directives.regexp.push({ regexp: type, factory: factory });
-  } else {
-    directives.type[type] = factory;
-  }
+var directiveList = [];
+Jinkela.register = function(options) {
+  directiveList.push(options);
+  directiveList.sort(function(a, b) { return a.priority - b.priority; });
 };
 
 // Export to global

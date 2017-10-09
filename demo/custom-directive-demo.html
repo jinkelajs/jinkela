@@ -1,14 +1,22 @@
 <script src="../jinkela.js"></script>
 <script src="../directives/if.js"></script>
 <script>
-Jinkela.register('X-FOO', (ownerComponent, node, ownerElement) => {
-  node.style.color = 'red';
+Jinkela.register({
+  pattern: /^X-FOO$/,
+  priority: 100,
+  handler: (ownerComponent, node, ownerElement) => {
+    node.style.color = 'red';
+  }
 });
 
-Jinkela.register('data-tip', (ownerComponent, node, ownerElement) => {
-  ownerElement.addEventListener('click', () => {
-    alert(ownerElement.getAttribute('data-tip'));
-  });
+Jinkela.register({
+  pattern: /^data-tip$/,
+  priority: 200,
+  handler: (ownerComponent, node, ownerElement) => {
+    ownerElement.addEventListener('click', () => {
+      alert(ownerElement.getAttribute('data-tip'));
+    });
+  }
 });
  
 class Demo extends Jinkela {
