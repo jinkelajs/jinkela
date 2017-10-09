@@ -38,7 +38,7 @@ var parseTemplate = function(that, params) {
       }
     }
     // Try to match directive
-    node['@@subscribers'] = [];
+    define(node, '@@subscribers', { value: [], configurable: true });
     for (i = 0; directive = directiveList[i]; i++) {
       if (directive.pattern.test(node.nodeName)) directive.handler(that, node, ownerElement);
     }
