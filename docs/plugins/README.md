@@ -5,7 +5,7 @@ Support nesting CSS selector.
 #### Include
 
 ```html
-<script src="//yanagieiichi.github.io/jinkela/plugins/nesting.js"></script>
+<script src="http://jinkelajs.org/plugins/nesting.js"></script>
 ```
 
 #### Demo
@@ -47,7 +47,7 @@ Support "from" static method.
 #### Include
 
 ```html
-<script src="//yanagieiichi.github.io/jinkela/plugins/static.js"></script>
+<script src="http://jinkelajs.org/plugins/static.js"></script>
 ```
 
 #### Demo
