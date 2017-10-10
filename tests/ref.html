@@ -9,7 +9,7 @@ Foo.prototype = Object.create(Jinkela.prototype, {
   template: {
     configurable: true,
     get: function() {
-      return '<div> <a href="JavaScript:" ref="a">Jinkela</a> </div>';
+      return '<div><a href="javascript:" ref="a">Jinkela</a></div>';
     }
   }
 });
@@ -26,18 +26,20 @@ Span.prototype = Object.create(Jinkela.prototype, {
 });
 
 var foo = new Foo().to(document.body);
-Tester.assert(foo.a === foo.element.firstElementChild);
+Tester.assert(foo.a === foo.element.firstElementChild, 'must be firstElementChild');
 
 var haha = foo.a = new Span({ text: 'haha' });
-Tester.assert(foo.a === foo.element.firstElementChild);
-Tester.assert(foo.a === haha.element);
+Tester.assert(foo.element.textContent === 'haha', 'must be haha');
+Tester.assert(foo.a === haha, 'must be haha');
 
-var hehe = foo.a = new Span({ text: 'hehe' });
-Tester.assert(foo.a === hehe.element);
+var hehe = foo.a = [ new Span({ text: 'he' }), new Span({ text: 'he' }) ];
+Tester.assert(foo.element.textContent === 'hehe', 'must be hehe');
+Tester.assert(foo.a === hehe, 'must be hehe');
 
 var hoho = new Span({ text: 'hoho' });
 foo.a = hoho.element;
-Tester.assert(foo.a === hoho.element);
+Tester.assert(foo.element.textContent === 'hoho', 'must be hoho');
+Tester.assert(foo.a === hoho.element, 'must be hoho.element');
 
 Tester.feedback(true);
 </script>

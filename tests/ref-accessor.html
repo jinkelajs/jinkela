@@ -1,0 +1,39 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+var log = [];
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  a: {
+    configurable: true,
+    get: function() { return 'a'; },
+    set: function(what) { log.push(what); }
+  },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div><a href="javascript:" ref="a">Jinkela</a></div>';
+    }
+  }
+});
+
+var foo = new Foo().to(document.body);
+Tester.assert(foo.a === 'a', 'foo.a must be string "a"');
+Tester.assert(foo.element.textContent === 'a', 'textContent must be "a"');
+Tester.assert(foo.element.firstElementChild === null, 'firstElementChild must be null');
+
+foo.a = 123;
+
+Tester.assert(foo.a === 123, 'foo.a must be number 123');
+Tester.assert(foo.element.textContent === '123', 'textContent must be "123"');
+Tester.assert(foo.element.firstElementChild === null, 'firstElementChild must be null');
+
+Tester.assert(log.length === 2, 'log.length must be 1, but ' + log.length);
+Tester.assert(log[0] === 'a', 'log[0] must be "a", bug ' + log[0]);
+Tester.assert(log[1] === 123, 'log[1] must be 123, bug ' + log[1]); // ?
+
+Tester.feedback(true);
+</script>
