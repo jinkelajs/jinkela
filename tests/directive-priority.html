@@ -1,0 +1,26 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<body>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div><span a="a" b="b" c="c" d="d"></span></div>';
+    }
+  }
+});
+
+var handler = function(that, node, owner) { result.push(node.value); };
+var result = [];
+Jinkela.register({ pattern: /^a$/, priority: 2, handler: handler });
+Jinkela.register({ pattern: /^b$/, priority: 3, handler: handler });
+Jinkela.register({ pattern: /^c$/, priority: 4, handler: handler });
+Jinkela.register({ pattern: /^d$/, priority: 1, handler: handler });
+
+var foo = new Foo().to(document.body);
+Tester.assert(result.join('') === 'dabc', 'priority error');
+Tester.feedback(true);
+</script>

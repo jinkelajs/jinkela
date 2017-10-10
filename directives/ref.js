@@ -1,7 +1,7 @@
 Jinkela.register({
 
   pattern: /^ref$/,
-  priority: 100,
+  priority: 20,
 
   handler: function(that, node, ownerElement) {
     var fixNode = function(item) {

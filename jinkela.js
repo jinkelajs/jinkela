@@ -27,26 +27,23 @@ var getOnce = function(base, name, getter) {
 var parseTemplate = function(that, params) {
   var watches = that['@@watches'];
   // Walking and match special templates into "watches"
-  void function callee(node, ownerElement) {
-    var attrs, sibling, attr, i, directive;
-    var child = node.firstChild;
-    if (node.nodeType === 1) {
-      while (child) {
-        sibling = child.nextSibling;
-        callee(child);
-        child = sibling;
+  void function callee(node) {
+    var i, j, n, key;
+    if (node.nodeType === 1) for (i = node.firstChild; i; i = i.nextSibling) callee(i);
+    var nodeList = [ node ];
+    if (node.attributes) nodeList.push.apply(nodeList, node.attributes);
+    for (j = 0; n = nodeList[j]; j++) {
+      if (n.nodeType in NODE_TYPE_NAME) {
+        define(n, '@@subscribers', { value: [], configurable: true });
+        key = /^\{([$_a-zA-Z][$\w]*)\}$|$/g.exec(n[NODE_TYPE_NAME[n.nodeType]])[1];
+        if (key) (key in watches ? watches[key] : watches[key] = []).push(n);
       }
     }
-    // Try to match directive
-    define(node, '@@subscribers', { value: [], configurable: true });
-    for (i = 0; directive = directiveList[i]; i++) {
-      if (directive.pattern.test(node.nodeName)) directive.handler(that, node, ownerElement);
+    for (i = 0; i < directiveList.length; i++) {
+      for (j = 0; n = nodeList[j]; j++) {
+        if (directiveList[i].pattern.test(n.nodeName)) directiveList[i].handler(that, n, node);
+      }
     }
-    // Try to match binding node (textNode or attrNode) and save if matched
-    if (/^\{([$_a-zA-Z][$\w]*)\}$/.test(node[NODE_TYPE_NAME[node.nodeType]])) {
-      (RegExp.$1 in watches ? watches[RegExp.$1] : watches[RegExp.$1] = []).push(node);
-    }
-    if (attrs = node.attributes) for (i = 0; attr = attrs[i]; i++) callee(attr, node);
   }(that.element);
   // Change "watches" to accessor properties
   for (var name in watches) void function(name) {

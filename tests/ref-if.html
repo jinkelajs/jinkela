@@ -1,0 +1,43 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div> <a href="JavaScript:" ref="a">Jinkela</a> </div>';
+    }
+  }
+});
+
+var Span = function() { Jinkela.apply(this, arguments); };
+Span.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Span },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<span>{text}</span>';
+    }
+  }
+});
+
+var foo = new Foo().to(document.body);
+Tester.assert(foo.a === foo.element.firstElementChild);
+
+var haha = foo.a = new Span({ text: 'haha' });
+Tester.assert(foo.a === foo.element.firstElementChild);
+Tester.assert(foo.a === haha.element);
+
+var hehe = foo.a = new Span({ text: 'hehe' });
+Tester.assert(foo.a === hehe.element);
+
+var hoho = new Span({ text: 'hoho' });
+foo.a = hoho.element;
+Tester.assert(foo.a === hoho.element);
+
+Tester.feedback(true);
+</script>

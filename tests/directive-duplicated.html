@@ -1,0 +1,25 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<body>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div><span></span></div>';
+    }
+  }
+});
+
+var handler = function(that, node, owner) { owner.textContent += 'o'; };
+Jinkela.register({ pattern: /^SPAN$/, handler: handler });
+Jinkela.register({ pattern: /^SPAN$/, handler: handler });
+Jinkela.register({ pattern: /^SPAN$/, handler: handler });
+Jinkela.register({ pattern: /^SPAN$/, handler: handler });
+
+var foo = new Foo().to(document.body);
+Tester.assert(foo.element.textContent === 'oooo', 'foo.element.textContent must be "oooo"');
+Tester.feedback(true);
+</script>

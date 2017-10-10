@@ -1,7 +1,7 @@
 Jinkela.register({
 
   pattern: /^JKL(?:-[A-Z0-9]+)+$/,
-  priority: 100,
+  priority: 10,
 
   handler: function(that, node) {
 
