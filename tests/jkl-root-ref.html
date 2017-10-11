@@ -1,0 +1,39 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<script src="/directives/jkl.js"></script>
+<script>
+var Child = function() { Jinkela.apply(this, arguments); };
+Child.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Child },
+  template: { configurable: true, value: '<div>hehe</div>' }
+});
+
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<jkl-child ref="child"></jkl-child>';
+    }
+  }
+});
+
+addEventListener('DOMContentLoaded', function() {
+
+  var foo = new Foo().to(document.body);
+  Tester.assert(foo.child instanceof Child, 'child must be an instance of Child');
+  Tester.assert(foo.element.tagName === 'JKL-CHILD', 'element tag name must be JKL-CHILD, but ' + foo.element.tagName);
+  Tester.assert(document.body.textContent === 'hehe', 'textContent must be "hehe", but ' + document.body.textContent);
+
+  foo.child = 123;
+  Tester.assert(foo.child !== foo.element, 'after child 123, element must not be child');
+  Tester.assert(foo.child === 123, 'after child 123, child must be 123, but ' + foo.child);
+  Tester.assert(foo.element.tagName === 'JKL-CHILD', 'after child 123, element tag name must be JKL-CHILD, but ' + foo.element.tagName);
+  Tester.assert(document.body.textContent === '123', 'after child 123, textContent must be "123", but ' + document.body.textContent);
+
+  Tester.feedback(true);
+
+});
+</script>

@@ -1,0 +1,29 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<script src="/directives/jkl.js"></script>
+<script>
+var Child = function() { Jinkela.apply(this, arguments); };
+Child.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Child },
+  template: { configurable: true, value: '<div><meta ref="children" /></div>' }
+});
+
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div><jkl-child>hehe</jkl-child></div>';
+    }
+  }
+});
+
+addEventListener('DOMContentLoaded', function() {
+  var foo = new Foo().to(document.body);
+  Tester.assert(foo.element.firstChild.tagName === 'DIV', 'first child tag name must be DIV, but ' + foo.element.firstChild.tagName);
+  Tester.assert(foo.element.textContent === 'hehe', 'textContent must be "hehe", but ' + foo.element.textContent);
+  Tester.feedback(true);
+});
+</script>

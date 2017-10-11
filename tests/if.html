@@ -3,39 +3,11 @@
 <script src="/directives/if.js"></script>
 <body>
 <script>
-var A = function() { Jinkela.apply(this, arguments); };
-A.prototype = Object.create(Jinkela.prototype, {
-  constructor: { configurable: true, value: A },
-  template: { configurable: true, get: function() { return '<div if="{cond}">A</div>'; } }
-});
-
 var B = function() { Jinkela.apply(this, arguments); };
 B.prototype = Object.create(Jinkela.prototype, {
   constructor: { configurable: true, value: B },
   template: { configurable: true, get: function() { return '<div><div if="{cond}">B</div></div>'; } }
 });
-
-var C = function() { Jinkela.apply(this, arguments); };
-C.prototype = Object.create(Jinkela.prototype, {
-  constructor: { configurable: true, value: C },
-  template: { configurable: true, get: function() { return '<div if-not="{cond}">C</div>'; } }
-});
-
-// false to true for container
-void function() {
-  var a = new A().to(document.body);
-  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
-  a.cond = true;
-  Tester.assert(a.element.parentNode === document.body, 'parentNode must be body');
-}();
-
-// true to false for container
-void function() {
-  var a = new A({ cond: true }).to(document.body);
-  Tester.assert(a.element.parentNode === document.body);
-  a.cond = false;
-  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
-}();
 
 // falst to true for child
 void function() {
@@ -51,22 +23,6 @@ void function() {
   Tester.assert(b.element.firstChild.nodeType === 1);
   b.cond = false;
   Tester.assert(b.element.firstChild.nodeType === 8);
-}();
-
-// false to true for container on "if-not"
-void function() {
-  var a = new C().to(document.body);
-  Tester.assert(a.element.parentNode === document.body, 'parentNode must be body');
-  a.cond = true;
-  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
-}();
-
-// true to false for container on "if-not"
-void function() {
-  var a = new C({ cond: true }).to(document.body);
-  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
-  a.cond = false;
-  Tester.assert(a.element.parentNode === document.body);
 }();
 
 Tester.feedback(true);

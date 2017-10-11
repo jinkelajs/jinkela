@@ -1,0 +1,28 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div ref="a">hehe</div>';
+    }
+  }
+});
+
+addEventListener('DOMContentLoaded', function() {
+  var foo = new Foo().to(document.body);
+  var i = 0;
+  void function callee() {
+    foo.a = ++i;
+    Tester.assert(foo.a === i, 'foo.a must be ' + i);
+    Tester.assert(foo.element.tagName === 'DIV', 'element tag name must always be DIV, but ' + foo.element.tagName);
+    Tester.assert(document.body.textContent === i + '', 'body.textContent must be "' + i + '", but ' + document.body.textContent);
+    if (i < 30) setTimeout(callee, 16);
+  }();
+  Tester.feedback(true);
+});
+</script>

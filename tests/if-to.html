@@ -1,0 +1,29 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/if.js"></script>
+<body>
+<meta id="m" />
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: { configurable: true, get: function() { return '<div if="{cond}">DIV</div>'; } }
+});
+
+var foo = new Foo({ cond: true });
+Tester.assert(foo.element.parentNode === null, 'after create without render, parentNode must be null');
+
+foo.cond = false;
+Tester.assert(foo.element.parentNode === null, 'after condition false, parentNode must be null');
+
+foo.renderWith(m);
+Tester.assert(foo.element.parentNode === null, 'after render, parentNode must be null');
+
+foo.cond = true;
+Tester.assert(foo.element.parentNode, 'parentNode must be not null');
+
+foo.cond = false;
+Tester.assert(foo.element.parentNode === null, 'after condition false, parentNode must be null');
+
+Tester.feedback(true);
+</script>

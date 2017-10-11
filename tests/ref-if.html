@@ -1,5 +1,6 @@
 <script src="/tester.js"></script>
 <script src="/jinkela.js"></script>
+<script src="/directives/if.js"></script>
 <script src="/directives/ref.js"></script>
 <body>
 <script>
@@ -9,7 +10,7 @@ Foo.prototype = Object.create(Jinkela.prototype, {
   template: {
     configurable: true,
     get: function() {
-      return '<div> <a href="JavaScript:" ref="a">Jinkela</a> </div>';
+      return '<div><a href="javascript:" if="{condition}" ref="a">Jinkela</a></div>';
     }
   }
 });
@@ -26,19 +27,13 @@ Span.prototype = Object.create(Jinkela.prototype, {
 });
 
 var foo = new Foo().to(document.body);
-Tester.assert(foo.a === foo.element.firstElementChild, 'must be firstElementChild');
-
-var haha = foo.a = new Span({ text: 'haha' });
-Tester.assert(foo.a.element === foo.element.firstElementChild, 'a.element must be firstElementChild');
-Tester.assert(foo.a === haha, 'a.element must be haha');
+Tester.assert(foo.element.firstElementChild === null, 'condition false, must be null');
 
 var hehe = foo.a = new Span({ text: 'hehe' });
-Tester.assert(foo.a.element === foo.element.firstElementChild, 'a.element must be firstElementChild');
-Tester.assert(foo.a === hehe);
+Tester.assert(foo.element.firstElementChild === null, 'assigned, condition false, must be null');
 
-var hoho = new Span({ text: 'hoho' });
-foo.a = hoho.element;
-Tester.assert(foo.a === hoho.element);
+foo.condition = true;
+Tester.assert(foo.element.firstElementChild === hehe.element, 'must be hehe.element');
 
 Tester.feedback(true);
 </script>

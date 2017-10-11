@@ -30,6 +30,24 @@ var parseTemplate = function(that, params) {
   void function callee(node) {
     var i, j, n, key;
     if (node.nodeType === 1) for (i = node.firstChild; i; i = i.nextSibling) callee(i);
+
+    var current = [ node ];
+    define(node, '@@binding', {
+      configurable: true,
+      get: function() { return current; },
+      set: function(list) {
+        list = [].concat(list);
+        if (list.length === 0) list.push(document.createComment(' empty binding list '));
+        var first = current[0];
+        if (that.element === node) that['@@element'] = list;
+        if (first.parentNode) for (var i = 0; i < list.length; i++) first.parentNode.insertBefore(list[i], first);
+        for (var i = 0; i < current.length; i++) {
+          if (current[i].parentNode && !~list.indexOf(current[i])) current[i].parentNode.removeChild(current[i]);
+        }
+        current = list;
+      }
+    });
+
     var nodeList = [ node ];
     if (node.attributes) nodeList.push.apply(nodeList, node.attributes);
     for (j = 0; n = nodeList[j]; j++) {
@@ -128,19 +146,22 @@ getOnce(Jinkela.prototype, 'element', function() {
   }
   return target[key].cloneNode(true);
 });
-getOnce(Jinkela, 'style', function() {
-  return document.head.appendChild(document.createElement('style'));
-});
+getOnce(Jinkela, 'style', function() { return document.head.appendChild(document.createElement('style')); });
+
 var createRender = function(name, handler) {
-  define(Jinkela.prototype, name, { value: function(target) {
-    if (target instanceof Jinkela) target = target.element;
-    handler.call(this, target);
-    return this;
-  } });
+  define(Jinkela.prototype, name, {
+    value: function(target) {
+      if (target instanceof Jinkela) target = target.element;
+      var list = [].concat(this['@@element'] || this.element);
+      var first = target.firstElementChild;
+      for (var i = 0; i < list.length; i++) handler.call(this, target, list[i], first);
+      return this;
+    }
+  });
 };
-createRender('to', function(target) { target.appendChild(this.element); });
-createRender('prependTo', function(target) { target.insertBefore(this.element, target.firstElementChild); });
-createRender('renderWith', function(target) { target.parentNode.replaceChild(this.element, target); });
+createRender('to', function(target, base) { target.appendChild(base); });
+createRender('prependTo', function(target, base, offset) { target.insertBefore(base, offset); });
+createRender('renderWith', function(target, base) { target.parentNode.replaceChild(base, target); });
 
 // Directive register
 var directiveList = [];

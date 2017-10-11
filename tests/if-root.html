@@ -1,0 +1,52 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/if.js"></script>
+<body>
+<script>
+var A = function() { Jinkela.apply(this, arguments); };
+A.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: A },
+  template: { configurable: true, get: function() { return '<div if="{cond}">A</div>'; } }
+});
+
+var C = function() { Jinkela.apply(this, arguments); };
+C.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: C },
+  template: { configurable: true, get: function() { return '<div if-not="{cond}">C</div>'; } }
+});
+
+// false to true for container
+void function() {
+  var a = new A().to(document.body);
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+  a.cond = true;
+  Tester.assert(a.element.parentNode !== null, 'after cond true, parentNode must not be null');
+  Tester.assert(a.element.parentNode === document.body, 'parentNode must be body, but ' + a.element.parentNode.tagName);
+}();
+
+// true to false for container
+void function() {
+  var a = new A({ cond: true }).to(document.body);
+  Tester.assert(a.element.parentNode === document.body);
+  a.cond = false;
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+}();
+
+// false to true for container on "if-not"
+void function() {
+  var a = new C().to(document.body);
+  Tester.assert(a.element.parentNode === document.body, 'parentNode must be body');
+  a.cond = true;
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+}();
+
+// true to false for container on "if-not"
+void function() {
+  var a = new C({ cond: true }).to(document.body);
+  Tester.assert(a.element.parentNode === null, 'parentNode must be null');
+  a.cond = false;
+  Tester.assert(a.element.parentNode === document.body);
+}();
+
+Tester.feedback(true);
+</script>

@@ -23,7 +23,7 @@ Fee.prototype = Object.create(Jinkela.prototype, {
 var fee = new Fee().to(document.body);
 
 Tester.assert(fee.div.tagName === 'DIV', 'tagName must be "DIV"');
-Tester.assert(fee.element.firstElementChild.tagName === 'SPAN', 'tagName must be "SPAN"');
+Tester.assert(fee.element.firstElementChild.tagName === 'SPAN', 'tagName must be "SPAN", but ' + fee.element.firstElementChild.tagName);
 Tester.assert(fee.foo instanceof Jinkela, 'foo must be instance of jinkela');
 Tester.assert(fee.foo.color === 'red', 'color must be "red"');
 Tester.assert(fee.element.firstElementChild.style.color === 'red', 'style.color must be "red"');

@@ -18,17 +18,19 @@ Fee.prototype = Object.create(Jinkela.prototype, {
   template: {
     configurable: true,
     get: function() {
-      return '<div> <jkl-foo if="{cond}" color="red" text="{text}"></jkl-foo> <div ref="div"></div> </div>';
+      return '<div><jkl-foo if="{cond}" color="red" text="{text}"></jkl-foo><div ref="div"></div></div>';
     }
   }
 });
 
 var fee = new Fee().to(document.body);
-Tester.assert(fee.element.firstChild.nextSibling.nodeType === 8, 'nodeType must be 8');
+Tester.assert(fee.element.firstChild.nodeType === 8, 'nodeType must be 8, but ' + fee.element.firstChild.nodeType);
+Tester.assert(fee.element.childNodes.length === 2, 'childNodes.length must be 2, but ' + fee.element.childNodes.length);
 
 fee.cond = true;
-Tester.assert(fee.element.firstChild.nextSibling.nodeType === 1, 'nodeType must be 1');
-Tester.assert(fee.element.firstChild.nextSibling.tagName === 'SPAN', 'tagName must be SPAN');
+Tester.assert(fee.element.firstChild.nodeType === 1, 'nodeType must be 1');
+Tester.assert(fee.element.firstChild.tagName === 'SPAN', 'tagName must be SPAN');
+Tester.assert(fee.element.childNodes.length === 2, 'after cond true, childNodes.length must be 2, but ' + fee.element.childNodes.length);
 
 Tester.feedback(true);
 </script>
