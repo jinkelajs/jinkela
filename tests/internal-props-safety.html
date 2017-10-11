@@ -1,0 +1,37 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/plugins/if.js"></script>
+<script src="/plugins/ref.js"></script>
+<script src="/plugins/jkl.js"></script>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div a="hehe" if="{text}" title="text" ref="x"><span>{text}<span></div>';
+    }
+  }
+});
+
+addEventListener('DOMContentLoaded', function() {
+
+  var foo = new Foo({ text: 'hehe' }).to(document.body);
+
+  Tester.assert(foo.element.textContent === 'hehe', 'textContent must be hehe');
+
+  Tester.assert(Object.keys(foo).length === 1, 'foo must be pollution-free');
+  Tester.assert(Object.keys(foo.element).length === 0, 'foo.element must be pollution-free');
+  Tester.assert(Object.keys(foo.element.firstChild).length === 0, 'firstChild must be pollution-free');
+
+  var attrs = foo.element.attributes;
+  for (var i = 0; i < attrs.length; i++) {
+    var keys = Object.keys(attrs[i]);
+    Tester.assert(keys.length === 0, attrs[i].name + ' must be pollution-free, but ' + keys);
+  }
+
+  Tester.feedback(true);
+
+});
+</script>

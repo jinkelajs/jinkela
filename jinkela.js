@@ -23,14 +23,19 @@ var getOnce = function(base, name, getter) {
   define(base, name, { get: function() { return define(this, name, { value: getter.call(this) })[name]; } });
 };
 
-// Walk the tree and change "{xxx}" template to accessor properties.
+// Walk the template tree
 var parseTemplate = function(that, params) {
-  var watches = that['@@watches'];
-  // Walking and match special templates into "watches"
+
+  var watches = define(that, '@@watches', { value: Object.create(null) })['@@watches'];
+  define(that, '@@beforeInit', { value: [] });
+  define(that, '@@element', { writable: true, value: [ that.element ] });
+
   void function callee(node) {
+
     var i, j, n, key;
     if (node.nodeType === 1) for (i = node.firstChild; i; i = i.nextSibling) callee(i);
 
+    // Init element binding
     var current = [ node ];
     define(node, '@@binding', {
       get: function() { return current; },
@@ -47,8 +52,11 @@ var parseTemplate = function(that, params) {
       }
     });
 
+    // Init nodeList
     var nodeList = [ node ];
     if (node.attributes) nodeList.push.apply(nodeList, node.attributes);
+
+    // Watch all expressions for nodeList
     for (j = 0; n = nodeList[j]; j++) {
       if (n.nodeType in NODE_TYPE_NAME) {
         define(n, '@@subscribers', { value: [] });
@@ -56,13 +64,17 @@ var parseTemplate = function(that, params) {
         if (key) (key in watches ? watches[key] : watches[key] = []).push(n);
       }
     }
+
+    // Apply directives for nodeList
     for (i = 0; i < directiveList.length; i++) {
       for (j = 0; n = nodeList[j]; j++) {
         if (directiveList[i].pattern.test(n.nodeName)) directiveList[i].handler(that, n, node);
       }
     }
+
   }(that.element);
-  // Change "watches" to accessor properties
+
+  // Register all watchers
   for (var name in watches) void function(name) {
     var list = watches[name];
     var cache = that[name];
@@ -75,16 +87,17 @@ var parseTemplate = function(that, params) {
         cache = value;
         if (handler) handler(value);
         for (var i = 0; i < list.length; i++) {
-          list[i].jinkelaValue = list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
+          list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
+          'jinkelaValue' in list[i] ? list[i].jinkelaValue = value : define(list[i], 'jinkelaValue', { value: value, writable: true });
           var subscribers = list[i]['@@subscribers'];
           if (subscribers) for (var j = 0; j < subscribers.length; j++) subscribers[j](list[i]);
         }
       }
     });
-    if (!(name in params)) that[name] = cache;
-    // Push desc.set to handler list as a watching handler if existed
+    if (!(name in params)) that[name] = cache; 
     if (desc && desc.set) handler = desc.set.bind(that);
   }(name);
+
 };
 
 // Extend special fields to instance before parse
@@ -113,8 +126,6 @@ var Jinkela = function() {
 };
 
 // Prototype Properties
-getOnce(Jinkela.prototype, '@@watches', function() { return Object.create(null); });
-getOnce(Jinkela.prototype, '@@beforeInit', function() { return []; });
 getOnce(Jinkela.prototype, 'element', function() {
   var target = this.constructor;
   var key = '@@domCache';
@@ -151,9 +162,8 @@ var createRender = function(name, handler) {
   define(Jinkela.prototype, name, {
     value: function(target) {
       if (target instanceof Jinkela) target = target.element;
-      var list = [].concat(this['@@element'] || this.element);
       var first = target.firstElementChild;
-      for (var i = 0; i < list.length; i++) handler.call(this, target, list[i], first);
+      for (var i = 0; i < this['@@element'].length; i++) handler.call(this, target, this['@@element'][i], first);
       return this;
     }
   });
