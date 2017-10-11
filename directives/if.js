@@ -4,7 +4,7 @@ Jinkela.register({
   priority: 20,
 
   handler: function(that, node, ownerElement) {
-    var not = !!RegExp.$1;
+    var not = node.name === 'if-not';
     var comment = ' ' + node.name + '="' + node.value + '" ';
     var replacement = document.createComment(comment);
     var state = true;
