@@ -33,7 +33,6 @@ var parseTemplate = function(that, params) {
 
     var current = [ node ];
     define(node, '@@binding', {
-      configurable: true,
       get: function() { return current; },
       set: function(list) {
         list = [].concat(list);
@@ -52,7 +51,7 @@ var parseTemplate = function(that, params) {
     if (node.attributes) nodeList.push.apply(nodeList, node.attributes);
     for (j = 0; n = nodeList[j]; j++) {
       if (n.nodeType in NODE_TYPE_NAME) {
-        define(n, '@@subscribers', { value: [], configurable: true });
+        define(n, '@@subscribers', { value: [] });
         key = /^\{([$_a-zA-Z][$\w]*)\}$|$/g.exec(n[NODE_TYPE_NAME[n.nodeType]])[1];
         if (key) (key in watches ? watches[key] : watches[key] = []).push(n);
       }
@@ -93,7 +92,7 @@ var specialFields = [ 'tagName', 'template', 'styleSheet' ];
 var extendSpecialFields = function(that, params) {
   for (var key, i = 0; key = specialFields[i]; i++) {
     if (key in params) {
-      Object.defineProperty(that, key, { configurable: true, value: params[key] });
+      define(that, key, { value: params[key] });
       delete params[key];
     }
   }
