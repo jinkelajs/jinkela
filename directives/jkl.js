@@ -20,7 +20,11 @@ Jinkela.register({
       var component = node.component = Component && new Component(args, { children: [].slice.call(node.childNodes, 0) });
       node['@@binding'] = component.element;
       for (var i = 0; i < attrs.length; i++) {
-        attrs[i]['@@subscribers'].push(function(target) { component[target.nodeName] = target.jinkelaValue; });
+        if (attrs[i]['@@subscribers'] instanceof Array) {
+          attrs[i]['@@subscribers'].push(function(target) { component[target.nodeName] = target.jinkelaValue; });
+        } else {
+          // WTF??
+        }
       }
     });
 
