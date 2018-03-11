@@ -1,0 +1,20 @@
+<script src="../jinkela.js"></script>
+<script>
+class Foo extends Jinkela {
+  get text() { return 'Default Text'; }
+  set text(value) {
+    console.log(value); // 'New Text'
+  }
+  get template() {
+    return `<div>{text}</div>`;
+  }
+}
+let foo = new Foo();
+
+// The geeter property is default value of binding
+console.log(foo.element.textContent === 'Default Text'); // true
+
+// The setter property is watching handler
+foo.text = 'New Text';
+console.log(foo.element.textContent === 'New Text'); // true
+</script>

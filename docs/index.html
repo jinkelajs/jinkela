@@ -4,12 +4,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="renderer" content="webkit" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0" />
-    <script>
-      if (!window.Promise) document.write('<script src="https://github.elemecdn.com/jakearchibald/es6-promise/v3.0.2/dist/es6-promise.min.js"><\/script>');
-      if (!window.fetch) document.write('<script src="https://github.elemecdn.com/uglifyjs!github/fetch/v0.11.0/fetch.js"><\/script>');
-    </script>
-    <script src="https://github.elemecdn.com/YanagiEiichi/reciper/0.1.10/index.es5.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/reciper@0.1.12/index.es5.min.js"></script>
     <script>
       var ROOT = location.pathname.match(/.*?(?=\/docs)|.*(?=\/)/)[0];
       reciper({
@@ -17,7 +13,7 @@
         darkColor: '#333',
         normalColor: '#666',
         primaryColor: '#000',
-        logoUrl: '//fuss10.elemecdn.com/9/ca/f88b429d6278cdf69e0027dfea51ejpeg.jpeg',
+        logoUrl: ROOT + '/logo.png',
         description: 'A MODULARIZATION SOLUTION OF FRONTEND',
         languages: [ 'xml', 'markdown', 'bash', 'javascript' ],
         home: ROOT + '/',

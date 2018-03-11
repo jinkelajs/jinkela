@@ -1,0 +1,29 @@
+<script src="../jinkela.js"></script>
+<script>
+class A extends Jinkela {
+  get template() { return '<div>Hello</div>'; }
+}
+let a = new A();
+// From `template`
+console.log(a.element.outerHTML === '<div>Hello</div>'); // true
+
+class B extends Jinkela {
+  get tagName() { return 'span'; }
+}
+let b = new B();
+// From `tagName`
+console.log(b.element.outerHTML === '<span></span>'); // true
+
+class C extends Jinkela {
+  get template() { return '<div>Hello</div>'; }
+  get tagName() { return 'span'; }
+}
+let c = new C();
+// From `template`, `tagName` will be ignored
+console.log(c.element.outerHTML === '<div>Hello</div>'); // true
+
+class D extends Jinkela {}
+let d = new D();
+// Defaults emtpy DIV
+console.log(d.element.outerHTML === '<div></div>'); // true
+</script>

@@ -1,0 +1,29 @@
+<script src="../jinkela.js"></script>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `<div>{c}</div>`;
+  }
+  beforeParse(params) {
+    // Now, the `params` is { a: 1, b: 2 }
+
+    // You can insert new variable into `params`
+    params.c = params.a + params.b;
+
+    // Also deletable
+    delete params.a;
+
+    // DOM has not parsed yet now
+    console.log(this.element.innerHTML === '{c}'); // true
+  }
+}
+
+let foo = new Foo({ a: 1 }, { b: 2 });
+
+console.log(foo.a === undefined); // true
+console.log(foo.b === 2); // true
+console.log(foo.c === 3); // true
+
+// Now, data has bound
+console.log(foo.element.innerHTML === '3'); // true
+</script>

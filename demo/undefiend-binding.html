@@ -1,0 +1,10 @@
+<script src="../jinkela.js"></script>
+<script>
+class Foo extends Jinkela {
+  get template() {
+    return `<div><span>{first}</span>,<span>{second}</span></div>`;
+  }
+}
+let foo = new Foo({ first: 1 });
+console.log(foo.element.textContent === '1,undefined'); // true
+</script>
