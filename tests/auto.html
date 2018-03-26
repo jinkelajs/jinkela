@@ -1,0 +1,44 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/plugins/auto.js"></script>
+<script src="/directives/jkl.js"></script>
+
+<meta name="jinkela" content="auto=true" />
+
+<script>
+var one = 1;
+
+class Test extends Jinkela {
+  get template() {
+    return `
+      <span>JKL-TEST</span>
+    `;   
+  }  
+  get styleSheet() {
+    return `
+      :scope {
+        color: red;
+      }
+    `;   
+  }  
+}
+
+addEventListener('DOMContentLoaded', () => {
+  let a = document.getElementById('a');
+  let b = document.getElementById('b');
+  let c = document.getElementById('c');
+  Tester.assert(a.textContent === '1', 'text of #a must be "a"');
+  Tester.assert(b.textContent === 'undefined', 'Text of #b must be "undefined"');
+  Tester.assert(c.textContent === 'JKL-TEST', 'Text of #c must be "JKL-TEST"');
+  Tester.assert(getComputedStyle(c.firstChild).color === 'rgb(255, 0, 0)', 'Color of #c must be red');
+  Tester.feedback(true);
+});
+</script>
+
+<body>
+  <ul>
+    <li>a: <span id="a">{one}</span></li>
+    <li>b: <span id="b">{two}</span></li>
+  </ul>
+  <div id="c"><jkl-test></jkl-test></div>
+</body>
