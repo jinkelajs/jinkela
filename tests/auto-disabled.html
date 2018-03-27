@@ -1,0 +1,24 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/plugins/auto.js"></script>
+<script src="/directives/jkl.js"></script>
+
+<script>
+var one = 1;
+
+addEventListener('DOMContentLoaded', () => {
+  let a = document.getElementById('a');
+  let b = document.getElementById('b');
+  let c = document.getElementById('c');
+  Tester.assert(a.textContent === '{one}', 'text of #a must be "{one}"');
+  Tester.assert(b.textContent === '{two}', 'Text of #b must be "{two}"');
+  Tester.feedback(true);
+});
+</script>
+
+<body>
+  <ul>
+    <li>a: <span id="a">{one}</span></li>
+    <li>b: <span id="b">{two}</span></li>
+  </ul>
+</body>
