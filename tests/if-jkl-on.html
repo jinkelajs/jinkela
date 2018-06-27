@@ -1,0 +1,34 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/if.js"></script>
+<script src="/directives/jkl.js"></script>
+<script src="/directives/on.js"></script>
+<body>
+<script>
+var Child = function() { Jinkela.apply(this, arguments); };
+Child.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Child },
+  template: { configurable: true, get: function() { return '<button>CHILD</button>'; } }
+});
+
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  click: {
+    configurable: true, value: () => {
+      Tester.feedback(true);
+    }
+  },
+  template: {
+    configurable: true, get: function() {
+      return '<div><jkl-child if="{cond}" on-click="{click}"></jkl-child></div>';
+    }
+  }
+});
+
+var foo = new Foo({ cond: false }).to(document.body);
+
+foo.cond = true;
+
+document.querySelector('button').click();
+</script>

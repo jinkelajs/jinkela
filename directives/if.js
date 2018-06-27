@@ -17,7 +17,7 @@ Jinkela.register({
       configurable: true,
       get: function(list) { return current; },
       set: function(list) {
-        current = list;
+        current = [].concat(list);
         if (state) desc.set.call(ownerElement, current);
       }
     });
