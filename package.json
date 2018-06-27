@@ -6,10 +6,11 @@
   "author": "YanagiEiichi (yanagieiichi@web-tinker.com)",
   "license": "MIT",
   "scripts": {
-    "test": "ui-tester-start tests",
+    "test": "eslint . && ui-tester-start tests",
     "prepublish": "./build"
   },
   "devDependencies": {
+    "eslint": "^5.0.1",
     "ui-tester": "~1.1.4"
   },
   "dependencies": {

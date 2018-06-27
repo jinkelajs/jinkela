@@ -9,7 +9,6 @@ Jinkela.register({
 
       var eventName = node.nodeName.match(/^on-(.*)|$/)[1];
       var list = ownerElement['@@binding']; // Get once element list in timing @@beforeInit
-      console.log(list);
 
       var handler = typeof node.jinkelaValue === 'function' && node.jinkelaValue.bind(that);
       if (handler) list.forEach(function(element) { element.addEventListener(eventName, handler); });

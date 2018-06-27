@@ -8,14 +8,12 @@ Jinkela.register({
     var comment = ' ' + node.name + '="' + node.value + '" ';
     var replacement = document.createComment(comment);
     var state = true;
-    var name = /^\{(.*)\}$|$/.exec(node.value)[1];
-    var isRootIf = that.element === ownerElement;
 
     var desc = Object.getOwnPropertyDescriptor(ownerElement, '@@binding');
     var current = [ ownerElement ];
     Object.defineProperty(ownerElement, '@@binding', {
       configurable: true,
-      get: function(list) { return current; },
+      get: function() { return current; },
       set: function(list) {
         current = [].concat(list);
         if (state) desc.set.call(ownerElement, current);

@@ -40,12 +40,13 @@ var parseTemplate = function(that, params) {
     define(node, '@@binding', {
       get: function() { return current; },
       set: function(list) {
+        var i;
         list = [].concat(list);
         if (list.length === 0) list.push(document.createComment(' empty binding list '));
         var first = current[0];
         if (that.element === node) that['@@element'] = list;
-        if (first.parentNode) for (var i = 0; i < list.length; i++) first.parentNode.insertBefore(list[i], first);
-        for (var i = 0; i < current.length; i++) {
+        if (first.parentNode) for (i = 0; i < list.length; i++) first.parentNode.insertBefore(list[i], first);
+        for (i = 0; i < current.length; i++) {
           if (current[i].parentNode && !~list.indexOf(current[i])) current[i].parentNode.removeChild(current[i]);
         }
         current = list;
@@ -57,7 +58,7 @@ var parseTemplate = function(that, params) {
     if (node.attributes) nodeList.push.apply(nodeList, node.attributes);
 
     // Watch all expressions for nodeList
-    for (j = 0; n = nodeList[j]; j++) {
+    for (j = 0; (n = nodeList[j]); j++) {
       if (n.nodeType in NODE_TYPE_NAME) {
         define(n, '@@subscribers', { value: [] });
         key = /^\{([$_a-zA-Z][$\w]*)\}$|$/g.exec(n[NODE_TYPE_NAME[n.nodeType]])[1];
@@ -67,7 +68,7 @@ var parseTemplate = function(that, params) {
 
     // Apply directives for nodeList
     for (i = 0; i < directiveList.length; i++) {
-      for (j = 0; n = nodeList[j]; j++) {
+      for (j = 0; (n = nodeList[j]); j++) {
         if (directiveList[i].pattern.test(n.nodeName)) directiveList[i].handler(that, n, node);
       }
     }
@@ -88,7 +89,9 @@ var parseTemplate = function(that, params) {
         if (handler) handler(value);
         for (var i = 0; i < list.length; i++) {
           list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
-          'jinkelaValue' in list[i] ? list[i].jinkelaValue = value : define(list[i], 'jinkelaValue', { value: value, writable: true });
+          'jinkelaValue' in list[i]
+            ? (list[i].jinkelaValue = value)
+            : define(list[i], 'jinkelaValue', { value: value, writable: true });
           var subscribers = list[i]['@@subscribers'];
           if (subscribers) for (var j = 0; j < subscribers.length; j++) subscribers[j](list[i]);
         }
@@ -103,7 +106,7 @@ var parseTemplate = function(that, params) {
 // Extend special fields to instance before parse
 var specialFields = [ 'tagName', 'template', 'styleSheet' ];
 var extendSpecialFields = function(that, params) {
-  for (var key, i = 0; key = specialFields[i]; i++) {
+  for (var key, i = 0; (key = specialFields[i]); i++) {
     if (key in params) {
       define(that, key, { value: params[key] });
       delete params[key];
@@ -114,12 +117,15 @@ var extendSpecialFields = function(that, params) {
 // Main Constructor
 var Jinkela = function() {
   var params = {};
-  for (var i = 0; i < arguments.length; i++) if (arguments[i] instanceof Object) for (var j in arguments[i]) params[j] = arguments[i][j];
+  var i, j;
+  for (i = 0; i < arguments.length; i++) {
+    if (arguments[i] instanceof Object) for (j in arguments[i]) params[j] = arguments[i][j];
+  }
   if (typeof this.beforeParse === 'function') this.beforeParse(params); // Expirimental
   extendSpecialFields(this, params);
   parseTemplate(this, params);
-  for (name in params) this[name] = params[name]; // Extends
-  for(var i = 0; i < this['@@beforeInit'].length; i++) this['@@beforeInit'][i](); // Exec all beforeInit handlers
+  for (var name in params) this[name] = params[name]; // Extends
+  for(i = 0; i < this['@@beforeInit'].length; i++) this['@@beforeInit'][i](); // Exec all beforeInit handlers
   // Find all "init" method list in prototype chain and call they
   var args = [ this, arguments ];
   getShadedProps(this, 'init', function(init) { init.apply.apply(init, args); });
