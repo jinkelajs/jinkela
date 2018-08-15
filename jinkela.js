@@ -126,7 +126,7 @@ var Jinkela = function() {
   parseTemplate(this, params);
   for (var name in params) this[name] = params[name]; // Extends
   for(i = 0; i < this['@@beforeInit'].length; i++) this['@@beforeInit'][i](); // Exec all beforeInit handlers
-  // Find all "init" method list in prototype chain and call they
+  // Find all "init" method list in prototype chain and call them
   var args = [ this, arguments ];
   getShadedProps(this, 'init', function(init) { init.apply.apply(init, args); });
 };
