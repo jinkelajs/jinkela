@@ -1,0 +1,25 @@
+<script src="../jinkela.js"></script>
+<script src="../plugins/html.js"></script>
+<script>
+addEventListener('DOMContentLoaded', () => {
+
+  let obj = Jinkela.html`
+    <strong>Hello</strong>
+    <strong>{name}</strong>
+    <hr/>
+    <time>{now}</time>
+    <style>
+    :scope time { color: red; }
+    </style>
+  `;
+
+  obj.name = 'Jinkela';
+  obj.to(document.body);
+
+  void function callee() {
+    obj.now = new Date().toLocaleString();
+    setTimeout(callee, 1000);
+  }();
+
+});
+</script>

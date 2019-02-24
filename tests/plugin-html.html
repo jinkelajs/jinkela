@@ -1,0 +1,19 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/plugins/html.js"></script>
+<script>
+addEventListener('load', () => {
+  Tester.assert(Jinkela.html([ 'a', 'b', 'c' ], 1).element.innerHTML === 'a1bc', 'wtf 1');
+  Tester.assert(Jinkela.html([ 'a', 'b', 'c' ], 1, 2).element.innerHTML === 'a1b2c', 'wtf 2');
+  Tester.assert(Jinkela.html([ 'a', 'b', 'c' ], 1, 2, 3).element.innerHTML === 'a1b2c', 'wtf 3');
+
+  let obj = Jinkela.html`
+    <strong>Hello</strong>
+    <strong>{name}</strong>
+  `;
+  obj.name = 'Jinkela';
+  obj.to(document.body);
+  Tester.assert(/Hello\s+Jinkela/.test(document.body.textContent), 'textContent mismatched');
+  Tester.feedback(true);
+});
+</script>

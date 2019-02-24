@@ -10,8 +10,8 @@
     "prepublish": "./build"
   },
   "devDependencies": {
-    "eslint": "^5.0.1",
-    "ui-tester": "~1.1.4"
+    "eslint": "^5.14.1",
+    "ui-tester": "~1.2.2"
   },
   "dependencies": {
     "amd2umd": "0.0.5"
