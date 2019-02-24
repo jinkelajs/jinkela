@@ -88,7 +88,7 @@ var parseTemplate = function(that, params) {
         cache = value;
         if (handler) handler(value);
         for (var i = 0; i < list.length; i++) {
-          list[i][NODE_TYPE_NAME[list[i].nodeType]] = value;
+          list[i][NODE_TYPE_NAME[list[i].nodeType]] = typeof value === 'function' ? value.name : value;
           'jinkelaValue' in list[i]
             ? (list[i].jinkelaValue = value)
             : define(list[i], 'jinkelaValue', { value: value, writable: true });

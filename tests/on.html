@@ -14,7 +14,7 @@ Foo.prototype = Object.create(Jinkela.prototype, {
   },
   onClick: {
     configurable: true,
-    value: function(e) {
+    value: function onClick(e) {
       Tester.assert(e.target === this.element);
       Tester.feedback(true);
     }
@@ -22,5 +22,6 @@ Foo.prototype = Object.create(Jinkela.prototype, {
 });
 
 var foo = new Foo().to(document.body);
+Tester.assert(foo.element.getAttribute('on-click') === 'onClick', 'function in attr must be name');
 foo.element.click();
 </script>
