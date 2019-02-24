@@ -1,0 +1,33 @@
+{
+  "name": "Jinkela",
+  "darkColor": "#333",
+  "normalColor": "#666",
+  "primaryColor": "#000",
+  "logoUrl": "https://jinkelajs.org/logo.png",
+  "description": "A MODULARIZATION SOLUTION OF FRONTEND",
+  "languages": [
+    "xml",
+    "markdown",
+    "bash",
+    "javascript"
+  ],
+  "items": [
+    {
+      "text": "Introduction",
+      "href": "intro/"
+    },
+    {
+      "text": "Directives",
+      "href": "directives/"
+    },
+    {
+      "text": "Plugins",
+      "href": "plugins/"
+    },
+    {
+      "text": "Github",
+      "href": "//github.com/jinkelajs",
+      "target": "_blank"
+    }
+  ]
+}

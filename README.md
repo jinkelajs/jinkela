@@ -1,1 +1,1 @@
-docs => http://jinkelajs.org/
+docs => https://jinkelajs.org/
