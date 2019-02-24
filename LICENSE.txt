@@ -1,2 +1,2 @@
 MIT LICENSE
-Copyright 2016 YanagiEiichi, yanagieiichi@web-tinker.com
+Copyright 2016~2019 YanagiEiichi<admin@web-tinker.com>
