@@ -103,6 +103,21 @@ var parseTemplate = function(that, params) {
 
 };
 
+// Accessor props maybe overrided by class-fields, change class-fields to assignings in next tick
+var fixClassFields = function(that) {
+  var before = Object.getOwnPropertyDescriptors(that);
+  window.Promise.resolve().then(function() {
+    var after = Object.getOwnPropertyDescriptors(that);
+    for (var key in after) {
+      if (!('value' in after[key])) continue;
+      if (before[key] && !('value' in before[key])) {
+        Object.defineProperty(that, key, before[key]);
+        that[key] = after[key].value;
+      }
+    }
+  });
+};
+
 // Extend special fields to instance before parse
 var specialFields = [ 'tagName', 'template', 'styleSheet' ];
 var extendSpecialFields = function(that, params) {
@@ -129,6 +144,8 @@ var Jinkela = function() {
   // Find all "init" method list in prototype chain and call them
   var args = [ this, arguments ];
   getShadedProps(this, 'init', function(init) { init.apply.apply(init, args); });
+  // Avoid accessor props overridden by class-fields
+  if (window.Promise) fixClassFields(this);
 };
 
 // Prototype Properties
@@ -137,7 +154,7 @@ getOnce(Jinkela.prototype, 'element', function() {
   var key = '@@domCache';
   if (!target.hasOwnProperty(key)) {
     var element;
-    var template = this.template; // Call once getter handler
+    var template = this.constructor.template || this.template;
     if (template) {
       // Get first tagName from template
       var tagName = String(template.replace(/<!--[\s\S]*?-->/g, '').match(/<([a-z][\w-]*)|$/i)[1]).toLowerCase();
