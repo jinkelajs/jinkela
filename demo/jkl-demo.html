@@ -9,8 +9,13 @@ class Foo extends Jinkela {
   get template() { return `<span><meta ref="children" />: <span>{text}</span></span>`; }
 }
 
-class Fee extends Jinkela {
+class Demo extends Jinkela {
   get text() { return 0; }
+  init() {
+    setInterval(() => {
+      this.text++;
+    }, 16);
+  }
   get template() {
     return `
       <div>
@@ -21,10 +26,6 @@ class Fee extends Jinkela {
 }
 
 addEventListener('DOMContentLoaded', () => {
-  let fee = new Fee().to(document.body);
-  console.log(fee.foo instanceof Foo);
-  setInterval(() => {
-    fee.text = +fee.text + 1;
-  }, 16);
+  new Demo().to(document.body);
 });
 </script>

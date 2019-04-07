@@ -1,10 +1,14 @@
-## The Jinkela
+## Jinkela 是什么？
 
-Jinkela is a modularization solution of frontend.
+Jinkela（金坷垃）<del style="opacity:.3;">是一种肥料添加剂</del> 自认为是一个**前端框架**。
 
-## Getting Started
+其核心思想是：**尽可能地使用规范内的特性，让代码无需构建就能在浏览器上跑起来**。
 
-### 1. My First Jinkela Component
+适合用来快速搭建一个小而轻的工具类页面，适合交互密集型的组件开发，不适合大型多人协作的项目。目前 Jinkela 已经是一个相对稳定的版本，可以在生产环境使用。
+
+## 快速上手
+
+### 1. 第一个金坷垃组件
 
 ```javascript
 class MyFirstComponent extends Jinkela {
@@ -23,9 +27,9 @@ class MyFirstComponent extends Jinkela {
 new MyFirstComponent({ text: 'Jinkela' }).to(document.body);
 ```
 
-[Live Demo](../../demo/my-first-jinkela-component.html)
+[在线示例](../../../demo/my-first-jinkela-component.html)
 
-### 2. Component Extending
+### 2. 组件的继承
 
 ```javascript
 class MyUnderline extends MyFirstComponent {
@@ -52,9 +56,9 @@ new MyUnderline({ text: 'Jinkela Bold' }).to(document.body);
 new MyBig({ text: 'Jinkela Big' }).to(document.body);
 ```
 
-[Live Demo](../../demo/component-extending.html)
+[在线示例](../../../demo/component-extending.html)
 
-### 3. Init Component
+### 3. 组件初始化动作
 
 ```javascript
 class MyCounter extends Jinkela {
@@ -74,9 +78,9 @@ class MyCounter extends Jinkela {
 new MyCounter({ name: 'Counter', from: 10086 }).to(document.body);
 ```
 
-[Live Demo](../../demo/init-component.html)
+[在线示例](../../../demo/init-component.html)
 
-### 4. Add Event Listener
+### 4. 事件绑定
 
 ```javascript
 class TextField extends Jinkela {
@@ -105,17 +109,17 @@ let inputs = Array.from({ length: 100 }, () => {
 });
 ```
 
-[Live Demo](../../demo/add-event-listener.html)
+[在线示例](../../../demo/add-event-listener.html)
 
-## Component Running Steps
+## 深入了解组件
 
-When a Jinkela class is operated with `new`, The following steps are taken:
+当一个 Jinkela 类被 `new` 时，将执行以下过程：
 
-#### 1. Parepare
+#### 1. 准备阶段
 
-##### 1.1. Setup getter `element` property
+##### 1.1. 初始化 `element` 属性
 
-That reads HTML tempalte from `template` or `tagName` properties, defaults empty DIV element.
+Jinkela 会读取实例上的 `template` 或 `tagName` 属性（默认是 DIV）来初始化元素。
 
 ```javascript
 class A extends Jinkela {
@@ -146,11 +150,11 @@ let d = new D();
 console.log(d.element.outerHTML === '<div></div>'); // true
 ```
 
-[Live Demo](../../demo/element.html)
+[在线示例](../../../demo/element.html)
 
-##### 1.2. Execute `beforeParse` Handler
+##### 1.2. 执行 `beforeParse` 处理函数
 
-Pass squashed `args` as the first argument.
+透传 `new` 的参数到 `beforeParse`，这个阶段是为了在数据绑定之前对数据的一些预处理。
 
 ```javascript
 class Foo extends Jinkela {
@@ -181,17 +185,17 @@ console.log(foo.c === 3); // true
 console.log(foo.element.innerHTML === '3'); // true
 ```
 
-[Live Demo](../../demo/before-parse.html)
+[在线示例](../../../demo/before-parse.html)
 
-#### 2. Parse
+#### 2. 解析
 
-##### 2.1. Build Style
+##### 2.1. 初始化 CSS
 
-Read and merge all `styleSheet` form prototype chains.
+将原型链上的所有 `styleSheet` 属性读取并合并起来，作为这个实例的样式。
 
-##### 2.2. Setup data binding
+##### 2.2. 数据绑定、初始化指令
 
-Traverse and setup data binding with DLR for DOM tree, set `undefined` if binding data not found.
+以 DLR 方式遍历组件的 DOM 树，对内容为 `\{\w+\}` 的文本或属性节点设置数据绑定。
 
 ```javascript
 class Foo extends Jinkela {
@@ -203,9 +207,9 @@ let foo = new Foo({ first: 1 });
 console.log(foo.element.textContent === '1,undefined'); // true
 ```
 
-[Live Demo](../../demo/undefined-binding.html)
+[在线示例](../../../demo/undefined-binding.html)
 
-If both accessor property and data binding are existed, the getter is the default value of binding, and the setter is watching handler.
+如果数据绑定的属性名本身就是一组访问器属性，那么 getter 的结果将作为默认值，setter 将作为变化通知（类似 watch）。
 
 ```javascript
 class Foo extends Jinkela {
@@ -227,26 +231,15 @@ foo.text = 'New Text';
 console.log(foo.element.textContent === 'New Text'); // true
 ```
 
-[Live Demo](../../demo/accessor-binding.html)
+[在线示例](../../../demo/accessor-binding.html)
 
-##### 2.3. Extend Params
+##### 2.3. 数据初始赋值
 
-Copy each parameters to the instance.
+将 `new` 时传入的参数依次赋值到实例上。
 
-#### 3. Execute `init`
+#### 3. 执行 `init` 处理函数
 
-Execute `init` method of instance (auto super with whole prototype chains).
+这个阶段表示 DOM 已经初始化完毕（但是还没渲染到文档），业务逻辑主要在这个阶段开始。
 
-## Instance Methods
+另外，`init` 处理函数有个特殊之处是会自动执行 `super.init()`，原型链上的 `init` 处理函数都会被执行一遍。
 
-### to(target)
-
-Render the instance as last child of target (equals `target.appendChild(this)`).
-
-The `target` is an instance of Jinkela or Element.
-
-### prependTo(target)
-
-Render the instance as first child of target.
-
-The `target` is an instance of Jinkela or Element.

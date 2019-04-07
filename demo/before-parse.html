@@ -1,29 +1,23 @@
 <script src="../jinkela.js"></script>
+<body>
 <script>
 class Foo extends Jinkela {
   get template() {
-    return `<div>{c}</div>`;
+    return `
+      <ul>
+        <li>a: <var>{a}</var></li>
+        <li>b: <var>{b}</var></li>
+        <li>c: <var>{c}</var></li>
+      </ul>
+    `;
   }
   beforeParse(params) {
-    // Now, the `params` is { a: 1, b: 2 }
-
-    // You can insert new variable into `params`
+    // 可以计算一个新的值
     params.c = params.a + params.b;
-
-    // Also deletable
+    // 也可以删除上面的参数（不影响原始数据）
     delete params.a;
-
-    // DOM has not parsed yet now
-    console.log(this.element.innerHTML === '{c}'); // true
   }
 }
 
-let foo = new Foo({ a: 1 }, { b: 2 });
-
-console.log(foo.a === undefined); // true
-console.log(foo.b === 2); // true
-console.log(foo.c === 3); // true
-
-// Now, data has bound
-console.log(foo.element.innerHTML === '3'); // true
+let foo = new Foo({ a: 1, b: 2 }).to(document.body);
 </script>

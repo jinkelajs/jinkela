@@ -4,7 +4,8 @@
   "normalColor": "#666",
   "primaryColor": "#000",
   "logoUrl": "https://jinkelajs.org/logo.png",
-  "description": "A MODULARIZATION SOLUTION OF FRONTEND",
+  "description": "自认为是一个前端框架",
+  "spa": true,
   "languages": [
     "xml",
     "markdown",
@@ -13,16 +14,12 @@
   ],
   "items": [
     {
-      "text": "Introduction",
+      "text": "介绍",
       "href": "intro/"
     },
     {
-      "text": "Directives",
-      "href": "directives/"
-    },
-    {
-      "text": "Plugins",
-      "href": "plugins/"
+      "text": "API",
+      "href": "api/"
     },
     {
       "text": "Github",

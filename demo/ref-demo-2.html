@@ -1,0 +1,32 @@
+<script src="../jinkela.js"></script>
+<script src="../directives/ref.js"></script>
+<script>
+class Item extends Jinkela {
+  get template() {
+    return `
+      <li>{text}</li>
+    `;
+  }
+}
+
+class Demo extends Jinkela {
+  init() {
+    this.list = [
+      new Item({ text: 'one' }),
+      new Item({ text: 'two' }),
+      new Item({ text: 'three' })
+    ];
+  }
+  get template() {
+    return `
+      <ul>
+        <meta ref="list" />
+      </ul>
+    `;
+  }
+}
+
+addEventListener('DOMContentLoaded', () => {
+  new Demo().to(document.body);
+});
+</script>

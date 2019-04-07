@@ -1,0 +1,12 @@
+<script src="../jinkela.js"></script>
+<body>
+<span> World</span>
+<script>
+class Demo extends Jinkela {
+  get template() {
+    return '<span>Hello</span>';
+  }
+}
+
+new Demo().prependTo(document.body);
+</script>
