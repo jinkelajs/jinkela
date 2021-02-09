@@ -1,13 +1,13 @@
 {
   "name": "jinkela",
-  "version": "1.3.8",
+  "version": "1.3.9",
   "description": "A MODULARIZATION SOLUTION OF FRONTEND",
   "main": "umd.js",
   "author": "YanagiEiichi<admin@web-tinker.com>",
   "license": "MIT",
   "scripts": {
     "test": "eslint . && ui-tester-start tests",
-    "prepublish": "./build"
+    "prepublishOnly": "./build"
   },
   "devDependencies": {
     "eslint": "^7.19.0",
