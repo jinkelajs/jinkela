@@ -5,3 +5,5 @@ env:
   browser: true
 extends:
   eslint:recommended
+rules:
+  no-prototype-builtins: [ 0 ]
