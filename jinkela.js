@@ -43,14 +43,9 @@ var parseTemplate = function(that, params) {
         var i;
         list = [].concat(list);
         if (list.length === 0) list.push(document.createComment(' empty binding list '));
+        var first = current[0];
         if (that.element === node) that['@@element'] = list;
-        for (i = 0; i < list.length; i++) {
-          if (current[i] === list[i]) continue;
-          var nearest = current[i] || current[current.length - 1];
-          if (nearest) {
-            nearest.parentNode && nearest.parentNode.insertBefore(list[i], nearest);
-          }
-        }
+        if (first.parentNode) for (i = 0; i < list.length; i++) first.parentNode.insertBefore(list[i], first);
         for (i = 0; i < current.length; i++) {
           if (current[i].parentNode && !~list.indexOf(current[i])) current[i].parentNode.removeChild(current[i]);
         }
