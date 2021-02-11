@@ -1,0 +1,53 @@
+<script src="/tester.js"></script>
+<script src="/jinkela.js"></script>
+<script src="/directives/ref.js"></script>
+<body>
+<script>
+var Foo = function() { Jinkela.apply(this, arguments); };
+Foo.prototype = Object.create(Jinkela.prototype, {
+  constructor: { configurable: true, value: Foo },
+  template: {
+    configurable: true,
+    get: function() {
+      return '<div><a href="javascript:" ref="children">Jinkela</a></div>';
+    }
+  }
+});
+
+function span(i) {
+  var e = document.createElement('span');
+  e.textContent = '[' + i + ']';
+  return e;
+}
+
+var list = [];
+for (var i = 0; i <= 10; i++) list.push(span(i));
+
+var foo = new Foo().to(document.body); 
+
+foo.children = list;
+Tester.assert(foo.element.textContent === '[0][1][2][3][4][5][6][7][8][9][10]', 'init');
+
+foo.children = foo.children.slice(0, -1);
+Tester.assert(foo.element.textContent === '[0][1][2][3][4][5][6][7][8][9]', 'slice 0 -1');
+
+foo.children = foo.children.slice(1);
+Tester.assert(foo.element.textContent === '[1][2][3][4][5][6][7][8][9]', 'slice 1');
+
+foo.children = foo.children.filter((_, i) => i % 2);
+Tester.assert(foo.element.textContent === '[2][4][6][8]', 'mod 2');
+
+foo.children = foo.children.slice(0).reverse();
+Tester.assert(foo.element.textContent === '[8][6][4][2]', 'reverse');
+
+foo.children = [].concat(span('BEGIN'), foo.children);
+Tester.assert(foo.element.textContent === '[BEGIN][8][6][4][2]', 'begin');
+
+foo.children = [].concat(foo.children, span('END'));
+Tester.assert(foo.element.textContent === '[BEGIN][8][6][4][2][END]', 'end');
+
+foo.children = [].concat(foo.children.slice(0, 3), span('CENTER'), foo.children.slice(-3));
+Tester.assert(foo.element.textContent === '[BEGIN][8][6][CENTER][4][2][END]', 'center');
+
+Tester.feedback(true);
+</script>
