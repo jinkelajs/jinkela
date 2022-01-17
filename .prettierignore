@@ -1,0 +1,5 @@
+dist/*.js
+!dist/common.js
+!dist/header.js
+dist/__VAN_STATIC_BASE_PATH__
+reports

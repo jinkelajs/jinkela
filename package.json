@@ -1,0 +1,37 @@
+{
+  "name": "jinkela",
+  "license": "MIT",
+  "version": "2.0.0-dev1",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "scripts": {
+    "start": "rollup -c -w",
+    "build": "rollup -c -m",
+    "test": "jest",
+    "prettier": "prettier --write \"**/*.{js,ts,md,json,css,html}\""
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-typescript": "^7.16.7",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1",
+    "rollup": "^2.64.0",
+    "ts-jest": "^27.1.3",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@babel/core": "^7.16.7",
+    "@types/babel__core": "^7.1.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jinkelajs/jinkela"
+  }
+}

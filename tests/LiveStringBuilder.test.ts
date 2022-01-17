@@ -1,0 +1,52 @@
+import { digestImmediately } from '../src/StateManager';
+import { createState } from '../src';
+import { LiveStringBuilder } from '../src/LiveStringBuilder';
+
+test('Basic Usage', () => {
+  const state = createState({ a: 1 });
+  const lsb = new LiveStringBuilder();
+  lsb.append('<b>');
+  lsb.append(() => state.a);
+  lsb.append('</b>');
+  expect(lsb.getValue()).toBe('<b>1</b>');
+  const watchHandler = jest.fn();
+  const liveHandler = jest.fn();
+  lsb.watch(watchHandler);
+  lsb.live(liveHandler);
+  state.a = 2;
+  digestImmediately();
+  expect(lsb.getValue()).toBe('<b>2</b>');
+  state.a++;
+  digestImmediately();
+  expect(lsb.getValue()).toBe('<b>3</b>');
+  expect(watchHandler).toHaveBeenCalledTimes(2);
+  expect(watchHandler).toHaveBeenNthCalledWith(1, '<b>2</b>');
+  expect(watchHandler).toHaveBeenNthCalledWith(2, '<b>3</b>');
+  expect(liveHandler).toHaveBeenCalledTimes(3);
+  expect(liveHandler).toHaveBeenNthCalledWith(1, '<b>1</b>');
+  expect(liveHandler).toHaveBeenNthCalledWith(2, '<b>2</b>');
+  expect(liveHandler).toHaveBeenNthCalledWith(3, '<b>3</b>');
+});
+
+test('Constructor Arguments', () => {
+  const state = createState({ a: 1 });
+  const lsb = new LiveStringBuilder(['<b>', () => state.a, '</b>']);
+  const watchHandler = jest.fn();
+  const liveHandler = jest.fn();
+  lsb.watch(watchHandler);
+  lsb.live(liveHandler);
+  expect(lsb.getValue()).toBe('<b>1</b>');
+  state.a = 2;
+  digestImmediately();
+  expect(lsb.getValue()).toBe('<b>2</b>');
+  state.a++;
+  digestImmediately();
+  expect(lsb.getValue()).toBe('<b>3</b>');
+  expect(watchHandler).toHaveBeenCalledTimes(2);
+  expect(watchHandler).toHaveBeenNthCalledWith(1, '<b>2</b>');
+  expect(watchHandler).toHaveBeenNthCalledWith(2, '<b>3</b>');
+  expect(liveHandler).toHaveBeenCalledTimes(3);
+  expect(liveHandler).toHaveBeenNthCalledWith(1, '<b>1</b>');
+  expect(liveHandler).toHaveBeenNthCalledWith(2, '<b>2</b>');
+  expect(liveHandler).toHaveBeenNthCalledWith(3, '<b>3</b>');
+});

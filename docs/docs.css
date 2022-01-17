@@ -1,0 +1,145 @@
+main {
+  padding: 0 60px;
+  position: relative;
+}
+
+aside {
+  position: absolute;
+  left: 60px;
+  top: 0;
+  width: 260px;
+}
+
+aside ul {
+  line-height: 1.8em;
+  list-style: none;
+  padding: 0;
+  color: #666;
+}
+
+aside ul ul {
+  padding-left: 1em;
+  font-size: 13px;
+}
+
+article {
+  padding-top: 2.2em;
+  margin: 0 auto;
+  max-width: 600px;
+  line-height: 1.6em;
+  color: #666;
+}
+
+article h1 {
+  margin: 1.5em 0 0.3em;
+  padding: 0.5em 0 1.2em;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+}
+
+article h2 {
+  margin: 2.5em 0 0.7em;
+  padding: 0.5em 0 0.5em;
+  position: relative;
+  color: #333;
+}
+
+article h3 {
+  margin: 2.5em 0 0.7em;
+  padding: 0.5em 0 0.5em;
+  position: relative;
+  color: #333;
+}
+
+article img {
+  max-width: 100%;
+}
+
+article table {
+  border-collapse: collapse;
+}
+
+article tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+article td,
+article th {
+  padding: 6px 13px;
+  border: 1px solid #ddd;
+}
+
+article pre {
+  padding: 1em;
+  position: relative;
+}
+
+article pre,
+article code {
+  font-family: 'Roboto Mono', Monaco, courier, monospace;
+  font-size: 12px;
+  background-color: #f8f8f8;
+  -webkit-font-smoothing: initial;
+}
+
+article pre {
+  border-radius: 6px;
+  overflow: auto;
+}
+
+article code {
+  color: #e96900;
+  padding: 3px 5px;
+  margin: 0 2px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+article strong {
+  color: #333;
+  font-weight: bold;
+}
+
+article h1:first-child {
+  margin-top: 0;
+}
+
+pre .try {
+  font-size: 12px;
+  padding: 5px 10px;
+  line-height: 1.25;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 0 0 0 7px;
+  cursor: pointer;
+  border: 0;
+  color: inherit;
+  transition: background-color 200ms;
+}
+
+pre .try:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 1280px) {
+  article {
+    margin-left: calc(260px + 1em);
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  aside {
+    display: none;
+  }
+  article {
+    margin: 0;
+    padding: 0;
+  }
+  main {
+    padding: 1em;
+  }
+}

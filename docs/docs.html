@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0" />
+    <link rel="stylesheet" href="./common.css" />
+    <link rel="stylesheet" href="./docs.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/styles/github-dark.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/languages/typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.0.10/marked.min.js"></script>
+    <script type="module">
+      import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev1/dist/index.esm.js';
+      import { header } from './header.js';
+      import { makeCodePreview } from './common.js';
+
+      const md = request(() =>
+        fetch('./intro.md')
+          .then((r) => r.text())
+          .then((text) => {
+            const html = marked.parse(text);
+            const node = jkl({ raw: [html] });
+            return node;
+          }),
+      );
+
+      const de = document.documentElement;
+      const state = createState({ menuPos: 'absolute', hash: location.hash });
+      addEventListener('scroll', () => (state.menuPos = de.scrollTop > 90 ? 'fixed' : 'absolute'));
+      addEventListener('hashchange', () => (state.hash = location.hash));
+
+      const renderer = new marked.Renderer();
+      renderer.code = (code, lang) => {
+        const validLang = !!(lang && hljs.getLanguage(lang));
+        const highlighted = validLang ? hljs.highlight(lang, code).value : code;
+        return `<pre class="hljs ${lang}">${highlighted}</pre>`;
+      };
+      marked.setOptions({ renderer });
+
+      const content = jkl`
+        <div class="docs">
+          ${header()}
+          <main>
+            <aside style="position: ${() => state.menuPos};">
+              <h2>介绍</h2>
+              <ul>
+                ${() => {
+                  if (!md.data) return;
+                  const list = md.data.querySelectorAll('[id]');
+                  return Array.from(list, (h) => {
+                    const level = h.tagName.match(/\d+/) - 1;
+                    const href = `#${encodeURIComponent(h.getAttribute('id'))}`;
+                    const weight = () => (href === state.hash ? 'bold' : 'normal');
+                    return jkl`
+                      <li style="margin-left: ${level}em; font-weight: ${weight};">
+                        <a href="${href}">${h.textContent}<a/>
+                      </li>
+                    `;
+                  });
+                }}
+              </ul>
+            </aside>
+            <article>
+              ${() => {
+                if (!md.data) return null;
+                // After article rendered.
+                setTimeout(() => {
+                  // Scroll into anchor element
+                  const id = decodeURIComponent(location.hash.slice(1));
+                  document.getElementById(id)?.scrollIntoView(true);
+                  // Process pre Tag
+                  makeCodePreview();
+                });
+                return md.data.cloneNode(true);
+              }}
+            </article>
+          </main>
+        </div>
+      `;
+
+      document.body.appendChild(content);
+    </script>
+  </head>
+</html>
