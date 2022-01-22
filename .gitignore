@@ -2,7 +2,8 @@ node_modules
 .*
 *.map
 dist
-reports
+coverage
+!.travis.yml
 !.gitignore
 !.babelrc
 !.prettierignore

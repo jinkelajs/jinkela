@@ -3,7 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   collectCoverage: true,
-  coverageDirectory: 'reports',
+  coverageDirectory: './coverage/',
   collectCoverageFrom: ['src/**/*.ts', '!src/example.ts', '!src/index.ts'],
   coverageReporters: ['clover', 'html'],
 };
