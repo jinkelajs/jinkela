@@ -5,5 +5,4 @@ module.exports = {
   collectCoverage: true,
   coverageDirectory: './coverage/',
   collectCoverageFrom: ['src/**/*.ts', '!src/example.ts', '!src/index.ts'],
-  coverageReporters: ['clover', 'html'],
 };
