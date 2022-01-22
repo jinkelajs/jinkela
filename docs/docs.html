@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="./common.css" />
     <link rel="stylesheet" href="./docs.css" />
     <link
@@ -18,7 +18,7 @@
       import { makeCodePreview } from './common.js';
 
       const md = request(() =>
-        fetch('./intro.md')
+        fetch('./intro.md?_=' + Date.now())
           .then((r) => r.text())
           .then((text) => {
             const html = marked.parse(text);
@@ -66,12 +66,9 @@
             <article>
               ${() => {
                 if (!md.data) return null;
-                // After article rendered.
                 setTimeout(() => {
-                  // Scroll into anchor element
                   const id = decodeURIComponent(location.hash.slice(1));
                   document.getElementById(id)?.scrollIntoView(true);
-                  // Process pre Tag
                   makeCodePreview();
                 });
                 return md.data.cloneNode(true);

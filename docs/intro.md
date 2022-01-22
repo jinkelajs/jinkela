@@ -112,10 +112,67 @@ const div = jkl`
 document.body.appendChild(div);
 ```
 
-## 4. 你学废了吗？
+## x. 小结
 
-以上就是 Jinkela 最基本的用法，你学废了吗？
+1. 组件模板字符串
+2. 分支循环写原生
+3. 事件前面加 @
 
-# TODO
+你学废了吗？
+
+# 设计理念
+
+## 1. 状态与视图分离
+
+绝大多数前端框架都将状态和视图一起包装成组件，「状态」一词潜移默化地变成了特指组件的状态。而在 Jinkela 的设计中，状态是可以单独存在的，视图与状态之间可以自由结合，是多对多的关系。
+
+假如有两个无关的组件，他们都要展示当前时间，咋写？一般的思路就是每个组件单独开计时器计算当前时间，带来的问题是一旦这样的组件用多了，整个页面就需要开启大量的定时器。优化一下的方案就是引入一个外部的状态管理器，两个组件共同订阅上面是时间数据，数据变化时去更新组件自己的状态。这个方案的思路是很清晰的，但有两个让人不舒服的点。一是要引入外部状态管理器，增加了外部依赖。二是要从外部的状态管理器将数据同步到组件的状态上，这个过程太绕了。
+
+从外部状态管理器的普及程度来看，大家对「状态被限制在组件范围内」的前端框架是不满意的。既然要引入外部状态管理器，为什么不从框架设计层面就直接把这层屏障打开呢？这就好比是既然植物要吸收氮磷钾，为什么不直接让植物能够吸收地下两米的氮磷钾呢？
+
+下面这张图是一个典型的页面对应的一棵组件树，从根组件开始，到一个个叶组件，每个组件都在维护自己的状态。
+
+![](component-tree.png)
+
+而 Jinkela 状态与视图分离的设计就可以让原本看似无关的组件复用同一个状态。这便是 Jinkela 的核心理念之 **状态属于 Model 而不是 View**。
+
+![](component-tree-with-jinkela.png)
+
+所以回到前面多组件展示当前时间的问题，Jinkela 的代码可以这么写。
+
+```typescript
+import { jkl, createState } from 'jinkela';
+
+const s = createState({
+  update() {
+    const t = new Date();
+    this.hours = t.getHours();
+    this.minutes = t.getMinutes();
+    this.seconds = t.getSeconds();
+    setTimeout(() => this.update(), 100);
+  },
+});
+
+s.update();
+
+const c1 = jkl`
+  <h1>
+    ${() => s.hours}:${() => s.minutes}:${() => s.seconds}
+  </h1>`;
+
+const c2 = jkl`
+  <h2>
+    Current Time: ${() => s.hours}:${() => s.minutes}:${() => s.seconds}
+  </h2>`;
+
+document.body.appendChild(c1);
+document.body.appendChild(c2);
+```
+
+## 2. 还没想好咋编
+
+TODO
+
+# 详细文档
 
 别急，文档正在逐步完善中。
