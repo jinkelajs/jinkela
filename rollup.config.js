@@ -1,8 +1,6 @@
 import path from 'path';
-import babel from '@rollup/plugin-babel';
-import nodeResolve from '@rollup/plugin-node-resolve';
-
-const extensions = ['.js', '.ts'];
+import typescript from 'rollup-plugin-typescript2';
+import { uglify } from 'rollup-plugin-uglify';
 
 const resolve = (...args) => {
   return path.resolve(__dirname, ...args);
@@ -26,16 +24,12 @@ const jinkela = {
     },
   ],
   plugins: [
-    nodeResolve({
-      extensions,
-      modulesOnly: true,
+    typescript({
+      tsconfigOverride: {
+        include: ['src', 'types.d.ts'],
+      },
     }),
-    babel({
-      exclude: 'node_modules/**',
-      babelHelpers: 'bundled',
-      extensions,
-      sourceMaps: true,
-    }),
+    uglify(),
   ],
 };
 
