@@ -1,6 +1,6 @@
 import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType } from './utils';
 import type { SlotVar } from './utils';
-import { live } from './StateManager';
+import { live, touch } from './StateManager';
 import { StringBuilder } from './StringBuilder';
 import { BasicBuilder } from './BasicBuilder';
 import { domListAssign } from './domListAssign';
@@ -74,13 +74,16 @@ export class HtmlBuilder extends BasicBuilder {
         // The list must not be empty in any time.
         let list = new IndexedArray<Node>([cmt]);
         const variable = this.getVariable();
-        if (typeof variable === 'function') {
-          live(variable, (value) => {
+        live(
+          () => {
+            const value = typeof variable === 'function' ? variable() : variable;
+            touch(value);
+            return value;
+          },
+          (value) => {
             list = domListAssign(list, value);
-          });
-        } else {
-          list = domListAssign(list, variable);
-        }
+          },
+        );
       }
       // Normal char.
       else {

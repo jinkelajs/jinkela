@@ -137,6 +137,21 @@ describe('Attributes', () => {
     expect(e1?.getAttribute('b')).toBe('() => 1');
   });
 
+  test('with Extracted Variable', () => {
+    const attrs = createState({ a: 1 } as any);
+    const e1 = r`<div ${attrs}></div>`.firstElementChild;
+    expect(e1?.getAttribute('a')).toBe('1');
+    expect(e1?.getAttribute('b')).toBe(null);
+    attrs.b = 2;
+    digestImmediately();
+    expect(e1?.getAttribute('a')).toBe('1');
+    expect(e1?.getAttribute('b')).toBe('2');
+    delete attrs.a;
+    digestImmediately();
+    expect(e1?.getAttribute('a')).toBe(null);
+    expect(e1?.getAttribute('b')).toBe('2');
+  });
+
   describe('Override Rules', () => {
     test('Right Extracted Attributes Override Left Normal Attributes', () => {
       const e1 = r`<div a="1" ${{ a: 2, b: 2 }}></div>`.firstElementChild;

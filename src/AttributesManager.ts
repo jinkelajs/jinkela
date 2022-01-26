@@ -1,5 +1,5 @@
 import { assertDefined, uDiff } from './utils';
-import { live } from './StateManager';
+import { live, touch } from './StateManager';
 
 interface IPair {
   readonly type: 'pair';
@@ -43,6 +43,7 @@ export class AttributesManager {
       else {
         const { value } = item;
         const dict = Object(typeof value === 'function' ? value() : value);
+        touch(dict);
         const keys = Object.keys(dict);
         for (let j = 0; j < keys.length; j++) {
           const name = keys[j];

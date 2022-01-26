@@ -7,13 +7,14 @@ let recording: Recording = undefined;
 const recordingStack: Recording[] = [recording];
 
 const handlerMap = new WeakMap<() => void, PairSet<EventTarget, string>>();
+const stateEtMap = new WeakMap<any, EventTarget>();
 
-const executeAndRecordDeps = <T extends () => any>(mayBeFn: T, onUpdate: Fn): ReturnType<T> => {
+const executeAndRecordDeps = <T extends () => any>(fn: T, onUpdate: Fn): ReturnType<T> => {
   try {
-    // Setup a new recording stack head first, and execute myBeFn.
+    // Setup a new recording stack head first, and execute `fn`.
     recordingStack.push(recording);
     recording = new PairSet<EventTarget, string>();
-    return mayBeFn();
+    return fn();
   } finally {
     assertDefined(recording);
     const debouncedOnUpdate = debounce(onUpdate);
@@ -43,11 +44,18 @@ const cleanUpListeners = (onUpdate: Fn) => {
   handlerMap.delete(onUpdate);
 };
 
+export const touch = (obj: unknown) => {
+  assertDefined(recording);
+  const et = stateEtMap.get(obj);
+  if (!et) return;
+  recording.add(et, '*');
+};
+
 /**
  * Get and watch value, handler function will be called immediately first time.
  * @returns A 'cancel' function to stop watch.
  */
-export function live<T extends () => any>(fn: T, handler: (value: ReturnType<T>) => void) {
+export const live = <T extends () => any>(fn: T, handler: (value: ReturnType<T>) => void) => {
   // Execute function with `executeAndRecordDeps`.
   // The `update` function will be called while any dependencies change.
   const update = () => {
@@ -57,7 +65,7 @@ export function live<T extends () => any>(fn: T, handler: (value: ReturnType<T>)
   update();
   // Return a 'cancel' function to stop watch.
   return () => cleanUpListeners(update);
-}
+};
 
 /**
  * Create a proxied state object, any property values change could be watched.
@@ -65,19 +73,26 @@ export function live<T extends () => any>(fn: T, handler: (value: ReturnType<T>)
 export const createState = <T extends Record<PropertyKey, any>>(value: T) => {
   const isArray = value instanceof Array;
   const et = new EventTarget();
+  const dispatch = (key: string | symbol) => {
+    if (isArray) {
+      et.dispatchEvent(new CustomEvent('*'));
+    } else if (typeof key === 'string') {
+      et.dispatchEvent(new CustomEvent('*'));
+      et.dispatchEvent(new CustomEvent(key));
+    }
+  };
   const state = new Proxy(value, {
     set(target, key, value) {
       const oValue = target[key];
       target[key as keyof typeof target] = value;
       // Dispatch event only when value changed actually.
-      if (oValue !== value) {
-        if (isArray) {
-          et.dispatchEvent(new CustomEvent('*'));
-        } else if (typeof key === 'string') {
-          et.dispatchEvent(new CustomEvent(key));
-        }
-      }
+      if (oValue !== value) dispatch(key);
       return true;
+    },
+    deleteProperty(target, key) {
+      // Dispatch event only when value changed actually.
+      if (key in target) dispatch(key);
+      return delete target[key];
     },
     get(target, key) {
       // Record the property as a dependency, if recording currently.
@@ -88,8 +103,9 @@ export const createState = <T extends Record<PropertyKey, any>>(value: T) => {
           recording.add(et, key);
         }
       }
-      return Object(target)[key];
+      return target[key];
     },
   });
+  stateEtMap.set(state, et);
   return state;
 };
