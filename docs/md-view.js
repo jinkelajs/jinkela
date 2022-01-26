@@ -1,16 +1,24 @@
-import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev1/dist/index.esm.js';
+import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev2/dist/index.esm.js';
 
 const makeCodePreview = () => {
-  const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev1/dist/index.iife.js';
+  const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev2/dist/index.iife.js';
   Array.from(document.querySelectorAll('pre.hljs'), (pre) => {
     const code = pre.textContent.replace(/^import (.*) from 'jinkela';$/gm, `const $1 = Jinkela;`);
     const href = URL.createObjectURL(
       new Blob(
         [
-          '<!DOCTYPE html>\n<html>\n<body>\n',
-          `<script src="${src}"><\/script>\n`,
-          `<script>\n\n${code}\n\n<\/script>\n`,
-          '</body>\n</html>\n',
+          [
+            '<!DOCTYPE html>',
+            '<html>',
+            '<body>',
+            '<meta charset="utf-8" />',
+            `<script src="${src}"><\/script>`,
+            '<script>',
+            code,
+            '</script>',
+            '</body>',
+            '</html>',
+          ].join('\n'),
         ],
         { type: 'text/html' },
       ),
@@ -40,7 +48,10 @@ marked.setOptions({ renderer });
 export const mdView = (src, title) => {
   const md = request(() =>
     fetch(`${src}?_=${Date.now()}`)
-      .then((r) => r.text())
+      .then((r) => {
+        if (r.ok) return r.text();
+        throw new Error(`HTTP ${r.status}`);
+      })
       .then((text) => {
         const html = marked.parse(text);
         const node = jkl({ raw: [html] });
@@ -52,6 +63,7 @@ export const mdView = (src, title) => {
     <main class="md-view">
       ${() => {
         if (md.loading) return jkl`<h2>Loading...</h2>`;
+        if (md.error) return jkl`<h2 style="color: darkred;">${md.error}</h2>`;
         return jkl`
           <aside style="position: ${() => pageState.menuPos};">
             <h2>${title}</h2>

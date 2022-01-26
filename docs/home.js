@@ -17,10 +17,10 @@ const content = jkl`
         });
       }} 
     </nav>
-    <a class="logo" href="docs.html">
+    <a class="logo" href="docs.html?d=intro">
       <img src="./willan.png" alt="logo" />
     </a>
-    <h1><a href="docs.html">${title}</a></h1>
+    <h1><a href="docs.html?d=intro">${title}</a></h1>
     <h2>${description}</h2>
   </div>`;
 
