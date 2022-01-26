@@ -1,13 +1,13 @@
 {
   "name": "jinkela",
   "license": "MIT",
-  "version": "2.0.0-dev1",
+  "version": "2.0.0-dev2",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "scripts": {
     "start": "rollup -c -w",
     "build": "rollup -c -m",
-    "test": "jest",
+    "test": "jest --coverage",
     "prettier": "prettier --write \"**/*.{js,ts,md,json,css,html}\""
   },
   "files": [

@@ -18,4 +18,8 @@ export class PairSet<A, B> {
       s.forEach((b) => cb(a, b));
     });
   }
+  clear() {
+    this.storage.forEach((s) => s.clear());
+    this.storage.clear();
+  }
 }

@@ -1,10 +1,11 @@
-import { assertDefined, assertNotNull, assertToken, isSelfClosingTag } from './utils';
+import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType } from './utils';
+import type { SlotVar } from './utils';
 import { live } from './StateManager';
 import { StringBuilder } from './StringBuilder';
 import { BasicBuilder } from './BasicBuilder';
-import { LiveStringBuilder } from './LiveStringBuilder';
 import { domListAssign } from './domListAssign';
 import { IndexedArray } from './IndexedArray';
+import { AttributesManager } from './AttributesManager';
 
 export class HtmlBuilder extends BasicBuilder {
   public root = document.createDocumentFragment();
@@ -164,9 +165,9 @@ export class HtmlBuilder extends BasicBuilder {
     const isStandard = type === '!' && this.look(2) === '--';
     if (isStandard) this.read(2);
 
-    const lsb = new LiveStringBuilder();
+    const list: SlotVar[] = [];
 
-    const sb = new StringBuilder((s) => lsb.append(s));
+    const sb = new StringBuilder((s) => list.push(s));
     if (type === '?') sb.append(type);
 
     for (;;) {
@@ -187,15 +188,22 @@ export class HtmlBuilder extends BasicBuilder {
         sb.append(c);
       } else {
         sb.commit();
-        lsb.append(this.getVariable());
+        list.push(this.getVariable());
       }
     }
 
-    const comment = document.createComment(lsb.getValue());
-    this.current.appendChild(comment);
-    lsb.watch((text) => {
-      comment.data = text;
-    });
+    let comment: Comment;
+    live(
+      () => list.map((i) => (typeof i === 'function' ? i() : i)).join(''),
+      (text) => {
+        if (comment) {
+          comment.data = text;
+        } else {
+          comment = document.createComment(text);
+          this.current.appendChild(comment);
+        }
+      },
+    );
   }
 
   private readAttrSpace() {
@@ -204,82 +212,89 @@ export class HtmlBuilder extends BasicBuilder {
   }
 
   private readAttributes(element?: HTMLElement) {
+    const am = new AttributesManager();
     for (let i = 0; i < 1000; i++) {
-      this.readAttrSpace();
+      const res = this.readAttrName(element);
+      if (res === false) return false;
 
-      // Detect it's an event binding or not.
-      if (this.done) return false;
-      const isEventBinding = this.look() === '@';
-      if (isEventBinding) this.read();
-
-      let name = '';
-
-      if (this.done) return false;
-      if (!this.look()) {
-        this.read();
-        let leadingVariable = this.getVariable();
-        const space = this.readAttrSpace();
-        if (this.done) return false;
-        // Extract variable to the attributes.
-        if (this.look() === '>' || this.look() === '/' || (space && this.look() !== '=')) {
-          if (leadingVariable) {
-            const entries = Object.entries(leadingVariable);
-            if (element)
-              for (let i = 0; i < entries.length; i++) {
-                const v = entries[i][1];
-                if (v === undefined || v === null) continue;
-                element.setAttribute(entries[i][0], v);
-              }
-          }
-        } else {
-          name += leadingVariable;
-        }
+      // It's a extract attributes.
+      if (typeof res === 'object') {
+        am.addExtract(res.value);
+        continue;
       }
 
-      // Read attribute name
-      // https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
-      name += this.readUntil('\t\n\f >/=', true);
+      const name = res;
 
       this.readAttrSpace();
-
       if (this.done) return false;
+
       const c = this.look();
-      // If it's a key=value pattern.
+
+      // If it's a name=value pair.
       if (c === '=') {
         this.read();
         this.readAttrSpace();
         if (this.done) return false;
         const value = this.readAttrValue();
-        if (!element) continue;
-        // For event binding, add all function values as the event listeners.
-        if (isEventBinding) {
-          for (let i = 0; i < value.length; i++) {
-            if (typeof value[i] !== 'function') continue;
-            element.addEventListener(name, value[i] as any);
-          }
-        }
-        // Else it's a normal attribute, bind to variable.
-        else if (name) {
-          const lsb = new LiveStringBuilder(value);
-          lsb.live((text) => element.setAttribute(name, text));
-        }
+        if (name) am.addPair(name, value);
+        continue;
       }
+
+      // It's name only.
+      if (name) am.addPair(name, ['']);
+
       // End of tag, set last attribute and stop.
-      else if (c === '>') {
+      if (c === '>') {
         this.read();
-        if (name && element) element.setAttribute(name, '');
-        return true;
+        break;
       } else if (c === '/' && this.look(2) === '/>') {
         this.read(2);
-        if (name && element) element.setAttribute(name, '');
-        return true;
-      }
-      // Name found only, set it without value, and find next attribute.
-      else {
-        if (name && element) element.setAttribute(name, '');
+        break;
       }
     }
-    throw new TypeError('Too many attributes.');
+
+    if (element) am.bind(element);
+    return true;
+  }
+
+  private readAttrName(element?: HTMLElement) {
+    this.readAttrSpace();
+    if (this.done) return false;
+    let name = '';
+
+    // Read leading variable.
+    // It may be a variable attribute name such as <meta ${'x'}="" ${'dis'}able />,
+    // or name-value pairs such as <meta ${'x'} />.
+    if (!this.look()) {
+      this.read();
+      let leadingVariable = this.getVariable();
+      if (leadingVariable === null || leadingVariable === undefined) {
+        // Nothing to do.
+      }
+      // It's unknown, need to check following characters.
+      else if (!isValueType(leadingVariable)) {
+        const space = this.readAttrSpace();
+        if (this.done) return false;
+        const following = this.look();
+        // It's name-value pairs.
+        if (following === '>' || following === '/' || (space && following !== '=')) {
+          return { type: 'extract', value: leadingVariable } as const;
+        }
+        // It's an attribute name.
+        else {
+          name += leadingVariable;
+        }
+      }
+      // It's an attribute name.
+      else {
+        name += leadingVariable;
+      }
+    }
+
+    // Read attribute name
+    // https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
+    name += this.readUntil('\t\n\f >/=', true);
+    return name;
   }
 
   private readAttrValue() {
@@ -317,9 +332,3 @@ export class HtmlBuilder extends BasicBuilder {
     }
   }
 }
-
-export type Var = number | string | boolean | null | undefined | Node;
-
-export type VarOrList = Var | Var[];
-
-export type SlotVar = VarOrList | (() => VarOrList) | ((e?: Event) => void);

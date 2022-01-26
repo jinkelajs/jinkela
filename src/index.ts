@@ -1,4 +1,5 @@
-import { SlotVar, HtmlBuilder } from './HtmlBuilder';
+import { HtmlBuilder } from './HtmlBuilder';
+import { SlotVar } from './utils';
 import { createState } from './StateManager';
 import { request } from './stdlib/request';
 

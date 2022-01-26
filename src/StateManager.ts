@@ -1,74 +1,67 @@
+import { debounce, removeDebounce } from './debounce';
 import { PairSet } from './PairSet';
-import { assertDefined } from './utils';
-
-const handlerMap = new WeakMap<() => void, PairSet<EventTarget, string>>();
+import { assertDefined, Fn } from './utils';
 
 type Recording = undefined | PairSet<EventTarget, string>;
 let recording: Recording = undefined;
 const recordingStack: Recording[] = [recording];
 
-type Fn = () => void;
-const debounceCache = new WeakMap<Fn, Fn>();
-const debounceWaitingSet = new Set<Fn>();
-const debounce = (fn: () => void) => {
-  let dfn = debounceCache.get(fn);
-  if (dfn) return dfn;
-  dfn = () => {
-    if (debounceWaitingSet.has(fn)) return;
-    debounceWaitingSet.add(fn);
-    // Next tick.
-    Promise.resolve().then(() => {
-      if (!debounceWaitingSet.has(fn)) return;
-      debounceWaitingSet.delete(fn);
-      fn();
-    });
-  };
-  debounceCache.set(fn, dfn);
-  return dfn;
-};
+const handlerMap = new WeakMap<() => void, PairSet<EventTarget, string>>();
 
-export const digestImmediately = () => {
-  debounceWaitingSet.forEach((fn) => {
-    debounceWaitingSet.delete(fn);
-    fn();
-  });
-};
-
-/**
- * Get and watch value.
- * NOTE: Handler function will be called immediately.
- */
-export const live = <T extends Fn>(fn: T, handler: (value: ReturnType<T>) => void) => {
-  // Execute function with `executeAndRecordDeps`.
-  // `update` will be called while any dependencies change.
-  const update = () => {
-    // The return value of function will be passed to handler.
-    handler(executeAndRecordDeps(fn, update));
-  };
-  update();
-};
-
-const executeAndRecordDeps = <T extends (...args: any[]) => any>(fn: T, onUpdate: Fn): ReturnType<T> => {
+const executeAndRecordDeps = <T extends () => any>(mayBeFn: T, onUpdate: Fn): ReturnType<T> => {
   try {
+    // Setup a new recording stack head first, and execute myBeFn.
     recordingStack.push(recording);
     recording = new PairSet<EventTarget, string>();
-    return fn();
+    return mayBeFn();
   } finally {
     assertDefined(recording);
     const debouncedOnUpdate = debounce(onUpdate);
     const old = handlerMap.get(onUpdate);
+    // Add event listeners for new dependencies.
     recording.forEach((et, name) => {
       if (old?.delete(et, name)) return;
       et.addEventListener(name, debouncedOnUpdate);
     });
+    // Remove unused event listeners.
     old?.forEach((et, name) => {
       et.removeEventListener(name, debouncedOnUpdate);
     });
+    // Save and recover recording stack head.
     handlerMap.set(onUpdate, recording);
     recording = recordingStack.pop() as Recording;
   }
 };
 
+const cleanUpListeners = (onUpdate: Fn) => {
+  const recording = handlerMap.get(onUpdate);
+  if (!recording) return;
+  const debouncedOnUpdate = debounce(onUpdate);
+  recording.forEach((et, name) => et.removeEventListener(name, debouncedOnUpdate));
+  removeDebounce(onUpdate);
+  recording.clear();
+  handlerMap.delete(onUpdate);
+};
+
+/**
+ * Get and watch value, handler function will be called immediately first time.
+ * @returns A 'cancel' function to stop watch.
+ */
+export function live<T extends () => any>(fn: T, handler: (value: ReturnType<T>) => void) {
+  // Execute function with `executeAndRecordDeps`.
+  // The `update` function will be called while any dependencies change.
+  const update = () => {
+    // The return value of function will be passed to handler.
+    handler(executeAndRecordDeps(fn, update));
+  };
+  update();
+  // Return a 'cancel' function to stop watch.
+  return () => cleanUpListeners(update);
+}
+
+/**
+ * Create a proxied state object, any property values change could be watched.
+ */
 export const createState = <T extends Record<PropertyKey, any>>(value: T) => {
   const isArray = value instanceof Array;
   const et = new EventTarget();
@@ -87,6 +80,7 @@ export const createState = <T extends Record<PropertyKey, any>>(value: T) => {
       return true;
     },
     get(target, key) {
+      // Record the property as a dependency, if recording currently.
       if (recording) {
         if (isArray) {
           recording.add(et, '*');

@@ -1,4 +1,5 @@
-import { createState, digestImmediately, live } from '../src/StateManager';
+import { createState, live } from '../src/StateManager';
+import { digestImmediately } from '../src/debounce';
 
 test('Array Push', async () => {
   const arr = createState<number[]>([]);
@@ -116,4 +117,22 @@ test('Value Change Actually', async () => {
   digestImmediately();
   expect(update).toHaveBeenCalledTimes(2);
   expect(update).toHaveBeenNthCalledWith(2, 2);
+});
+
+test('Live and Cancel', async () => {
+  const s = createState({ a: 1 });
+  const update = jest.fn();
+  const cancel = live(() => s.a, update);
+  expect(update).toHaveBeenCalledTimes(1);
+  expect(update).toHaveBeenNthCalledWith(1, 1);
+  s.a++;
+  digestImmediately();
+  expect(update).toHaveBeenCalledTimes(2);
+  expect(update).toHaveBeenNthCalledWith(2, 2);
+  s.a++;
+  cancel();
+  s.a++;
+  digestImmediately();
+  expect(update).toHaveBeenCalledTimes(2);
+  cancel(); // Nothing to do
 });

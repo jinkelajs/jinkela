@@ -1,4 +1,4 @@
-import { SlotVar } from './HtmlBuilder';
+import { SlotVar } from './utils';
 
 export class BasicBuilder {
   protected index = 0;
