@@ -1,11 +1,11 @@
 main.md-view {
-  padding: 0 60px;
+  padding: 0 var(--side-padding);
   position: relative;
 }
 
 .md-view aside {
   position: absolute;
-  left: 60px;
+  left: var(--side-padding);
   top: 0;
   width: 260px;
 }
@@ -28,6 +28,10 @@ main.md-view {
   max-width: 600px;
   line-height: 1.6em;
   color: #666;
+}
+
+.md-view article a {
+  text-decoration: underline;
 }
 
 .md-view article h1 {
@@ -119,6 +123,7 @@ main.md-view {
   border: 0;
   color: inherit;
   transition: background-color 200ms;
+  text-decoration: none;
 }
 
 .md-view pre .try:hover {
@@ -133,8 +138,43 @@ main.md-view {
 }
 
 @media (max-width: 720px) {
+  .md-view .hamburger {
+    position: fixed;
+    top: 13px;
+    right: var(--side-padding);
+    width: 18px;
+    height: 15px;
+    z-index: 3;
+    background: #000;
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .md-view .hamburger::before,
+  .md-view .hamburger::after {
+    content: '';
+    display: block;
+    height: 3px;
+    background: #fff;
+    margin-top: 3px;
+  }
   .md-view aside {
-    display: none;
+    transform: translateX(-200px);
+    position: fixed !important;
+    background: #f9f9f9;
+    top: 40px;
+    padding-left: var(--side-padding);
+    box-sizing: border-box;
+    height: 100%;
+    z-index: 1;
+    left: 0;
+    width: 200px;
+    box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+    overflow: auto;
+    transition: transform 200ms ease;
+  }
+  .md-view.active aside {
+    transform: translateX(0);
   }
   .md-view article {
     max-width: initial;

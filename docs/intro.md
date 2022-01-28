@@ -4,7 +4,7 @@ Jinkela（金坷垃）<del style="opacity:.3;">是一种肥料添加剂</del> �
 
 其核心思想是：**尽可能地使用规范内的特性，让代码无需构建就能在浏览器上跑起来**。
 
-适合用来快速搭建一个小而轻的工具类页面，适合交互密集型的组件开发，在大型多人协作项目上似乎没有优势。
+适合用来快速搭建一个小而轻的工具类页面，适合交互密集型的组件开发，在大型多人协作项目上可能没有优势。
 
 # 快速上手
 
@@ -63,7 +63,7 @@ setTimeout(() => {
 
 const div = jkl`
   <div>
-    <h2>What are the benefits of Jinkela?</h2> 
+    <h2>What are the benefits of Jinkela?</h2>
     ${() => {
       if (s.loading) return jkl`<span>Waiting...</span>`;
       return jkl`
@@ -79,7 +79,7 @@ const div = jkl`
 document.body.appendChild(div);
 ```
 
-## 3. 事件语法糖
+## 3. 事件处理
 
 给元素添加 `@` 开头的属性时候，Jinkela 会将其作为事件注册到元素上。比如下面这个例子就是给 div 里的 button 绑定了 click 事件。按钮点击之后往 `list` 里面增加一个 li 元素。每个 li 元素里面有一个 remove 按钮，点击后将从 `list` 中删除 li 自身。
 
@@ -105,7 +105,7 @@ const click = () => {
 const div = jkl`
   <button @click="${click}">+1</button>
   <ul style="line-height: 1.75;">
-    ${() => [...list]}
+    ${list}
   </ul>
 `;
 
@@ -118,11 +118,19 @@ document.body.appendChild(div);
 2. 分支循环写原生
 3. 事件前面加 @
 
-你学废了吗？
+你学废了吗？🎉🎉🎉
 
 # 设计理念
 
-## 1. 状态与视图分离
+## 1. 无构建
+
+Jinkela 第一版设计的出发点就是对当是的构建工具如 Grunt、Gulp、Webpack 之类的东西强烈不满，希望有一个无需构建用起来也不难受的框架。所以 Jinkela v2 也会不忘初心，依然坚持无构建可用。
+
+这不是反潮流，我没有反对前端工程化。如果引入构建之后可以变得更好用那何乐不为呢？即便是基于 Jinkela 的项目，我有时也会用 Webpack 打包，用 TypeScript 来写。但有时候我希望 5 分钟做出一个简易的页面呢？当然是撸起袖子就是干啦，要是整个 Webpack 进来网络不好的话时间还不够 npm install。
+
+有杠精可能会说，现在的前端框架全都是无构建可用的。这么说也对，但 Jinkela 是希望在无构建的时候也不难用。现在的前端框架，比如有些推荐使用 JSX，如果无构建使用，就得写一堆 createElement，能想象得多难用吗？Jinkela 永远不会把不能在浏览器原生跑起来的东西作为一种推荐用法。
+
+## 2. 状态分离
 
 绝大多数前端框架都将状态和视图一起包装成组件，「状态」一词潜移默化地变成了特指组件的状态。而在 Jinkela 的设计中，状态是可以单独存在的，视图与状态之间可以自由结合，是多对多的关系。
 
@@ -168,11 +176,3 @@ const c2 = jkl`
 document.body.appendChild(c1);
 document.body.appendChild(c2);
 ```
-
-## 2. 还没想好咋编
-
-TODO
-
-# 详细文档
-
-别急，文档正在逐步完善中。

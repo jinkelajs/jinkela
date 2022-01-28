@@ -1,0 +1,68 @@
+.header {
+  line-height: 40px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgb(0 0 0 / 25%);
+  padding: 25px var(--side-padding);
+  position: relative;
+  width: 100%;
+  display: flex;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0 0 0 1ch;
+  font-size: 1.5em;
+}
+
+.header .logo {
+  width: 40px;
+  height: 40px;
+  line-height: 240px;
+  font-size: 120px;
+  border-radius: 100%;
+  overflow: hidden;
+}
+
+.header .logo img {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.header .menu a {
+  padding: 2px;
+  margin-left: 20px;
+}
+
+.header .menu a.current {
+  border-bottom: 3px solid #000;
+}
+
+.header .hamburger {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  body {
+    padding-top: 40px;
+  }
+  .header {
+    position: fixed;
+    top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .header .logo {
+    width: 28px;
+    height: 28px;
+  }
+  .header h1 {
+    font-size: 1em;
+  }
+  .header .menu {
+    display: none;
+  }
+}

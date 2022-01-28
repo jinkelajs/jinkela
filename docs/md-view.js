@@ -1,16 +1,24 @@
-import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev1/dist/index.esm.js';
+import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.esm.js';
 
 const makeCodePreview = () => {
-  const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev1/dist/index.iife.js';
+  const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.iife.js';
   Array.from(document.querySelectorAll('pre.hljs'), (pre) => {
     const code = pre.textContent.replace(/^import (.*) from 'jinkela';$/gm, `const $1 = Jinkela;`);
     const href = URL.createObjectURL(
       new Blob(
         [
-          '<!DOCTYPE html>\n<html>\n<body>\n',
-          `<script src="${src}"><\/script>\n`,
-          `<script>\n\n${code}\n\n<\/script>\n`,
-          '</body>\n</html>\n',
+          [
+            '<!DOCTYPE html>',
+            '<html>',
+            '<body>',
+            '<meta charset="utf-8" />',
+            `<script src="${src}"><\/script>`,
+            '<script>',
+            code,
+            '</script>',
+            '</body>',
+            '</html>',
+          ].join('\n'),
         ],
         { type: 'text/html' },
       ),
@@ -30,6 +38,9 @@ renderer.code = (code, lang) => {
   const highlighted = validLang ? hljs.highlight(lang, code).value : code;
   return `<pre class="hljs ${lang}">${highlighted}</pre>`;
 };
+renderer.link = (href, title, text) => {
+  return `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
+};
 marked.setOptions({ renderer });
 
 /**
@@ -40,7 +51,10 @@ marked.setOptions({ renderer });
 export const mdView = (src, title) => {
   const md = request(() =>
     fetch(`${src}?_=${Date.now()}`)
-      .then((r) => r.text())
+      .then((r) => {
+        if (r.ok) return r.text();
+        throw new Error(`HTTP ${r.status}`);
+      })
       .then((text) => {
         const html = marked.parse(text);
         const node = jkl({ raw: [html] });
@@ -48,13 +62,31 @@ export const mdView = (src, title) => {
       }),
   );
 
+  const s = createState({});
+  addEventListener('click', (e) => {
+    if (e.fromAside) {
+      return;
+    }
+    delete s.active;
+  });
+  const hamburgerClick = (e) => {
+    if (s.active) return;
+    s.active = 'active';
+    e.stopPropagation();
+  };
+  const asideClick = (e) => {
+    e.fromAside = true;
+  };
+
   return jkl`
-    <main class="md-view">
+    <main class="md-view ${() => s.active}" >
+      <div class="hamburger" @click="${hamburgerClick}"></div>
       ${() => {
         if (md.loading) return jkl`<h2>Loading...</h2>`;
+        if (md.error) return jkl`<h2 style="color: darkred;">${md.error}</h2>`;
         return jkl`
-          <aside style="position: ${() => pageState.menuPos};">
-            <h2>${title}</h2>
+          <aside style="position: ${() => pageState.menuPos};" @click="${asideClick}">
+            <h2><a href="#">${title}</a></h2>
             <ul>
               ${() => {
                 if (!md.data) return;
@@ -83,6 +115,6 @@ export const mdView = (src, title) => {
             }}
           </article>
         `;
-      }} 
+      }}
     </main>`;
 };

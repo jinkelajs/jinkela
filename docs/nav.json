@@ -1,11 +1,14 @@
 [
   {
-    "href": "docs.html#intro",
-    "text": "介绍",
-    "target": null
+    "href": "docs.html?d=intro",
+    "text": "介绍"
   },
   {
-    "href": "https://github.com/jinkelajs",
+    "href": "docs.html?d=api",
+    "text": "API"
+  },
+  {
+    "href": "https://github.com/jinkelajs/jinkela/tree/v2",
     "text": "GitHub",
     "target": "_blank"
   }
