@@ -54,3 +54,10 @@ export const uDiff = <T>(o: T[], n: T[], a: Record<'add' | 'delete' | 'modify', 
   }
   s.forEach((i) => a.add(i));
 };
+
+/**
+ * Convert Variable List to String.
+ */
+export const vl2s = (a: any[]) => {
+  return a.map((w) => (typeof w === 'function' ? w() : w)).join('');
+};

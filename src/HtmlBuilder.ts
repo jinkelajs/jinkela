@@ -1,4 +1,4 @@
-import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType } from './utils';
+import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType, vl2s } from './utils';
 import type { SlotVar } from './utils';
 import { live, touch } from './StateManager';
 import { StringBuilder } from './StringBuilder';
@@ -6,6 +6,8 @@ import { BasicBuilder } from './BasicBuilder';
 import { domListAssign } from './domListAssign';
 import { IndexedArray } from './IndexedArray';
 import { AttributesManager } from './AttributesManager';
+
+const isNotAlpha = RegExp.prototype.test.bind(/[^a-zA-Z0-9]/);
 
 export class HtmlBuilder extends BasicBuilder {
   public root = document.createDocumentFragment();
@@ -25,38 +27,28 @@ export class HtmlBuilder extends BasicBuilder {
       if (c === '<') {
         const h3 = this.look(3);
         assertDefined(h3);
+        // It's a comment, such as <!xxx>, or <?xxx>, or <!--xxx-->.
         if (h3[1] === '!' || h3[1] === '?') {
           sb.commit();
           this.readComment();
         } else {
           const hasSlash = h3[1] === '/';
           const leading = hasSlash ? h3[2] : h3[1];
-          if (leading) {
-            // Tag name must start with ascii alpha characters.
-            if (/[a-zA-Z]/.test(leading)) {
-              sb.commit();
-              this.readTag();
-            }
-            // It's not a html tag, may be comment or text.
-            else {
-              // It's a comment, if starts with slash, such as </注释>.
-              if (hasSlash) {
-                sb.commit();
-                this.readComment();
-              }
-              // It's a text, such as <123>.
-              else {
-                // Read it as a plain text, don't commit here.
-                this.read();
-                sb.append(c);
-              }
-            }
-          }
-          // It's probably a variable tag, if no leading character found.
-          // Anyway, read it as a tag.
-          else {
+          // It's probably a variable tag, if no leading character found, such as <${x}>.
+          // It's a tag, if starts with ASCII alpha characters, such as <div>.
+          if (!leading || /[a-zA-Z]/.test(leading)) {
             sb.commit();
             this.readTag();
+          }
+          // It's a comment, if starts with slash, such as </注释>.
+          else if (hasSlash) {
+            sb.commit();
+            this.readComment();
+          }
+          // It's a text, such as <123>.
+          else {
+            this.read();
+            sb.append(c);
           }
         }
       }
@@ -80,9 +72,7 @@ export class HtmlBuilder extends BasicBuilder {
             touch(value);
             return value;
           },
-          (value) => {
-            list = domListAssign(list, value);
-          },
+          (value) => (list = domListAssign(list, value)),
         );
       }
       // Normal char.
@@ -97,7 +87,7 @@ export class HtmlBuilder extends BasicBuilder {
     assertToken(this.read(), '&');
     const sharp = !this.done && this.look() === '#' ? '#' : '';
     if (sharp) this.read();
-    const name = this.readWhile(/[a-zA-Z0-9]/);
+    const name = this.readUntil(isNotAlpha).join('');
     const colon = !this.done && this.look() === ';' ? ';' : '';
     if (colon) this.read();
     // Create an element to parse html entity.
@@ -117,7 +107,7 @@ export class HtmlBuilder extends BasicBuilder {
     this.read(isClosing ? 2 : 1);
 
     // https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
-    const tagName = this.readUntil('\t\n\f />\x00', true);
+    const tagName = this.readUntil('\t\n\f />\x00').join('');
 
     if (this.done) {
       if (!tagName) this.current.appendChild(document.createTextNode('<' + isClosing));
@@ -168,36 +158,22 @@ export class HtmlBuilder extends BasicBuilder {
     const isStandard = type === '!' && this.look(2) === '--';
     if (isStandard) this.read(2);
 
-    const list: SlotVar[] = [];
+    let list: SlotVar[] = [];
 
-    const sb = new StringBuilder((s) => list.push(s));
-    if (type === '?') sb.append(type);
-
-    for (;;) {
-      const c = this.read();
-      // Standard html comment
-      if (isStandard && c === '-' && this.look(2) === '->') {
-        this.read(2);
-        sb.commit();
-        break;
-      }
-      // Simple html comment.
-      else if (!isStandard && c === '>') {
-        sb.commit();
-        break;
-      }
-      // Not a comment terminator, append char to string builder.
-      else if (c) {
-        sb.append(c);
-      } else {
-        sb.commit();
-        list.push(this.getVariable());
-      }
+    if (isStandard) {
+      list = this.readUntil((c) => {
+        return c === '-' && this.look(3) === '-->';
+      });
+      this.read(3);
+    } else {
+      list = this.readUntil('>');
+      this.read();
+      if (type === '?') list.unshift('?');
     }
 
     let comment: Comment;
     live(
-      () => list.map((i) => (typeof i === 'function' ? i() : i)).join(''),
+      () => vl2s(list),
       (text) => {
         if (comment) {
           comment.data = text;
@@ -209,25 +185,29 @@ export class HtmlBuilder extends BasicBuilder {
     );
   }
 
+  static isNotAttrSpace = (c: string) => '\x09\x0a\x0c\x20'.indexOf(c) === -1;
   private readAttrSpace() {
-    // Ignore empty characters.
-    return this.readWhile('\x09\x0a\x0c\x20');
+    return this.readUntil(HtmlBuilder.isNotAttrSpace, true).join('');
   }
 
   private readAttributes(element?: HTMLElement) {
     const am = new AttributesManager();
     for (let i = 0; i < 1000; i++) {
-      const res = this.readAttrName(element);
-      if (res === false) return false;
+      const what = this.readAttrNameOrSpread();
 
-      // It's a extract attributes.
-      if (typeof res === 'object') {
-        am.addExtract(res.value);
+      // EOF found.
+      if (what === false) return false;
+
+      // It's a spread attributes.
+      if (what.type === 'spread') {
+        am.addSpread(what.value);
         continue;
       }
 
-      const name = res;
+      // It's a attribute name.
+      const name = what.value;
 
+      // There may be spaces after attribute name.
       this.readAttrSpace();
       if (this.done) return false;
 
@@ -239,65 +219,69 @@ export class HtmlBuilder extends BasicBuilder {
         this.readAttrSpace();
         if (this.done) return false;
         const value = this.readAttrValue();
-        if (name) am.addPair(name, value);
+        if (name.length) am.addPair(name, value);
         continue;
       }
 
       // It's name only.
-      if (name) am.addPair(name, ['']);
+      if (name.length) am.addPair(name, ['']);
 
-      // End of tag, set last attribute and stop.
+      // It's the end of the tag, bind attributes to element and return.
       if (c === '>') {
         this.read();
-        break;
+        if (element) am.bind(element);
+        return true;
       } else if (c === '/' && this.look(2) === '/>') {
         this.read(2);
-        break;
+        if (element) am.bind(element);
+        return true;
       }
     }
 
-    if (element) am.bind(element);
-    return true;
+    throw RangeError('Too many attributes.');
   }
 
-  private readAttrName(element?: HTMLElement) {
+  private readAttrNameOrSpread() {
     this.readAttrSpace();
     if (this.done) return false;
-    let name = '';
+    let name: any[] = [];
 
     // Read leading variable.
     // It may be a variable attribute name such as <meta ${'x'}="" ${'dis'}able />,
-    // or name-value pairs such as <meta ${'x'} />.
+    // or spread attributes such as <meta ${{ a: 1, b: 2 }} />.
     if (!this.look()) {
       this.read();
-      let leadingVariable = this.getVariable();
-      if (leadingVariable === null || leadingVariable === undefined) {
+      let lv = this.getVariable();
+      if (lv === null || lv === undefined) {
         // Nothing to do.
       }
-      // It's unknown, need to check following characters.
-      else if (!isValueType(leadingVariable)) {
+      // It's an attribute name.
+      else if (isValueType(lv)) {
+        name.push(lv);
+      }
+      // Need to check following characters.
+      else {
         const space = this.readAttrSpace();
         if (this.done) return false;
         const following = this.look();
-        // It's name-value pairs.
+        // It's spread attributes. <meta ${obj}>, and <meta ${obj}/>, and <meta ${obj} xxx />
+        // are spread attributes, but <meta ${obj} = xxx /> is not.
         if (following === '>' || following === '/' || (space && following !== '=')) {
-          return { type: 'extract', value: leadingVariable } as const;
+          return { type: 'spread', value: lv } as const;
         }
         // It's an attribute name.
         else {
-          name += leadingVariable;
+          name.push(lv);
         }
-      }
-      // It's an attribute name.
-      else {
-        name += leadingVariable;
       }
     }
 
     // Read attribute name
     // https://html.spec.whatwg.org/multipage/parsing.html#attribute-name-state
-    name += this.readUntil('\t\n\f >/=', true);
-    return name;
+    const list = this.readUntil('\t\n\f >/=');
+    name = name.concat(list);
+
+    return { type: 'name', value: name } as const;
   }
 
   private readAttrValue() {
@@ -308,30 +292,16 @@ export class HtmlBuilder extends BasicBuilder {
     if (boundary) this.read();
 
     if (boundary) {
-      for (;;) {
-        // The readUntil method may be broken by variable, try to read variable and continue.
-        value.push(this.readUntil(boundary));
-        // Read boundary character or variable.
-        if (this.read()) return value;
-        value.push(this.getVariable());
-      }
+      const list = this.readUntil(boundary);
+      this.read();
+      return list;
     } else {
-      for (;;) {
-        // The readUntil method may be broken by variable, try to read variable and continue.
-        value.push(this.readUntil('\t\r\n\f >'));
-        // Use head() here, we needen't read tag closing charater.
-        if (this.done || this.look()) return value;
-        this.read();
-        value.push(this.getVariable());
-      }
+      return this.readUntil('\t\r\n\f >');
     }
   }
 
   constructor(frags: string[] | ArrayLike<string>, vars: SlotVar[]) {
     super(frags, vars);
-    for (;;) {
-      if (this.done) break;
-      this.readContent();
-    }
+    this.readContent();
   }
 }

@@ -1,14 +1,14 @@
-import { assertDefined, uDiff } from './utils';
+import { assertDefined, isValueType, uDiff, vl2s } from './utils';
 import { live, touch } from './StateManager';
 
 interface IPair {
   readonly type: 'pair';
-  name: string;
+  name: any[];
   value: any[];
 }
 
-interface IExtract {
-  readonly type: 'extract';
+interface ISpread {
+  readonly type: 'spread';
   value: any;
 }
 
@@ -16,7 +16,7 @@ type IAttrs = Record<string, string | null | any[]>;
 type IEvents = Record<string, ((...a: any[]) => void)[]>;
 
 export class AttributesManager {
-  private list = [] as (IPair | IExtract)[];
+  private list = [] as (IPair | ISpread)[];
   private attrs: IAttrs = {};
   private events: IEvents = {};
   private cancelMap = new WeakMap<Attr, () => void>();
@@ -32,28 +32,34 @@ export class AttributesManager {
       const item = list[i];
       if (item.type === 'pair') {
         const { name, value } = item;
-        if (name[0] == '@') {
+        const sName = vl2s(name);
+        if (sName[0] == '@') {
           // Convert to a function array (remove all non-function items).
-          events[name.slice(1)] = value.filter((i) => typeof i === 'function');
+          events[sName.slice(1)] = value.filter((i) => typeof i === 'function');
         } else {
-          attrs[name] = value;
+          if (sName) attrs[sName] = value;
         }
       }
-      // It's a extract type
+      // It's a spread type
       else {
         const { value } = item;
-        const dict = Object(typeof value === 'function' ? value() : value);
-        touch(dict);
-        const keys = Object.keys(dict);
-        for (let j = 0; j < keys.length; j++) {
-          const name = keys[j];
-          if (name[0] == '@') {
-            // Convert to a function array (remove all non-function items).
-            events[name.slice(1)] = [].concat(dict[name]).filter((i) => typeof i === 'function');
-          } else if (dict[name] === null || dict[name] === undefined) {
-            attrs[name] = null;
-          } else {
-            attrs[name] = String(dict[name]);
+        const res = typeof value === 'function' ? value() : value;
+        if (isValueType(res)) {
+          attrs[String(res)] = '';
+        } else {
+          const dict = Object(res);
+          touch(dict);
+          const keys = Object.keys(dict);
+          for (let j = 0; j < keys.length; j++) {
+            const name = keys[j];
+            if (name[0] == '@') {
+              // Convert to a function array (remove all non-function items).
+              events[name.slice(1)] = [].concat(dict[name]).filter((i) => typeof i === 'function');
+            } else if (dict[name] === null || dict[name] === undefined) {
+              attrs[name] = null;
+            } else {
+              attrs[name] = String(dict[name]);
+            }
           }
         }
       }
@@ -128,9 +134,7 @@ export class AttributesManager {
     const update = (name: string) => {
       const value = attrs[name];
       if (value instanceof Array) {
-        this.setBindingAttr(name, () => {
-          return value.map((w) => (typeof w === 'function' ? w() : w)).join('');
-        });
+        this.setBindingAttr(name, () => vl2s(value));
       } else if (value === null) {
         this.unsetBindingAttr(name);
       } else {
@@ -145,17 +149,17 @@ export class AttributesManager {
     this.attrs = attrs;
   }
 
-  addPair(name: string, value: any[]) {
+  addPair(name: any[], value: any[]) {
     this.list.push({ type: 'pair', name, value });
   }
 
-  addExtract(value: any) {
-    this.list.push({ type: 'extract', value });
+  addSpread(value: any) {
+    this.list.push({ type: 'spread', value });
   }
 
   bind(element: HTMLElement) {
     this.element = element;
-    // Watch attributes list structure change (extract attributes may add or remove some attributes),
+    // Watch attributes list structure change (spread attributes may add or remove some attributes),
     // and update events and attributes.
     live(
       () => this.restructure(),

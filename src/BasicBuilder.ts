@@ -1,13 +1,9 @@
+import { StringBuilder } from './StringBuilder';
 import { SlotVar } from './utils';
 
 export class BasicBuilder {
   protected index = 0;
   protected position = 0;
-
-  protected reset() {
-    this.index = 0;
-    this.position = 0;
-  }
 
   /**
    * Read head chars, may be undefined in gap of template fragmetns.
@@ -54,42 +50,26 @@ export class BasicBuilder {
     return this.vars[this.index];
   }
 
-  protected readWhile(pattern: RegExp | string, readVariable = false) {
-    let sb = '';
+  protected readUntil(pattern: string | ((c: string) => boolean), noVariables = false) {
+    const list = [];
+    const sb = new StringBuilder((v) => list.push(v));
+    const t = typeof pattern === 'string' ? (c: string) => pattern.indexOf(c) !== -1 : pattern;
     for (;;) {
-      if (this.done) return sb;
+      if (this.done) break;
       const c = this.look();
       if (c) {
-        if (typeof pattern === 'string') {
-          if (pattern.indexOf(c) === -1) return sb;
-        } else {
-          if (!pattern.test(c)) return sb;
-        }
+        if (t(c)) break;
         this.read();
-        sb += c;
+        sb.append(c);
       } else {
-        if (!readVariable) return sb;
+        if (noVariables) break;
+        sb.commit();
         this.read();
-        sb += this.getVariable();
+        list.push(this.getVariable());
       }
     }
-  }
-
-  protected readUntil(pattern: string, readVariable = false) {
-    let sb = '';
-    for (;;) {
-      if (this.done) return sb;
-      const c = this.look();
-      if (c) {
-        if (pattern.indexOf(c) !== -1) return sb;
-        this.read();
-        sb += c;
-      } else {
-        if (!readVariable) return sb;
-        this.read();
-        sb += this.getVariable();
-      }
-    }
+    sb.commit();
+    return list;
   }
 
   constructor(protected frags: string[] | ArrayLike<string>, protected vars: SlotVar[]) {}

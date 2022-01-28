@@ -51,7 +51,7 @@ test('TagName with Variable', () => {
 });
 
 describe('Attributes', () => {
-  test('with Value', () => {
+  test('Variables', () => {
     const state = createState({ v: 1 });
     const root = r`
       <div
@@ -60,7 +60,9 @@ describe('Attributes', () => {
         style="color: red; font-size: ${12}px;"
         ${'class'}="${'nothing'}"
         v1="${() => state.v}"
+        a${() => state.v}="hehe"
         ${{ toString: () => 'data-' }}hehe="123"
+        ${() => 'disabled'}
       >
       </div>
     `;
@@ -72,8 +74,13 @@ describe('Attributes', () => {
     expect(div?.getAttribute('class')).toBe('nothing');
     expect(div?.getAttribute('data-hehe')).toBe('123');
     expect(div?.getAttribute('v1')).toBe('1');
+    expect(div?.getAttribute('a1')).toBe('hehe');
+    expect(div?.getAttribute('a2')).toBe(null);
+    expect(div?.getAttribute('disabled')).toBe('');
     state.v++;
     digestImmediately();
+    expect(div?.getAttribute('a1')).toBe(null);
+    expect(div?.getAttribute('a2')).toBe('hehe');
     expect(div?.getAttribute('v1')).toBe('2');
   });
 
@@ -131,13 +138,13 @@ describe('Attributes', () => {
     expect(e6?.getAttribute('c')).toBe(null);
   });
 
-  test('with Extracted', () => {
+  test('with Spread', () => {
     const e1 = r`<div ${{ a: 1, b: () => 1 }}></div>`.firstElementChild;
     expect(e1?.getAttribute('a')).toBe('1');
     expect(e1?.getAttribute('b')).toBe('() => 1');
   });
 
-  test('with Extracted Variable', () => {
+  test('with Spread Variable', () => {
     const attrs = createState({ a: 1 } as any);
     const e1 = r`<div ${attrs}></div>`.firstElementChild;
     expect(e1?.getAttribute('a')).toBe('1');
@@ -153,13 +160,13 @@ describe('Attributes', () => {
   });
 
   describe('Override Rules', () => {
-    test('Right Extracted Attributes Override Left Normal Attributes', () => {
+    test('Right Spread Attributes Override Left Normal Attributes', () => {
       const e1 = r`<div a="1" ${{ a: 2, b: 2 }}></div>`.firstElementChild;
       expect(e1?.getAttribute('a')).toBe('2');
       expect(e1?.getAttribute('b')).toBe('2');
     });
 
-    test('Right Normal Attributes Override Left Extracted Attributes', () => {
+    test('Right Normal Attributes Override Left Spread Attributes', () => {
       const e2 = r`<div ${{ a: 2, b: 2 }} a="1"></div>`.firstElementChild;
       expect(e2?.getAttribute('a')).toBe('1');
       expect(e2?.getAttribute('b')).toBe('2');
@@ -180,7 +187,7 @@ describe('Attributes', () => {
       expect(e3?.getAttribute('b')).toBe('3');
     });
 
-    test('Extracted Attributes can be Null', () => {
+    test('Spread Attributes can be Null', () => {
       const s3 = createState({ v: { a: 2, b: 2 } as any, x: 1 as any });
       const e3 = r`<div a="${() => s3.x}" ${() => s3.v}></div>`.firstElementChild;
       expect(e3?.getAttribute('a')).toBe('2');
@@ -195,6 +202,13 @@ describe('Attributes', () => {
       expect(e3?.getAttribute('a')).toBe('4');
       expect(e3?.getAttribute('b')).toBe(null);
     });
+  });
+
+  test('Too many attributes', () => {
+    expect(() => {
+      const attrs = Array.from({ length: 1001 }, (_, i) => `a${i}`).join(' ');
+      new HtmlBuilder([`<meta ${attrs} />`], []);
+    }).toThrowError();
   });
 });
 
@@ -217,7 +231,7 @@ describe('Event Handler', () => {
     expect(click2).toBeCalled();
   });
 
-  test('with Extracted Attributes', () => {
+  test('with Spread Attributes', () => {
     const click0 = jest.fn();
     const click1 = jest.fn();
     const s = createState({
