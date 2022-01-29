@@ -18,7 +18,7 @@ const content = jkl`
       }}
     </nav>
     <a class="logo" href="docs.html?d=intro">
-      <img src="./willan.png" alt="logo" />
+      <img src="./willan.svg" alt="logo" />
     </a>
     <h1><a href="docs.html?d=intro">${title}</a></h1>
     <h2>${description}</h2>

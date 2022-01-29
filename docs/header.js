@@ -8,7 +8,7 @@ export const header = () => {
   return jkl`
     <header class="header">
       <a class="logo" href=".">
-        <img src="./willan.png" alt="logo" />
+        <img src="./willan.svg" alt="logo" />
       </a>
       <h1>Jinkela v2</h1>
       <div style="flex: 1;"></div>
