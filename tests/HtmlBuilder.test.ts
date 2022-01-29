@@ -448,6 +448,21 @@ test('HTML Entity', () => {
   expect(children[3].textContent).toBe('©nimei');
 });
 
+test('Svg', () => {
+  const { firstElementChild: svg } = r`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+      <rect x="0" y="20" width="100" height="20" />
+      <g fill="red">
+        <rect x="0" y="60" width="100" height="20" />
+      </g>
+    </svg>`;
+  expect(svg).toBeInstanceOf(SVGElement);
+  const { children = [] } = svg || {};
+  expect(children[0].tagName).toBe('rect');
+  expect(children[1].tagName).toBe('g');
+  expect(children[1].firstElementChild?.tagName).toBe('rect');
+});
+
 test('EOF', () => {
   assertElement(r`<div>ccc</di`.firstChild, 'DIV', 'ccc');
   assertElement(r`<div>ccc</`.firstChild, 'DIV', 'ccc</');

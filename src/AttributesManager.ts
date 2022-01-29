@@ -1,4 +1,4 @@
-import { assertDefined, isValueType, uDiff, vl2s } from './utils';
+import { assertDefined, isValueType, uDiff, v2v, vl2s } from './utils';
 import { live, touch } from './StateManager';
 
 interface IPair {
@@ -20,7 +20,7 @@ export class AttributesManager {
   private attrs: IAttrs = {};
   private events: IEvents = {};
   private cancelMap = new WeakMap<Attr, () => void>();
-  private element?: HTMLElement;
+  private element?: Element;
 
   private restructure() {
     const attrs = {} as IAttrs;
@@ -43,7 +43,7 @@ export class AttributesManager {
       // It's a spread type
       else {
         const { value } = item;
-        const res = typeof value === 'function' ? value() : value;
+        const res = v2v(value);
         if (isValueType(res)) {
           attrs[String(res)] = '';
         } else {
@@ -149,6 +149,22 @@ export class AttributesManager {
     this.attrs = attrs;
   }
 
+  get(name: string) {
+    const { list } = this;
+    for (let i = list.length - 1; i >= 0; i--) {
+      const n = list[i];
+      if (n.type === 'pair') {
+        if (vl2s(n.name) === name) return vl2s(n.value);
+      } else if (n.type === 'spread') {
+        const obj = v2v(n.value);
+        if (obj instanceof Object && name in obj) {
+          return obj[name];
+        }
+      }
+    }
+    return null;
+  }
+
   addPair(name: any[], value: any[]) {
     this.list.push({ type: 'pair', name, value });
   }
@@ -157,7 +173,7 @@ export class AttributesManager {
     this.list.push({ type: 'spread', value });
   }
 
-  bind(element: HTMLElement) {
+  bind(element: Element) {
     this.element = element;
     // Watch attributes list structure change (spread attributes may add or remove some attributes),
     // and update events and attributes.

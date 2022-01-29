@@ -1,4 +1,4 @@
-import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType, vl2s } from './utils';
+import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType, v2v, vl2s } from './utils';
 import type { SlotVar } from './utils';
 import { live, touch } from './StateManager';
 import { StringBuilder } from './StringBuilder';
@@ -68,7 +68,7 @@ export class HtmlBuilder extends BasicBuilder {
         const variable = this.getVariable();
         live(
           () => {
-            const value = typeof variable === 'function' ? variable() : variable;
+            const value = v2v(variable);
             touch(value);
             return value;
           },
@@ -128,17 +128,34 @@ export class HtmlBuilder extends BasicBuilder {
         }
       }
     } else {
-      // Create element.
-      const element = document.createElement(tagName);
+      const res = this.readAttributes();
+      if (!res) return;
 
-      const complete = this.readAttributes(element);
-      if (!complete) return;
+      const [isSelfClosing, am] = res;
+
+      // Create element.
+      const xmlns = am.get('xmlns');
+      let element;
+      if (xmlns) {
+        element = document.createElementNS(xmlns, tagName);
+      } else {
+        if (this.current instanceof Element) {
+          element = document.createElementNS(this.current.namespaceURI, tagName);
+        } else {
+          element = document.createElement(tagName);
+        }
+      }
+
+      am.bind(element);
 
       this.current.appendChild(element);
       this.current = element;
 
       // Handle self-closing tag
-      if (this.current instanceof HTMLElement && isSelfClosingTag(this.current.tagName)) {
+      if (
+        (!(this.current instanceof HTMLElement) && isSelfClosing) ||
+        (this.current instanceof HTMLElement && isSelfClosingTag(this.current.tagName))
+      ) {
         const { parentNode } = this.current;
         assertNotNull(parentNode);
         this.current = parentNode;
@@ -190,7 +207,7 @@ export class HtmlBuilder extends BasicBuilder {
     return this.readUntil(HtmlBuilder.isNotAttrSpace, true).join('');
   }
 
-  private readAttributes(element?: HTMLElement) {
+  private readAttributes() {
     const am = new AttributesManager();
     for (let i = 0; i < 1000; i++) {
       const what = this.readAttrNameOrSpread();
@@ -229,12 +246,10 @@ export class HtmlBuilder extends BasicBuilder {
       // It's the end of the tag, bind attributes to element and return.
       if (c === '>') {
         this.read();
-        if (element) am.bind(element);
-        return true;
+        return [false, am] as const;
       } else if (c === '/' && this.look(2) === '/>') {
         this.read(2);
-        if (element) am.bind(element);
-        return true;
+        return [true, am] as const;
       }
     }
 
