@@ -1,6 +1,7 @@
-import { jkl } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.esm.js';
 import { header } from './header.js';
 import { mdView } from './md-view.js';
+
+const { jkl } = Jinkela;
 
 const url = new URL(location.href);
 const d = url.searchParams.get('d');

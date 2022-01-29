@@ -31,4 +31,6 @@ const div = jkl`
 document.body.appendChild(div);
 ```
 
+## Docs
+
 SEE https://jinkelajs.org

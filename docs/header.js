@@ -1,4 +1,4 @@
-import { jkl, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.esm.js';
+const { jkl, request } = Jinkela;
 
 const navState = request(() => {
   return fetch('./nav.json').then((r) => r.json());

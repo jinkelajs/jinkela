@@ -1,4 +1,4 @@
-import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.esm.js';
+const { jkl, createState, request } = Jinkela;
 
 const tipOnMouse = (e) => {
   const ae = (e) => e.target.remove();
@@ -59,9 +59,9 @@ addEventListener('hashchange', () => (pageState.hash = location.hash));
 const renderer = new marked.Renderer();
 renderer.code = (code, rLang) => {
   const [lang, ext = ''] = rLang.split(/,/g);
-  const validLang = !!(lang && hljs.getLanguage(lang));
-  const highlighted = validLang ? hljs.highlight(lang, code).value : code;
-  return `<pre class="hljs ${lang}" data-ext="${ext}"><div>${highlighted}</div></pre>`;
+  const language = hljs.getLanguage(lang) ? lang : 'text';
+  const { value } = hljs.highlight(code, { language });
+  return `<pre class="hljs ${lang}" data-ext="${ext}"><div>${value}</div></pre>`;
 };
 renderer.link = (href, title, text) => {
   return `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
