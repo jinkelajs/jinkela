@@ -94,17 +94,13 @@ const click = () => {
     <li>
       ${new Date()}
       <button @click="${remove}">remove</button>
-    </li>
-  `;
+    </li>`;
   list.push(li);
 };
 
 const div = jkl`
   <button @click="${click}">+1</button>
-  <ul style="line-height: 1.75;">
-    ${list}
-  </ul>
-`;
+  <ul style="line-height: 1.75;">${list}</ul>`;
 
 document.body.appendChild(div);
 ```
