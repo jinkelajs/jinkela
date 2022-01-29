@@ -68,11 +68,8 @@ const div = jkl`
       if (s.loading) return jkl`<span>Waiting...</span>`;
       return jkl`
         <ul>
-        ${() => {
-          return s.data.map((i) => jkl`<li>${i.name}</li>`);
-        }}
-        </ul>
-      `;
+          ${() => s.data.map((i) => jkl`<li>${i.name}</li>`)}
+        </ul>`;
     }}
   <div>`;
 
@@ -120,6 +117,54 @@ document.body.appendChild(div);
 
 你学废了吗？🎉🎉🎉
 
+# 获取与引用
+
+## 1. 从 NPM 引入
+
+**Npm**
+
+```shell,copy
+npm install jinkela --save
+```
+
+**Yarn**
+
+```shell,copy
+yarn add jinkela
+```
+
+## 2. 从 CDN 引入
+
+<img src="https://cdn.jsdelivr.net/www.jsdelivr.com/35507da1d543c7874252e26e5dd65f505d0f6241/img/logo-horizontal.svg" height="26" style="margin: 0;" alt="jsdelivr" />
+
+[iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) 方式引入：
+
+```html,copy
+<script src="https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.iife.js"></script>
+```
+
+[esm](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) 方式引入：
+
+```typescript,copy
+import { jkl } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.esm.js';
+```
+
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; font-size: 24px; margin: 40px 0 10px 0;">
+  <strong>UNPKG</strong>
+</div>
+
+[iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) 方式引入：
+
+```html,copy
+<script src="https://unpkg.com/jinkela@2.0.0-dev4/dist/index.iife.js"></script>
+```
+
+[esm](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) 方式引入：
+
+```typescript,copy
+import { jkl } from 'https://unpkg.com/jinkela@2.0.0-dev4/dist/index.esm.js';
+```
+
 # 设计理念
 
 ## 1. 无构建
@@ -134,7 +179,7 @@ Jinkela 第一版设计的出发点就是对当是的构建工具如 Grunt、Gul
 
 绝大多数前端框架都将状态和视图一起包装成组件，「状态」一词潜移默化地变成了特指组件的状态。而在 Jinkela 的设计中，状态是可以单独存在的，视图与状态之间可以自由结合，是多对多的关系。
 
-假如有两个无关的组件，他们都要展示当前时间，咋写？一般的思路就是每个组件单独开计时器计算当前时间，带来的问题是一旦这样的组件用多了，整个页面就需要开启大量的定时器。优化一下的方案就是引入一个外部的状态管理器，两个组件共同订阅上面是时间数据，数据变化时去更新组件自己的状态。这个方案的思路是很清晰的，但有两个让人不舒服的点。一是要引入外部状态管理器，增加了外部依赖。二是要从外部的状态管理器将数据同步到组件的状态上，这个过程太绕了。
+假如有两个无关的组件，他们都要展示当前时间，怎么写？一般的思路就是每个组件单独开计时器计算当前时间，带来的问题是一旦这样的组件用多了，整个页面就需要开启大量的定时器。优化一下的方案就是引入一个外部的状态管理器，两个组件共同订阅上面是时间数据，数据变化时去更新组件自己的状态。这个方案的思路是很清晰的，但有两个让人不舒服的点。一是要引入外部状态管理器，增加了外部依赖。二是要从外部的状态管理器将数据同步到组件的状态上，这个过程太绕了。
 
 从外部状态管理器的普及程度来看，大家对「状态被限制在组件范围内」的前端框架是不满意的。既然要引入外部状态管理器，为什么不从框架设计层面就直接把这层屏障打开呢？这就好比是既然植物要吸收氮磷钾，为什么不直接让植物能够吸收地下两米的氮磷钾呢？
 

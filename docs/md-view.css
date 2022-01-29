@@ -132,7 +132,7 @@ main.md-view {
   margin-top: 0;
 }
 
-.md-view pre .try {
+.md-view pre > [role='button'] {
   font-size: 12px;
   padding: 5px 10px;
   line-height: 1.25;
@@ -149,8 +149,28 @@ main.md-view {
   text-decoration: none;
 }
 
-.md-view pre .try:hover {
+.md-view pre > [role='button']:hover {
   background: rgba(255, 255, 255, 0.4);
+}
+
+.md-view__tip-on-mouse {
+  color: green;
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  position: fixed;
+  z-index: 10;
+  animation: tip-on-mouse 0.6s forwards linear;
+  transform: translate(-50%, -100%);
+}
+
+@keyframes tip-on-mouse {
+  80% {
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-30px) translate(-50%, -100%);
+    opacity: 0;
+  }
 }
 
 @media (max-width: 1280px) {
@@ -202,7 +222,7 @@ main.md-view {
   .md-view article {
     max-width: initial;
     margin: 0;
-    padding: 0;
+    padding: 40px 0 0 0;
   }
   .md-view article h1:first-child {
     margin-top: 1.5em;

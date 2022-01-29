@@ -1,29 +1,53 @@
 import { jkl, createState, request } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.esm.js';
 
+const tipOnMouse = (e) => {
+  const ae = (e) => e.target.remove();
+  const tip = jkl`
+    <div class="md-view__tip-on-mouse" style="top: ${e.clientY}px; left: ${e.clientX}px;" @animationend="${ae}">
+      Copied!
+    </div>`;
+  document.body.appendChild(tip);
+};
+
 const makeCodePreview = () => {
   const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-dev4/dist/index.iife.js';
   Array.from(document.querySelectorAll('pre.hljs'), (pre) => {
-    const code = pre.textContent.replace(/^import (.*) from 'jinkela';$/gm, `const $1 = Jinkela;`);
-    const href = URL.createObjectURL(
-      new Blob(
-        [
+    if (pre.dataset.ext === 'copy') {
+      const click = (e) => {
+        const selection = getSelection();
+        const { rangeCount } = selection;
+        const ranges = Array.from({ length: rangeCount }, (_, i) => selection.getRangeAt(i));
+        getSelection().selectAllChildren(pre.firstElementChild);
+        document.execCommand('copy');
+        selection.removeAllRanges();
+        ranges.forEach((i) => selection.addRange(i));
+        tipOnMouse(e);
+      };
+      pre.appendChild(jkl`<span role="button" class="copy" @click="${click}">Copy</span>`);
+    } else {
+      const code = pre.textContent.replace(/^import (.*) from 'jinkela';$/gm, `const $1 = Jinkela;`);
+      const href = URL.createObjectURL(
+        new Blob(
           [
-            '<!DOCTYPE html>',
-            '<html>',
-            '<body>',
-            '<meta charset="utf-8" />',
-            `<script src="${src}"><\/script>`,
-            '<script>',
-            code,
-            '</script>',
-            '</body>',
-            '</html>',
-          ].join('\n'),
-        ],
-        { type: 'text/html' },
-      ),
-    );
-    pre.insertBefore(jkl`<a class="try" href="${href}" target="_blank">Try</a>`, pre.firstChild);
+            [
+              '<!DOCTYPE html>',
+              '<html>',
+              '<body>',
+              '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+              '<meta charset="utf-8" />',
+              `<script src="${src}"><\/script>`,
+              '<script>',
+              code,
+              '</script>',
+              '</body>',
+              '</html>',
+            ].join('\n'),
+          ],
+          { type: 'text/html' },
+        ),
+      );
+      pre.appendChild(jkl`<a role="button" class="try" href="${href}" target="_blank">Try</a>`);
+    }
   });
 };
 
@@ -33,10 +57,11 @@ addEventListener('scroll', () => (pageState.menuPos = de.scrollTop > 90 ? 'fixed
 addEventListener('hashchange', () => (pageState.hash = location.hash));
 
 const renderer = new marked.Renderer();
-renderer.code = (code, lang) => {
+renderer.code = (code, rLang) => {
+  const [lang, ext = ''] = rLang.split(/,/g);
   const validLang = !!(lang && hljs.getLanguage(lang));
   const highlighted = validLang ? hljs.highlight(lang, code).value : code;
-  return `<pre class="hljs ${lang}"><div>${highlighted}</div></pre>`;
+  return `<pre class="hljs ${lang}" data-ext="${ext}"><div>${highlighted}</div></pre>`;
 };
 renderer.link = (href, title, text) => {
   return `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
@@ -80,9 +105,7 @@ export const mdView = (src, title) => {
   );
 
   addEventListener('click', (e) => {
-    if (e.fromAside) {
-      return;
-    }
+    if (e.fromAside) return;
     delete s.active;
   });
 
