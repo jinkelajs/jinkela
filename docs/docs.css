@@ -3,6 +3,9 @@
 }
 
 @media (max-width: 720px) {
+  .docs {
+    padding-top: 40px;
+  }
   :root {
     --side-padding: 20px;
   }

@@ -20,7 +20,7 @@ if (!d) {
       ${header()}
       ${() => {
         if (mvArgs) return mdView(...mvArgs);
-        return jkl`<h2 style="margin-left: 60px; color: darkred;">Document '${d}' not found.</h2>`;
+        return jkl`<h2 style="margin-left: var(--side-padding); color: darkred;">Document '${d}' not found.</h2>`;
       }}
     </div>`;
   document.body.appendChild(content);

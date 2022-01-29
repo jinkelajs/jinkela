@@ -1,4 +1,4 @@
-main.md-view {
+.md-view {
   padding: 0 var(--side-padding);
   position: relative;
 }
@@ -222,10 +222,9 @@ main.md-view {
   .md-view article {
     max-width: initial;
     margin: 0;
-    padding: 40px 0 0 0;
   }
   .md-view article h1:first-child {
-    margin-top: 1.5em;
+    margin-top: 0;
   }
   .md-view main {
     padding: 1em;
