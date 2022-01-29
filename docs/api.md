@@ -225,3 +225,18 @@ document.body.appendChild(jkl`
   <div>error: ${() => s.error}</div>
 `);
 ```
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>

@@ -63,12 +63,29 @@ export const mdView = (src, title) => {
   );
 
   const s = createState({});
+
+  addEventListener(
+    'scroll',
+    () => {
+      const hx = document.querySelectorAll('article [id]');
+      let c = null;
+      for (let i of hx) {
+        const { top } = i.getBoundingClientRect();
+        if (top - 1 > 0) break;
+        c = i;
+      }
+      s.view = c ? c.id : null;
+    },
+    { passive: true },
+  );
+
   addEventListener('click', (e) => {
     if (e.fromAside) {
       return;
     }
     delete s.active;
   });
+
   const hamburgerClick = (e) => {
     if (s.active) return;
     s.active = 'active';
@@ -93,10 +110,12 @@ export const mdView = (src, title) => {
                 const list = md.data.querySelectorAll('[id]');
                 return Array.from(list, (h) => {
                   const level = h.tagName.match(/\d+/) - 1;
-                  const href = `#${encodeURIComponent(h.getAttribute('id'))}`;
-                  const weight = () => (href === pageState.hash ? 'bold' : 'normal');
+                  const id = h.getAttribute('id');
+                  const href = `#${encodeURIComponent(id)}`;
+                  const visiting = () => (id === s.view ? 'visiting' : '');
+                  const active = () => (href === pageState.hash ? 'active' : '');
                   return jkl`
-                    <li style="margin-left: ${level}em; font-weight: ${weight};">
+                    <li style="margin-left: ${level}em;" class="${visiting} ${active}">
                       <a href="${href}">${h.textContent}<a/>
                     </li>`;
                 });
