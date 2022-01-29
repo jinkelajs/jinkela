@@ -36,21 +36,21 @@ main.md-view {
 
 .md-view article h1 {
   margin: 1.5em 0 0.3em;
-  padding: 0.5em 0 1.2em;
+  padding: 0 0 1.2em;
   border-bottom: 1px solid #ddd;
   color: #333;
 }
 
 .md-view article h2 {
   margin: 2.5em 0 0.7em;
-  padding: 0.5em 0 0.5em;
+  padding: 0 0 0.5em;
   position: relative;
   color: #333;
 }
 
 .md-view article h3 {
   margin: 2.5em 0 0.7em;
-  padding: 0.5em 0 0.5em;
+  padding: 0 0 0.5em;
   position: relative;
   color: #333;
 }
@@ -88,6 +88,14 @@ main.md-view {
 
 .md-view article pre {
   border-radius: 6px;
+}
+
+.md-view article .hljs {
+  padding: 0;
+}
+
+.md-view article .hljs > div {
+  padding: 1em;
   overflow: auto;
 }
 
@@ -186,5 +194,11 @@ main.md-view {
   }
   .md-view main {
     padding: 1em;
+  }
+  .md-view article [id]::before {
+    content: '';
+    display: block;
+    height: 60px;
+    margin-top: -60px;
   }
 }

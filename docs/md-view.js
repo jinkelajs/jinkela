@@ -36,7 +36,7 @@ const renderer = new marked.Renderer();
 renderer.code = (code, lang) => {
   const validLang = !!(lang && hljs.getLanguage(lang));
   const highlighted = validLang ? hljs.highlight(lang, code).value : code;
-  return `<pre class="hljs ${lang}">${highlighted}</pre>`;
+  return `<pre class="hljs ${lang}"><div>${highlighted}</div></pre>`;
 };
 renderer.link = (href, title, text) => {
   return `<a href="${href}" target="_blank" title="${title}">${text}</a>`;

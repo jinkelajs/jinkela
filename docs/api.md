@@ -186,8 +186,6 @@ import { jkl, createState } from 'jinkela';
 
 const s = createState({ a: 233 });
 
-s.a + 1;
-
 document.body.appendChild(jkl`<div>${() => s.a}</div>`);
 ```
 
