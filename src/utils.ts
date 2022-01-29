@@ -19,8 +19,15 @@ export const isSelfClosingTag = (tagName: string): tagName is typeof SC_TAGS ext
   return SC_TAGS.has(tagName as any);
 };
 
+export function assertInstanceOf<T, C extends abstract new (...a: any) => any>(
+  what: T,
+  clz: C,
+): asserts what is InstanceType<C> {
+  if (!(what instanceof clz)) throw new TypeError('Assert InstanceOf');
+}
+
 export function assertDefined<T>(what: T): asserts what is Exclude<T, undefined> {
-  if (what === undefined) throw new TypeError('Assert Not Defined');
+  if (what === undefined) throw new TypeError('Assert Defined');
 }
 
 export function assertNotNull<T>(what: T): asserts what is Exclude<T, null> {

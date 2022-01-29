@@ -3,5 +3,5 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   coverageDirectory: './coverage/',
-  collectCoverageFrom: ['src/**/*.ts', '!src/example.ts', '!src/index.ts'],
+  collectCoverageFrom: ['src/**/*.ts', '!src/index.ts'],
 };

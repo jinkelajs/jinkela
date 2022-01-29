@@ -1,4 +1,13 @@
-import { assertDefined, assertNotNull, assertToken, isSelfClosingTag, isValueType, v2v, vl2s } from './utils';
+import {
+  assertDefined,
+  assertInstanceOf,
+  assertNotNull,
+  assertToken,
+  isSelfClosingTag,
+  isValueType,
+  v2v,
+  vl2s,
+} from './utils';
 import type { SlotVar } from './utils';
 import { live, touch } from './StateManager';
 import { StringBuilder } from './StringBuilder';
@@ -8,6 +17,20 @@ import { IndexedArray } from './IndexedArray';
 import { AttributesManager } from './AttributesManager';
 
 const isNotAlpha = RegExp.prototype.test.bind(/[^a-zA-Z0-9]/);
+
+const rawTextTagNames = new Set(['STYLE', 'XMP', 'IFRAME', 'NOEMBED', 'NOFRAMES', 'SCRIPT', 'NOSCRIPT']);
+
+const rcDataTagNames = new Set(['TITLE', 'TEXTAREA']);
+
+interface ReadAttributes {
+  /**
+   * 0: EOF
+   * 1: Normal Element
+   * 2: Self-Closing Element
+   */
+  state: 0 | 1 | 2;
+  attrsManager: AttributesManager;
+}
 
 export class HtmlBuilder extends BasicBuilder {
   public root = document.createDocumentFragment();
@@ -83,6 +106,50 @@ export class HtmlBuilder extends BasicBuilder {
     }
   }
 
+  /**
+   * https://html.spec.whatwg.org/multipage/parsing.html#rcdata-state
+   * https://html.spec.whatwg.org/multipage/parsing.html#rawtext-state
+   */
+  private readRawData(parseEntity = false) {
+    assertInstanceOf(this.current, HTMLElement);
+    const list: SlotVar[] = [];
+    const { tagName } = this.current;
+    for (;;) {
+      list.push(...this.readUntil('<&'));
+      if (this.done) break;
+      // Find closing tag.
+      if (this.look(2) === '</') {
+        const info = this.readTagName();
+        if (!this.done && tagName === info.tagName.toUpperCase()) {
+          this.readAttributes();
+          break;
+        } else {
+          list.push('</' + info.tagName);
+        }
+      } else if (parseEntity && this.look() === '&') {
+        list.push(this.readEntity());
+      } else {
+        list.push(this.read());
+      }
+    }
+
+    let node: Text;
+    live(
+      () => vl2s(list),
+      (text) => {
+        if (node) {
+          node.data = text;
+        } else {
+          node = document.createTextNode(text);
+          this.current.appendChild(node);
+          const { parentNode } = this.current;
+          assertNotNull(parentNode);
+          this.current = parentNode;
+        }
+      },
+    );
+  }
+
   private readEntity() {
     assertToken(this.read(), '&');
     const sharp = !this.done && this.look() === '#' ? '#' : '';
@@ -98,7 +165,7 @@ export class HtmlBuilder extends BasicBuilder {
     return textContent;
   }
 
-  private readTag() {
+  private readTagName() {
     const h2 = this.look(2);
     assertDefined(h2);
     assertToken(h2[0], '<');
@@ -109,15 +176,23 @@ export class HtmlBuilder extends BasicBuilder {
     // https://html.spec.whatwg.org/multipage/parsing.html#tag-name-state
     const tagName = this.readUntil('\t\n\f />\x00').join('');
 
+    return { tagName, isClosing };
+  }
+
+  private readTag() {
+    const { tagName, isClosing } = this.readTagName();
+
     if (this.done) {
       if (!tagName) this.current.appendChild(document.createTextNode('<' + isClosing));
       return;
     }
 
-    if (isClosing) {
-      // Closing tag may have some attributes, read and ignore them.
-      this.readAttributes();
+    const { state, attrsManager } = this.readAttributes();
+    if (state === 0) return;
 
+    const isSelfClosing = state === 2;
+
+    if (isClosing) {
       // Find nearest matched element and close it.
       for (let i: Node | null = this.current; i instanceof Element; i = i.parentNode) {
         if (i.tagName.toUpperCase() == tagName.toUpperCase()) {
@@ -128,13 +203,8 @@ export class HtmlBuilder extends BasicBuilder {
         }
       }
     } else {
-      const res = this.readAttributes();
-      if (!res) return;
-
-      const [isSelfClosing, am] = res;
-
       // Create element.
-      const xmlns = am.get('xmlns');
+      const xmlns = attrsManager.get('xmlns');
       let element;
       if (xmlns) {
         element = document.createElementNS(xmlns, tagName);
@@ -146,7 +216,7 @@ export class HtmlBuilder extends BasicBuilder {
         }
       }
 
-      am.bind(element);
+      attrsManager.bind(element);
 
       this.current.appendChild(element);
       this.current = element;
@@ -159,6 +229,13 @@ export class HtmlBuilder extends BasicBuilder {
         const { parentNode } = this.current;
         assertNotNull(parentNode);
         this.current = parentNode;
+      } else if (this.current instanceof HTMLElement) {
+        // https://html.spec.whatwg.org/multipage/parsing.html#parsing-html-fragments
+        if (rawTextTagNames.has(this.current.tagName)) {
+          this.readRawData();
+        } else if (rcDataTagNames.has(this.current.tagName)) {
+          this.readRawData(true);
+        }
       }
     }
   }
@@ -207,17 +284,20 @@ export class HtmlBuilder extends BasicBuilder {
     return this.readUntil(HtmlBuilder.isNotAttrSpace, true).join('');
   }
 
-  private readAttributes() {
-    const am = new AttributesManager();
+  /**
+   *
+   */
+  private readAttributes(): ReadAttributes {
+    const attrsManager = new AttributesManager();
     for (let i = 0; i < 1000; i++) {
       const what = this.readAttrNameOrSpread();
 
       // EOF found.
-      if (what === false) return false;
+      if (what === false) return { state: 0, attrsManager };
 
       // It's a spread attributes.
       if (what.type === 'spread') {
-        am.addSpread(what.value);
+        attrsManager.addSpread(what.value);
         continue;
       }
 
@@ -226,7 +306,7 @@ export class HtmlBuilder extends BasicBuilder {
 
       // There may be spaces after attribute name.
       this.readAttrSpace();
-      if (this.done) return false;
+      if (this.done) return { state: 0, attrsManager };
 
       const c = this.look();
 
@@ -234,22 +314,22 @@ export class HtmlBuilder extends BasicBuilder {
       if (c === '=') {
         this.read();
         this.readAttrSpace();
-        if (this.done) return false;
+        if (this.done) return { state: 0, attrsManager };
         const value = this.readAttrValue();
-        if (name.length) am.addPair(name, value);
+        if (name.length) attrsManager.addPair(name, value);
         continue;
       }
 
       // It's name only.
-      if (name.length) am.addPair(name, ['']);
+      if (name.length) attrsManager.addPair(name, ['']);
 
       // It's the end of the tag, bind attributes to element and return.
       if (c === '>') {
         this.read();
-        return [false, am] as const;
+        return { state: 1, attrsManager };
       } else if (c === '/' && this.look(2) === '/>') {
         this.read(2);
-        return [true, am] as const;
+        return { state: 2, attrsManager };
       }
     }
 

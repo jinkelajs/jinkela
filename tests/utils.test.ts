@@ -1,4 +1,4 @@
-import { assertDefined, assertNotNull, assertToken, isSelfClosingTag } from '../src/utils';
+import { assertDefined, assertInstanceOf, assertNotNull, assertToken, isSelfClosingTag } from '../src/utils';
 
 test('isSelfClosingTag', () => {
   expect(isSelfClosingTag('HR')).toBeTruthy();
@@ -28,7 +28,7 @@ test('assertNotNull', () => {
   }).toThrow();
 });
 
-test('assertNotNull', () => {
+test('assertToken', () => {
   const v: string = 'a';
   assertToken(v, 'a', 'b');
   let ab: 'a' | 'b' = v;
@@ -38,5 +38,15 @@ test('assertNotNull', () => {
   expect(a).toBe(v);
   expect(() => {
     assertToken(v, 'c');
+  }).toThrow();
+});
+
+test('assertInstanceOf', () => {
+  const v: null | [] = [];
+  assertInstanceOf(v, Array);
+  const a: [] = v;
+  expect(a).toBe(v);
+  expect(() => {
+    assertInstanceOf(v, String);
   }).toThrow();
 });

@@ -2,6 +2,7 @@ import { createState } from '../src/StateManager';
 import { digestImmediately } from '../src/debounce';
 import { HtmlBuilder } from '../src/HtmlBuilder';
 import { assertText, assertComment, assertElement } from './common';
+import { assertInstanceOf } from '../src/utils';
 
 const r = ({ raw }: any, ...vars: any[]) => new HtmlBuilder(raw, vars).root;
 
@@ -461,6 +462,42 @@ test('Svg', () => {
   expect(children[0].tagName).toBe('rect');
   expect(children[1].tagName).toBe('g');
   expect(children[1].firstElementChild?.tagName).toBe('rect');
+
+  const xmlns = 'http://www.w3.org/2000/svg';
+  const { firstElementChild: svg2 } = r`<svg ${{ xmlns, width: '200' }}></svg>`;
+  expect(svg2).toBeInstanceOf(SVGElement);
+  assertInstanceOf(svg2, SVGElement);
+  expect(svg2.namespaceURI).toBe(xmlns);
+  expect(svg2.getAttribute('width')).toBe('200');
+});
+
+test('Style', () => {
+  const s = createState({ v: 'wtf' });
+  const { firstElementChild: style } = r`
+    <style>
+      <script> /* noop &amp; */ </script>
+      <!-- ${() => s.v} -->
+    </style>`;
+  expect(style).toBeInstanceOf(HTMLStyleElement);
+  expect(style?.textContent?.replace(/\s+/g, ' ')).toBe(' <script> /* noop &amp; */ </script> <!-- wtf --> ');
+  s.v = 'hehe';
+  digestImmediately();
+  expect(style?.textContent?.replace(/\s+/g, ' ')).toBe(' <script> /* noop &amp; */ </script> <!-- hehe --> ');
+});
+
+test('Textarea', () => {
+  const s = createState({ v: 'wtf' });
+  const { firstElementChild: textarea } = r`
+    <textarea>
+      <script> /* noop &amp; */ </script>
+      <!-- ${() => s.v} -->
+    </textarea>`;
+  expect(textarea).toBeInstanceOf(HTMLTextAreaElement);
+  if (!(textarea instanceof HTMLTextAreaElement)) throw new Error('??');
+  expect(textarea?.value?.replace(/\s+/g, ' ')).toBe(' <script> /* noop & */ </script> <!-- wtf --> ');
+  s.v = 'hehe';
+  digestImmediately();
+  expect(textarea?.textContent?.replace(/\s+/g, ' ')).toBe(' <script> /* noop & */ </script> <!-- hehe --> ');
 });
 
 test('EOF', () => {
@@ -486,4 +523,8 @@ test('EOF', () => {
   expect(r`<div @a`.firstElementChild).toBeNull();
   expect(r`<div ${1}`.firstElementChild).toBeNull();
   expect(r`<div ${{}}`.firstElementChild).toBeNull();
+
+  expect(r`<style><`.firstElementChild?.textContent).toBe('<');
+  expect(r`<style></`.firstElementChild?.textContent).toBe('</');
+  expect(r`<style></style`.firstElementChild?.textContent).toBe('</style');
 });
