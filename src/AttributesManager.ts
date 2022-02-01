@@ -109,7 +109,15 @@ export class AttributesManager {
     }
     // Has no attribute node, create new one.
     else {
-      const an = document.createAttribute(name);
+      let an: Attr;
+      if (name === 'xmlns') {
+        // 'xmlns' is a special attribute, can only create by `createAttribute`;
+        an = document.createAttribute(name);
+      } else {
+        // The `createAttribute` will change name to lower-case,
+        // so use `createAttributeNS` to instead.
+        an = document.createAttributeNS(null, name);
+      }
       const cancel = live(fn, (v) => (an.value = String(v)));
       cancelMap.set(an, cancel);
       element.setAttributeNode(an);
