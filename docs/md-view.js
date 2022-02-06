@@ -10,7 +10,7 @@ const tipOnMouse = (e) => {
 };
 
 const makeCodePreview = () => {
-  const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta/dist/index.iife.js';
+  const src = 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta2/dist/index.iife.js';
   Array.from(document.querySelectorAll('pre.hljs'), (pre) => {
     if (pre.dataset.ext === 'copy') {
       const click = (e) => {

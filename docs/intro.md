@@ -136,13 +136,13 @@ yarn add jinkela
 [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) 方式引入：
 
 ```html,copy
-<script src="https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta/dist/index.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta2/dist/index.iife.js"></script>
 ```
 
 [esm](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) 方式引入：
 
 ```typescript,copy
-import { jkl } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta/dist/index.esm.js';
+import { jkl } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta2/dist/index.esm.js';
 ```
 
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; font-size: 24px; margin: 40px 0 10px 0;">
@@ -152,13 +152,13 @@ import { jkl } from 'https://cdn.jsdelivr.net/npm/jinkela@2.0.0-beta/dist/index.
 [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) 方式引入：
 
 ```html,copy
-<script src="https://unpkg.com/jinkela@2.0.0-beta/dist/index.iife.js"></script>
+<script src="https://unpkg.com/jinkela@2.0.0-beta2/dist/index.iife.js"></script>
 ```
 
 [esm](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) 方式引入：
 
 ```typescript,copy
-import { jkl } from 'https://unpkg.com/jinkela@2.0.0-beta/dist/index.esm.js';
+import { jkl } from 'https://unpkg.com/jinkela@2.0.0-beta2/dist/index.esm.js';
 ```
 
 # 设计理念
